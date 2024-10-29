@@ -1,7 +1,4 @@
-import { useState, useEffect } from 'react';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { createTelemetryService } from '../services/TelemetryService';
-import { ProcessedTelemetryData, TelemetryPoint } from '../services/types';
 
 interface MapPoint {
   x: number;
@@ -9,51 +6,11 @@ interface MapPoint {
   timestamp: string;
 }
 
-export function Map() {
-  const [data, setData] = useState<MapPoint[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+interface MapProps {
+  data: MapPoint[];
+}
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const service = createTelemetryService();
-        const telemetryData = await service.getLapData(1); // Starting with lap 1
-
-        if (!telemetryData.mapDataAvailable) {
-          throw new Error('Map data is not available');
-        }
-
-        const mapPoints = telemetryData.points.map((point: TelemetryPoint) => ({
-          x: point.position!.x,
-          y: point.position!.z, // Using z as y for top-down view
-          timestamp: formatTime(point.lapTime)
-        }));
-
-        setData(mapPoints);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load map data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const formatTime = (seconds: number): string => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = (seconds % 60).toFixed(3);
-    return `${minutes}:${remainingSeconds.padStart(6, '0')}`;
-  };
-
-  if (loading) {
-    return <div>Loading map data...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+export function Map({ data }: MapProps) {
   return (
     <div className="map-container">
       <ResponsiveContainer width="100%" height="100%">
@@ -97,11 +54,15 @@ export function Map() {
         <Scatter
           name="Position"
           data={data}
-          line={{ stroke: '#8884d8' }}
+          line={{
+            stroke: '#000000',
+            strokeWidth: 1
+          }}
           lineType='joint'
           lineJointType='natural'
-          fill="#8884d8"
-          shape="circle"
+          // https://github.com/recharts/recharts/issues/1177#issuecomment-710680374
+          fill="#00000000"
+          strokeWidth={1}
         />
         </ScatterChart>
       </ResponsiveContainer>

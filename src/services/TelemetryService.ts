@@ -69,7 +69,7 @@ export class ApiTelemetryService implements TelemetryService {
     }
 
     async getLapData(lapNumber: number): Promise<ProcessedTelemetryData> {
-        const response = await fetch(`${this.baseUrl}/api/telemetry/${lapNumber}`);
+        const response = await fetch(`${this.baseUrl}/lap/${lapNumber}`);
         if (!response.ok) {
             throw new Error(`Failed to fetch telemetry data: ${response.statusText}`);
         }
@@ -79,7 +79,7 @@ export class ApiTelemetryService implements TelemetryService {
 }
 
 export function createTelemetryService(): TelemetryService {
-    if (import.meta.env.VITE_USE_MOCK_DATA === 'true') {
+    if (false && import.meta.env.VITE_USE_MOCK_DATA === 'true') {
         return new MockTelemetryService();
     }
     return new ApiTelemetryService(import.meta.env.VITE_API_BASE_URL || '');
