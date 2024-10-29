@@ -1,19 +1,59 @@
+import { useState, useEffect } from 'react';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { createTelemetryService } from '../services/TelemetryService';
+import { ProcessedTelemetryData, TelemetryPoint } from '../services/types';
 
-// Example data - replace with your actual position data
-const data = [
-  { x: 5, y: 5, timestamp: '0:00' },
-  { x: 10, y: 20, timestamp: '0:01' },
-  { x: 30, y: 40, timestamp: '0:02' },
-  { x: 50, y: 30, timestamp: '0:03' },
-  { x: 80, y: 35, timestamp: '0:04' },
-  { x: 100, y: 50, timestamp: '0:05' },
-  { x: 85, y: 70, timestamp: '0:06' },
-  { x: 50, y: 80, timestamp: '0:07' },
-  { x: 20, y: 50, timestamp: '0:08' },
-];
+interface MapPoint {
+  x: number;
+  y: number;
+  timestamp: string;
+}
 
 export function Map() {
+  const [data, setData] = useState<MapPoint[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const service = createTelemetryService();
+        const telemetryData = await service.getLapData(1); // Starting with lap 1
+
+        if (!telemetryData.mapDataAvailable) {
+          throw new Error('Map data is not available');
+        }
+
+        const mapPoints = telemetryData.points.map((point: TelemetryPoint) => ({
+          x: point.position!.x,
+          y: point.position!.z, // Using z as y for top-down view
+          timestamp: formatTime(point.lapTime)
+        }));
+
+        setData(mapPoints);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load map data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = (seconds % 60).toFixed(3);
+    return `${minutes}:${remainingSeconds.padStart(6, '0')}`;
+  };
+
+  if (loading) {
+    return <div>Loading map data...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
   return (
     <div className="map-container">
       <ResponsiveContainer width="100%" height="100%">
