@@ -2,35 +2,39 @@ import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend } f
 
 // Example data - replace with your actual position data
 const data = [
-  { x: 10, y: 20, timestamp: '0:00' },
-  { x: 15, y: 25, timestamp: '0:01' },
-  { x: 20, y: 30, timestamp: '0:02' },
-  { x: 25, y: 15, timestamp: '0:03' },
-  { x: 30, y: 20, timestamp: '0:04' },
+  { x: 5, y: 5, timestamp: '0:00' },
+  { x: 10, y: 20, timestamp: '0:01' },
+  { x: 30, y: 40, timestamp: '0:02' },
+  { x: 50, y: 30, timestamp: '0:03' },
+  { x: 80, y: 35, timestamp: '0:04' },
+  { x: 100, y: 50, timestamp: '0:05' },
+  { x: 85, y: 70, timestamp: '0:06' },
+  { x: 50, y: 80, timestamp: '0:07' },
+  { x: 20, y: 50, timestamp: '0:08' },
 ];
 
 export function Map() {
   return (
     <div className="map-container">
-      <ScatterChart 
-        width={800} 
+      <ScatterChart
+        width={800}
         height={600}
         margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis 
-          type="number" 
-          dataKey="x" 
-          name="X Position" 
+        <XAxis
+          type="number"
+          dataKey="x"
+          name="X Position"
           unit="m"
         />
-        <YAxis 
-          type="number" 
-          dataKey="y" 
-          name="Y Position" 
+        <YAxis
+          type="number"
+          dataKey="y"
+          name="Y Position"
           unit="m"
         />
-        <Tooltip 
+        <Tooltip
           cursor={{ strokeDasharray: '3 3' }}
           content={({ payload }) => {
             if (payload && payload.length) {
@@ -51,10 +55,12 @@ export function Map() {
           }}
         />
         <Legend />
-        <Scatter 
-          name="Position" 
-          data={data} 
-          line={{ stroke: '#8884d8' }} 
+        <Scatter
+          name="Position"
+          data={data}
+          line={{ stroke: '#8884d8' }}
+          lineType='joint'
+          lineJointType='natural'
           fill="#8884d8"
           shape="circle"
         />
