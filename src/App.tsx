@@ -1,11 +1,18 @@
 import './App.css'
+import { Box } from '@mui/material'
 import { Map } from './components/Map'
 
 function App() {
   return (
-    <div className="App">
+    <Box
+      sx={{
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden'
+      }}
+    >
       <Map />
-    </div>
+    </Box>
   )
 }
 
