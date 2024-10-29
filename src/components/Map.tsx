@@ -1,4 +1,4 @@
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 // Example data - replace with your actual position data
 const data = [
@@ -16,11 +16,10 @@ const data = [
 export function Map() {
   return (
     <div className="map-container">
-      <ScatterChart
-        width={800}
-        height={600}
-        margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-      >
+      <ResponsiveContainer width="100%" height="100%">
+        <ScatterChart
+          margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+        >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
           type="number"
@@ -64,7 +63,8 @@ export function Map() {
           fill="#8884d8"
           shape="circle"
         />
-      </ScatterChart>
+        </ScatterChart>
+      </ResponsiveContainer>
     </div>
   );
 }
