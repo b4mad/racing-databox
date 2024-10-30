@@ -6,7 +6,7 @@ import { SessionNavigation } from './components/SessionNavigation';
 import { Map } from './components/Map'
 import { LineGraph } from './components/LineGraph'
 import { createTelemetryService } from './services/TelemetryService'
-import { TelemetryPoint, SessionData } from './services/types'
+import { TelemetryPoint, SessionData, ProcessedTelemetryData } from './services/types'
 
 interface MapPoint {
   x: number
@@ -33,6 +33,7 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [sessionData, setSessionData] = useState<SessionData | null>(null)
   const [currentLap, setCurrentLap] = useState<number>(0)
+  const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
   const [navigationOpen, setNavigationOpen] = useState(false)
 
   useEffect(() => {
@@ -43,10 +44,15 @@ function App() {
         // const sessionId = '1729092115'
         const session = await service.getSessionData(sessionId)
         setSessionData(session)
-        
-        // Set initial lap
+
+        // Set initial lap and its data
         if (session.laps.length > 0) {
-          setCurrentLap(session.laps[0])
+          const firstLap = session.laps[0];
+          setCurrentLap(firstLap);
+          const firstLapData = session.telemetryByLap.get(firstLap);
+          if (firstLapData) {
+            setCurrentLapData(firstLapData);
+          }
         }
 
         if (!session.mapDataAvailable) {
@@ -83,10 +89,11 @@ function App() {
 
   const handleLapSelect = (lap: number) => {
     setCurrentLap(lap)
-    // Update the data for the selected lap
+    // Update both map data and telemetry data for the selected lap
     if (sessionData) {
       const lapData = sessionData.telemetryByLap.get(lap)
       if (lapData) {
+        setCurrentLapData(lapData)
         const mapPoints = lapData.map((point: TelemetryPoint) => ({
           x: point.position!.x,
           y: point.position!.z,
@@ -99,8 +106,8 @@ function App() {
 
   return (
     <>
-      <Button 
-        variant="contained" 
+      <Button
+        variant="contained"
         onClick={() => setNavigationOpen(true)}
         sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}
       >
@@ -119,7 +126,7 @@ function App() {
         container
         spacing={2}
       >
-      {/* <Grid2 size={ 6 } >
+      <Grid2 size={ 6 } >
         {loading ? (
           <div>Loading map data...</div>
         ) : error ? (
@@ -127,12 +134,12 @@ function App() {
         ) : (
           <Map data={data} />
         )}
-      </Grid2> */}
+      </Grid2>
 
-      {sessionData && sessionData.telemetryByLap.get(currentLap) && (
+      {currentLapData.length > 0 && (
           <Grid2 size={12}>
             <LineGraph
-              data={sessionData.telemetryByLap.get(currentLap)!}
+              data={currentLapData}
               dataKey="speed"
               name="Speed"
               unit="km/h"
