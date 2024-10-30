@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { Grid } from '@mui/material'
 import { Map } from './components/Map'
+import { LineGraph } from './components/LineGraph'
 import { createTelemetryService } from './services/TelemetryService'
 import { TelemetryPoint, SessionData } from './services/types'
 
@@ -20,6 +21,7 @@ function formatTime(seconds: number): string {
 const getSessionIdFromUrl = () => {
   const pathParts = window.location.pathname.split('/')
   const sessionId = pathParts[pathParts.length - 2] // Assuming URL pattern is /session/{sessionId}/{lapNumber}
+  return sessionId || '1730284531'
   return sessionId || '1729092115'
 }
 
@@ -76,10 +78,10 @@ function App() {
       sx={{
         width: '100vw',
         height: '100vh',
-        overflow: 'hidden'
+        overflow: 'auto'
       }}
     >
-      <Grid item xs={12} sx={{ height: '100%' }}>
+      <Grid item xs={12} md={6} sx={{ height: '50vh' }}>
         {loading ? (
           <div>Loading map data...</div>
         ) : error ? (
@@ -88,6 +90,38 @@ function App() {
           <Map data={data} />
         )}
       </Grid>
+
+      {sessionData && sessionData.telemetryByLap.get(sessionData.laps[0]) && (
+        <>
+          <Grid item xs={12} md={6}>
+            <LineGraph
+              data={sessionData.telemetryByLap.get(sessionData.laps[0])!}
+              dataKey="speed"
+              name="Speed"
+              unit="km/h"
+              color="#2196f3"
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <LineGraph
+              data={sessionData.telemetryByLap.get(sessionData.laps[0])!}
+              dataKey="throttle"
+              name="Throttle"
+              unit="%"
+              color="#4caf50"
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <LineGraph
+              data={sessionData.telemetryByLap.get(sessionData.laps[0])!}
+              dataKey="brake"
+              name="Brake"
+              unit="%"
+              color="#f44336"
+            />
+          </Grid>
+        </>
+      )}
     </Grid>
   )
 }
