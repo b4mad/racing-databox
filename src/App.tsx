@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import Grid2 from '@mui/material/Grid2';
-import { Button, Container, Box } from '@mui/material';
+import Grid from '@mui/material/Grid2';
+import { Button, Container, Box, Stack } from '@mui/material';
 import { SessionNavigation } from './components/SessionNavigation';
 import { Map } from './components/Map'
 import { LineGraph } from './components/LineGraph'
@@ -88,22 +88,53 @@ function App() {
   }
 
   return (
-    <Container maxWidth={false} sx={{ height: '100vh', padding: 2, display: 'flex', flexDirection: 'column' }}>
-      <Button
-        variant="contained"
-        onClick={() => setNavigationOpen(true)}
-        sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}
+    <Container>
+      <Stack
+        sx={{
+          height: "100vh",
+          borderRadius: 1,
+        }}
       >
-        Select Lap
-      </Button>
+        <Box sx={{ height: "10vh" }}>
+          <Button variant="contained" onClick={() => setNavigationOpen(true)}>
+            Select Lap
+          </Button>
 
-      <SessionNavigation
-        open={navigationOpen}
-        onClose={() => setNavigationOpen(false)}
-        sessionData={sessionData}
-        onLapSelect={handleLapSelect}
-        currentLap={currentLap}
-      />
+          <SessionNavigation
+            open={navigationOpen}
+            onClose={() => setNavigationOpen(false)}
+            sessionData={sessionData}
+            onLapSelect={handleLapSelect}
+            currentLap={currentLap}
+          />
+        </Box>
+        <Box sx={{ height: "90vh" }}>
+          <Grid container spacing={2} sx={{ height: "100%" }}>
+            <Grid size={6}>
+              <Box sx={{ height: "50%" }}>
+                <Map data={currentLapData} />
+              </Box>
+            </Grid>
+            <Grid size={6}>
+              <Stack>
+                {currentLapData.length > 0 && (
+                  <Box sx={{ height: "200px" }}>
+                    <LineGraph
+                      data={currentLapData}
+                      dataKey="speed"
+                      name="Speed"
+                      unit="km/h"
+                      color="#2196f3"
+                    />
+                  </Box>
+                )}
+              </Stack>
+            </Grid>
+          </Grid>
+        </Box>
+      </Stack>
+
+      {/*
 
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Box sx={{ height: '50vh' }}>
@@ -121,9 +152,9 @@ function App() {
             />
           </Box>
         )}
-      </Box>
+      </Box> */}
     </Container>
-  )
+  );
 }
 
 export default App
