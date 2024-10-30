@@ -19,7 +19,8 @@ function formatTime(seconds: number): string {
 
 const getSessionIdFromUrl = () => {
   const pathParts = window.location.pathname.split('/')
-  return pathParts[pathParts.length - 2] // Assuming URL pattern is /session/{sessionId}/{lapNumber}
+  const sessionId = pathParts[pathParts.length - 2] // Assuming URL pattern is /session/{sessionId}/{lapNumber}
+  return sessionId || '1729092115'
 }
 
 function App() {
@@ -32,8 +33,8 @@ function App() {
     const fetchSessionData = async () => {
       try {
         const service = createTelemetryService()
-        // const sessionId = getSessionIdFromUrl()
-        const sessionId = '1729092115'
+        const sessionId = getSessionIdFromUrl()
+        // const sessionId = '1729092115'
         const session = await service.getSessionData(sessionId)
         setSessionData(session)
 
