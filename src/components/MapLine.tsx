@@ -22,7 +22,7 @@ export function MapLine({ data }: MapLineProps) {
           />
           <YAxis
             type="number"
-            dataKey="position.z"
+            dataKey="position.y"
             name="Y Position"
             unit="m"
           />
@@ -48,7 +48,7 @@ export function MapLine({ data }: MapLineProps) {
           <Legend />
           <Line
             type="natural"
-            dataKey="position.z"
+            dataKey="position.y"
             stroke="#000000"
             dot={false}
             name="Track Path"

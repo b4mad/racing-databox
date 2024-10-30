@@ -8,7 +8,8 @@ import { Map } from './components/Map'
 import { MapLine } from './components/MapLine'
 import { LineGraph } from './components/LineGraph'
 import { createTelemetryService } from './services/TelemetryService'
-import { TelemetryPoint, SessionData, ProcessedTelemetryData, SessionInformation } from './services/types'
+import { PaddockService } from './services/PaddockService'
+import { TelemetryPoint, SessionData, ProcessedTelemetryData, SessionInformation, PaddockLap } from './services/types'
 
 
 function formatTime(seconds: number): string {
@@ -20,7 +21,7 @@ function formatTime(seconds: number): string {
 const getSessionIdFromUrl = () => {
   const pathParts = window.location.pathname.split('/')
   const sessionId = pathParts[pathParts.length - 2] // Assuming URL pattern is /session/{sessionId}/{lapNumber}
-  return sessionId || '1730284531'
+  // return sessionId || '1730284531'
   return sessionId || '1729092115'
 }
 
@@ -28,13 +29,16 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [sessionData, setSessionData] = useState<SessionData | null>(null)
+  const [paddockLaps, setPaddockLaps] = useState<PaddockLap[]>([]);
+
   const sessionInformation = useMemo<SessionInformation | null>(() => {
     if (!sessionData) return null;
     return {
       laps: sessionData.laps,
-      mapDataAvailable: sessionData.mapDataAvailable
+      mapDataAvailable: sessionData.mapDataAvailable,
+      lapDetails: paddockLaps
     };
-  }, [sessionData]);
+  }, [sessionData, paddockLaps]);
   const [currentLap, setCurrentLap] = useState<number>(0)
   const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
   const [navigationOpen, setNavigationOpen] = useState(false)
@@ -43,12 +47,18 @@ function App() {
   useEffect(() => {
     const fetchSessionData = async () => {
       try {
-        const service = createTelemetryService()
+        const telemetryService = createTelemetryService()
+        const paddockService = new PaddockService()
         const sessionId = getSessionIdFromUrl()
-        // const sessionId = '1729092115'
-        console.log('fetch Session ID:', sessionId)
-        const session = await service.getSessionData(sessionId)
-        console.log('fetch Session complete')
+
+        // Fetch both telemetry and paddock data
+        const [session, paddockData] = await Promise.all([
+          telemetryService.getSessionData(sessionId),
+          paddockService.getSessionData(sessionId)
+        ]);
+
+
+        setPaddockLaps(paddockData.laps);
         setSessionData(session)
 
         // Set initial lap and its data
@@ -137,9 +147,11 @@ function App() {
           <Grid container spacing={2} sx={{ height: "100%" }}>
             <Grid size={6}>
               <Box sx={{ height: "50%" }}>
-                {/* <Map data={currentLapData} /> */}
                 <MapLine data={currentLapData} />
               </Box>
+              {/* <Box sx={{ height: "50%" }}>
+                <Map data={currentLapData} />
+              </Box> */}
             </Grid>
             <Grid size={6}>
               <Stack>

@@ -49,6 +49,7 @@ export interface SessionData {
 export interface SessionInformation {
     laps: number[];
     mapDataAvailable: boolean;
+    lapDetails: PaddockLap[];
 }
 
 export interface TelemetryService {

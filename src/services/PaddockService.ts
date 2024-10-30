@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
-import { SessionData, TelemetryPoint, ProcessedTelemetryData, PaddockSessionData } from './types';
+import { PaddockSessionData } from './types';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
@@ -91,29 +91,4 @@ export class PaddockService {
         };
     }
 
-    async getLapData(lapNumber: number): Promise<ProcessedTelemetryData> {
-        const { data } = await this.client.query({
-            query: gql`
-                query GetLapData($lapNumber: Int!) {
-                    telemetryLapBySessionIdAndStart(number: $lapNumber) {
-                        data
-                    }
-                }
-            `,
-            variables: { lapNumber }
-        });
-
-        const lap = data.telemetryLapBySessionIdAndStart;
-
-        if (!lap) {
-            throw new Error(`Lap ${lapNumber} not found`);
-        }
-
-        const points: TelemetryPoint[] = [];
-
-        return {
-            points,
-            mapDataAvailable: false
-        };
-    }
 }

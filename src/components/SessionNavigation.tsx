@@ -1,4 +1,10 @@
 import { Modal, Box, Typography, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
+
+const formatTime = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = (seconds % 60).toFixed(3);
+  return `${minutes}:${remainingSeconds.padStart(6, '0')}`;
+};
 import { SessionInformation } from '../services/types';
 
 const style = {
@@ -50,7 +56,14 @@ export const SessionNavigation = ({
                 }}
                 selected={lap === currentLap}
               >
-                <ListItemText primary={`Lap ${lap}`} />
+                <ListItemText 
+                  primary={`Lap ${lap}`}
+                  secondary={(() => {
+                    const lapDetail = sessionInformation.lapDetails.find(detail => detail.number === lap);
+                    if (!lapDetail) return 'No data';
+                    return `${formatTime(lapDetail.time)} ${lapDetail.valid ? '✓' : '✗'}`;
+                  })()}
+                />
               </ListItemButton>
             </ListItem>
           ))}
