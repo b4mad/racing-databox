@@ -3,7 +3,7 @@ import './App.css'
 import { Grid } from '@mui/material'
 import { Map } from './components/Map'
 import { createTelemetryService } from './services/TelemetryService'
-import { TelemetryPoint } from './services/types'
+import { TelemetryPoint, SessionData } from './services/types'
 
 interface MapPoint {
   x: number
@@ -17,22 +17,39 @@ function formatTime(seconds: number): string {
   return `${minutes}:${remainingSeconds.padStart(6, '0')}`
 }
 
+const getSessionIdFromUrl = () => {
+  const pathParts = window.location.pathname.split('/')
+  return pathParts[pathParts.length - 2] // Assuming URL pattern is /session/{sessionId}/{lapNumber}
+}
+
 function App() {
   const [data, setData] = useState<MapPoint[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [sessionData, setSessionData] = useState<SessionData | null>(null)
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchSessionData = async () => {
       try {
         const service = createTelemetryService()
-        const telemetryData = await service.getLapData(1792718)
+        // const sessionId = getSessionIdFromUrl()
+        const sessionId = '1729092115'
+        const session = await service.getSessionData(sessionId)
+        setSessionData(session)
 
-        if (!telemetryData.mapDataAvailable) {
+        if (!session.mapDataAvailable) {
           throw new Error('Map data is not available')
         }
 
-        const mapPoints = telemetryData.points.map((point: TelemetryPoint) => ({
+        // Get the first lap's data
+        const firstLap = session.laps[0]
+        const firstLapData = session.telemetryByLap.get(firstLap)
+
+        if (!firstLapData) {
+          throw new Error('No data available for first lap')
+        }
+
+        const mapPoints = firstLapData.map((point: TelemetryPoint) => ({
           x: point.position!.x,
           y: point.position!.z,
           timestamp: formatTime(point.lapTime)
@@ -40,13 +57,13 @@ function App() {
 
         setData(mapPoints)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load map data')
+        setError(err instanceof Error ? err.message : 'Failed to load session data')
       } finally {
         setLoading(false)
       }
     }
 
-    fetchData()
+    fetchSessionData()
   }, [])
 
   return (

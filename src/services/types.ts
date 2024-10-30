@@ -29,6 +29,13 @@ export interface RawTelemetryData {
     data: number[][];
 }
 
+export interface SessionData {
+    laps: number[];
+    telemetryByLap: Map<number, TelemetryPoint[]>;
+    mapDataAvailable: boolean;
+}
+
 export interface TelemetryService {
     getLapData(lapNumber: number): Promise<ProcessedTelemetryData>;
+    getSessionData(sessionId: string): Promise<SessionData>;
 }

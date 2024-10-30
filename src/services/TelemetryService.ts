@@ -1,4 +1,4 @@
-import { RawTelemetryData, ProcessedTelemetryData, TelemetryPoint, TelemetryService } from './types';
+import { RawTelemetryData, ProcessedTelemetryData, TelemetryPoint, TelemetryService, SessionData } from './types';
 import mockData from '../mock-data/lap-1.json';
 
 function parseTelemetryData(rawData: RawTelemetryData): ProcessedTelemetryData {
@@ -59,6 +59,15 @@ export class MockTelemetryService implements TelemetryService {
         await new Promise(resolve => setTimeout(resolve, 500));
         return parseTelemetryData(mockData as RawTelemetryData);
     }
+
+    async getSessionData(sessionId: string): Promise<SessionData> {
+        const { points, mapDataAvailable } = await this.getLapData(1);
+        return {
+            laps: [1],
+            telemetryByLap: new Map([[1, points]]),
+            mapDataAvailable
+        };
+    }
 }
 
 export class ApiTelemetryService implements TelemetryService {
@@ -75,6 +84,27 @@ export class ApiTelemetryService implements TelemetryService {
         }
         const rawData = await response.json();
         return parseTelemetryData(rawData);
+    }
+
+    async getSessionData(sessionId: string): Promise<SessionData> {
+        const response = await fetch(`${this.baseUrl}/session/${sessionId}`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch session data: ${response.statusText}`);
+        }
+        const rawData = await response.json();
+        const { telemetryLaps, telemetryData, mapDataAvailable } = parseTelemetryData(rawData);
+
+        // Organize telemetry data by lap
+        const telemetryByLap = new Map();
+        telemetryLaps.forEach(lap => {
+            telemetryByLap.set(lap, telemetryData.filter(item => item.lapNumber === lap));
+        });
+
+        return {
+            laps: telemetryLaps,
+            telemetryByLap,
+            mapDataAvailable
+        };
     }
 }
 

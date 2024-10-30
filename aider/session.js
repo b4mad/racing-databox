@@ -248,20 +248,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-    // Fetch Data from Django and Initialize Graphs
-    fetch('/api/session/' + session_id)
-    .then(response => response.json())
-    .then(data => {
-        loadingSpinner.classList.add('d-none');
-        const { telemetryLaps, telemetryData } = parseTelemetryData(data);
-        laps = telemetryLaps;
-        laps.forEach(lap => {
-            telemetry[lap] = telemetryData.filter(item => item.CurrentLap === lap);
-        });
+    // Create telemetry service
+    const telemetryService = createTelemetryService();
 
-        lap = lapSelector1.value;
-        showLap(lap);
-    });
+    // Fetch Data from API and Initialize Graphs
+    telemetryService.getSessionData(session_id)
+        .then(sessionData => {
+            loadingSpinner.classList.add('d-none');
+            laps = sessionData.laps;
+            telemetry = Object.fromEntries(sessionData.telemetryByLap);
+            mapDataAvailable = sessionData.mapDataAvailable;
+            
+            lap = lapSelector1.value;
+            showLap(lap);
+        });
 
     function showLap(lap) {
         lap = parseInt(lap);
@@ -389,19 +389,17 @@ document.addEventListener('DOMContentLoaded', function() {
             if (telemetry[lap] === undefined) {
                 loadingSpinner.classList.remove('d-none');
                 // get the data for the selected lap
-                fetch('/api/lap/' + lap)
-                .then(response => response.json())
-                .then(data => {
-                    loadingSpinner.classList.add('d-none');
-                    if (data.data.length === 0) {
-                        alert('No data for lap ' + lap);
-                        return;
-                    }
-                    const { telemetryLaps, telemetryData } = parseTelemetryData(data);
-                    // telemetry[lap] = telemetryData[0].filter(item => item.CurrentLap === lap);
-                    telemetry[lap] = telemetryData;
-                    showLap(lap);
-                });
+                telemetryService.getLapData(lap)
+                    .then(data => {
+                        loadingSpinner.classList.add('d-none');
+                        if (data.points.length === 0) {
+                            alert('No data for lap ' + lap);
+                            return;
+                        }
+                        telemetry[lap] = data.points;
+                        mapDataAvailable = data.mapDataAvailable;
+                        showLap(lap);
+                    });
             } else {
                 showLap(lap);
             }
