@@ -58,6 +58,9 @@ function App() {
         setData(mapPoints)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load session data')
+        if (import.meta.env.DEV) {
+          throw err; // Re-throw in development mode for better debugging
+        }
       } finally {
         setLoading(false)
       }
