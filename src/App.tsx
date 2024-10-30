@@ -36,7 +36,9 @@ function App() {
         const service = createTelemetryService()
         const sessionId = getSessionIdFromUrl()
         // const sessionId = '1729092115'
+        console.log('fetch Session ID:', sessionId)
         const session = await service.getSessionData(sessionId)
+        console.log('fetch Session complete')
         setSessionData(session)
 
         // Set initial lap and its data
@@ -81,7 +83,6 @@ function App() {
     if (sessionData) {
       const lapData = sessionData.telemetryByLap.get(lap)
       if (lapData) {
-        setCurrentLapData(lapData)
         setCurrentLapData(lapData)
       }
     }
