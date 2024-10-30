@@ -1,7 +1,11 @@
 import { RawTelemetryData, ProcessedTelemetryData, TelemetryPoint, TelemetryService, SessionData } from './types';
 import mockData from '../mock-data/lap-1.json';
 
-function parseTelemetryData(rawData: RawTelemetryData): ProcessedTelemetryData {
+function parseTelemetryData(rawData: RawTelemetryData): {
+    telemetryLaps: number[];
+    telemetryData: TelemetryPoint[];
+    mapDataAvailable: boolean;
+} {
     // Find column indexes
     const distanceIndex = rawData.columns.indexOf('DistanceRoundTrack');
     const speedIndex = rawData.columns.indexOf('SpeedMs');
@@ -20,7 +24,11 @@ function parseTelemetryData(rawData: RawTelemetryData): ProcessedTelemetryData {
 
     const mapDataAvailable = posXIndex !== -1 && posYIndex !== -1 && posZIndex !== -1;
 
-    const points: TelemetryPoint[] = rawData.data.map(row => {
+    // Extract unique lap numbers and sort them
+    const telemetryLaps = [...new Set(rawData.data.map(row => row[lapNumberIndex]))];
+    telemetryLaps.sort((a, b) => a - b);
+
+    const telemetryData: TelemetryPoint[] = rawData.data.map(row => {
         const point: TelemetryPoint = {
             distance: row[distanceIndex],
             speed: row[speedIndex] * 3.6, // Convert m/s to km/h
@@ -49,7 +57,8 @@ function parseTelemetryData(rawData: RawTelemetryData): ProcessedTelemetryData {
     });
 
     return {
-        points,
+        telemetryLaps,
+        telemetryData,
         mapDataAvailable
     };
 }
@@ -57,14 +66,22 @@ function parseTelemetryData(rawData: RawTelemetryData): ProcessedTelemetryData {
 export class MockTelemetryService implements TelemetryService {
     async getLapData(lapNumber: number): Promise<ProcessedTelemetryData> {
         await new Promise(resolve => setTimeout(resolve, 500));
-        return parseTelemetryData(mockData as RawTelemetryData);
+        const { telemetryData, mapDataAvailable } = parseTelemetryData(mockData as RawTelemetryData);
+        return {
+            points: telemetryData,
+            mapDataAvailable
+        };
     }
 
     async getSessionData(sessionId: string): Promise<SessionData> {
-        const { points, mapDataAvailable } = await this.getLapData(1);
+        const { telemetryLaps, telemetryData, mapDataAvailable } = parseTelemetryData(mockData as RawTelemetryData);
+        const telemetryByLap = new Map();
+        telemetryLaps.forEach(lap => {
+            telemetryByLap.set(lap, telemetryData.filter(point => point.lapNumber === lap));
+        });
         return {
-            laps: [1],
-            telemetryByLap: new Map([[1, points]]),
+            laps: telemetryLaps,
+            telemetryByLap,
             mapDataAvailable
         };
     }
