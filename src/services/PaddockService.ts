@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
-import { SessionData, TelemetryPoint, ProcessedTelemetryData } from './types';
+import { SessionData, TelemetryPoint, ProcessedTelemetryData, PaddockSessionData } from './types';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
@@ -30,11 +30,11 @@ export class PaddockService {
         return data.allTelemetryGames.nodes;
     }
 
-    async getSessions(groupBy?: string): Promise<Array<any>> {
+    async getSessions(groupBy?: string, limit: number = 10): Promise<Array<any>> {
         const { data } = await this.client.query({
             query: gql`
-                query GetSessions {
-                    allTelemetrySessions {
+                query GetSessions($limit: Int!) {
+                    allTelemetrySessions(first: $limit) {
                         nodes {
                             sessionId
                             start
@@ -43,22 +43,28 @@ export class PaddockService {
                         }
                     }
                 }
-            `
+            `,
+            variables: { limit }
         });
         return data.allTelemetrySessions.nodes;
     }
 
-    async getSessionData(sessionId: string): Promise<SessionData> {
+    async getSessionData(sessionId: string): Promise<PaddockSessionData> {
         const { data } = await this.client.query({
             query: gql`
                 query GetSessionData($sessionId: String!) {
-                    telemetrySessionByDriverIdAndSessionIdAndSessionTypeIdAndGameId(sessionId: $sessionId) {
-                        telemetryLapsBySessionId {
-                            nodes {
-                                number
-                                time
-                                valid
-                                data
+                    allTelemetrySessions(
+                        condition: { sessionId: $sessionId }
+                        first: 1
+                    ) {
+                        nodes {
+                            sessionId
+                            telemetryLapsBySessionId {
+                                nodes {
+                                    number
+                                    time
+                                    valid
+                                }
                             }
                         }
                     }
@@ -67,24 +73,21 @@ export class PaddockService {
             variables: { sessionId }
         });
 
-        const session = data.telemetrySessionByDriverIdAndSessionIdAndSessionTypeIdAndGameId;
+        const session = data.allTelemetrySessions.nodes[0];
 
         if (!session) {
             throw new Error(`Session ${sessionId} not found`);
         }
 
-        const laps = session.telemetryLapsBySessionId.nodes.map((lap: any) => lap.number);
-        const telemetryByLap = new Map();
-
-        session.telemetryLapsBySessionId.nodes.forEach((lap: any) => {
-            const points: TelemetryPoint[] = [];
-            telemetryByLap.set(lap.number, points);
-        });
+        const laps = session.telemetryLapsBySessionId.nodes.map((lap: any) => ({
+            number: lap.number,
+            time: lap.time,
+            valid: lap.valid
+        }));
 
         return {
-            laps,
-            telemetryByLap,
-            mapDataAvailable: false
+            session,
+            laps
         };
     }
 

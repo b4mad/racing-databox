@@ -6,7 +6,9 @@
     "start": "webpack serve --mode development",
     "build": "webpack --mode production",
     "lint": "eslint .",
-    "fetch-games": "ts-node src/scripts/fetchGames.ts"
+    "fetch-games": "ts-node src/scripts/fetchGames.ts",
+    "fetch-session": "ts-node src/scripts/fetchSession.ts",
+    "fetch-sessions": "ts-node src/scripts/fetchSessions.ts"
   },
   "dependencies": {
     "@apollo/client": "3.11.8",

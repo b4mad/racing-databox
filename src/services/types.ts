@@ -29,6 +29,17 @@ export interface RawTelemetryData {
     data: number[][];
 }
 
+export interface PaddockLap {
+    number: number;
+    time: number;
+    valid: boolean;
+}
+
+export interface PaddockSessionData {
+    laps: PaddockLap[];
+    session: object;
+}
+
 export interface SessionData {
     laps: number[];
     telemetryByLap: Map<number, TelemetryPoint[]>;
