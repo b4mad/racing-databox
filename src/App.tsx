@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import Grid2 from '@mui/material/Grid2';
-import { Button, Container } from '@mui/material';
+import { Button, Container, Box } from '@mui/material';
 import { SessionNavigation } from './components/SessionNavigation';
 import { Map } from './components/Map'
 import { LineGraph } from './components/LineGraph'
@@ -88,7 +88,7 @@ function App() {
   }
 
   return (
-    <Container maxWidth={false} sx={{ height: '100vh', padding: 2 }}>
+    <Container maxWidth={false} sx={{ height: '100vh', padding: 2, display: 'flex', flexDirection: 'column' }}>
       <Button
         variant="contained"
         onClick={() => setNavigationOpen(true)}
@@ -105,16 +105,13 @@ function App() {
         currentLap={currentLap}
       />
 
-      <Grid2
-        container
-        spacing={2}
-      >
-        <Grid2 size={ 12 } >
-            <Map data={currentLapData} />
-        </Grid2>
+      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ height: '50vh' }}>
+          <Map data={currentLapData} />
+        </Box>
 
-      {currentLapData.length > 0 && (
-          <Grid2 size={12}>
+        {currentLapData.length > 0 && (
+          <Box sx={{ height: '200px' }}>
             <LineGraph
               data={currentLapData}
               dataKey="speed"
@@ -122,9 +119,9 @@ function App() {
               unit="km/h"
               color="#2196f3"
             />
-          </Grid2>
-      )}
-    </Grid2>
+          </Box>
+        )}
+      </Box>
     </Container>
   )
 }

@@ -18,9 +18,9 @@ export function LineGraph({ data, dataKey, name, unit = '', color = '#8884d8' }:
           margin={{ top: 5, right: 20, bottom: 5, left: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis 
-            dataKey="distance" 
-            name="Distance" 
+          <XAxis
+            dataKey="distance"
+            name="Distance"
             unit="m"
           />
           <YAxis
