@@ -1,13 +1,9 @@
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-interface MapPoint {
-  x: number;
-  y: number;
-  timestamp: string;
-}
+import { TelemetryPoint } from '../services/types';
 
 interface MapProps {
-  data: MapPoint[];
+  data: TelemetryPoint[];
 }
 
 export function Map({ data }: MapProps) {
@@ -20,13 +16,13 @@ export function Map({ data }: MapProps) {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
           type="number"
-          dataKey="x"
+          dataKey="position.x"
           name="X Position"
           unit="m"
         />
         <YAxis
           type="number"
-          dataKey="y"
+          dataKey="position.z"
           name="Y Position"
           unit="m"
         />
@@ -41,9 +37,9 @@ export function Map({ data }: MapProps) {
                   padding: '10px',
                   border: '1px solid #ccc'
                 }}>
-                  <p>Time: {point.timestamp}</p>
-                  <p>X: {point.x}m</p>
-                  <p>Y: {point.y}m</p>
+                  <p>Time: {point.lapTime.toFixed(3)}s</p>
+                  <p>X: {point.position.x.toFixed(1)}m</p>
+                  <p>Y: {point.position.z.toFixed(1)}m</p>
                 </div>
               );
             }

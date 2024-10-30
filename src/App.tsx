@@ -1,18 +1,13 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import Grid2 from '@mui/material/Grid2';
-import { Button } from '@mui/material';
+import { Button, Container } from '@mui/material';
 import { SessionNavigation } from './components/SessionNavigation';
 import { Map } from './components/Map'
 import { LineGraph } from './components/LineGraph'
 import { createTelemetryService } from './services/TelemetryService'
 import { TelemetryPoint, SessionData, ProcessedTelemetryData } from './services/types'
 
-interface MapPoint {
-  x: number
-  y: number
-  timestamp: string
-}
 
 function formatTime(seconds: number): string {
   const minutes = Math.floor(seconds / 60)
@@ -28,7 +23,6 @@ const getSessionIdFromUrl = () => {
 }
 
 function App() {
-  const [data, setData] = useState<MapPoint[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [sessionData, setSessionData] = useState<SessionData | null>(null)
@@ -67,13 +61,7 @@ function App() {
           throw new Error('No data available for first lap')
         }
 
-        const mapPoints = firstLapData.map((point: TelemetryPoint) => ({
-          x: point.position!.x,
-          y: point.position!.z,
-          timestamp: formatTime(point.lapTime)
-        }))
-
-        setData(mapPoints)
+        setCurrentLapData(firstLapData)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load session data')
         if (import.meta.env.DEV) {
@@ -94,18 +82,13 @@ function App() {
       const lapData = sessionData.telemetryByLap.get(lap)
       if (lapData) {
         setCurrentLapData(lapData)
-        const mapPoints = lapData.map((point: TelemetryPoint) => ({
-          x: point.position!.x,
-          y: point.position!.z,
-          timestamp: formatTime(point.lapTime)
-        }))
-        setData(mapPoints)
+        setCurrentLapData(lapData)
       }
     }
   }
 
   return (
-    <>
+    <Container maxWidth={false} sx={{ height: '100vh', padding: 2 }}>
       <Button
         variant="contained"
         onClick={() => setNavigationOpen(true)}
@@ -126,15 +109,9 @@ function App() {
         container
         spacing={2}
       >
-      <Grid2 size={ 6 } >
-        {loading ? (
-          <div>Loading map data...</div>
-        ) : error ? (
-          <div>Error: {error}</div>
-        ) : (
-          <Map data={data} />
-        )}
-      </Grid2>
+        <Grid2 size={ 12 } >
+            <Map data={currentLapData} />
+        </Grid2>
 
       {currentLapData.length > 0 && (
           <Grid2 size={12}>
@@ -148,7 +125,7 @@ function App() {
           </Grid2>
       )}
     </Grid2>
-    </>
+    </Container>
   )
 }
 
