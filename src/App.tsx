@@ -66,7 +66,7 @@ function App() {
         setCurrentLapData(firstLapData)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load session data')
-        if (import.meta.env.DEV) {
+        if (process.env.NODE_ENV === 'development') {
           throw err; // Re-throw in development mode for better debugging
         }
       } finally {
@@ -135,25 +135,6 @@ function App() {
         </Box>
       </Stack>
 
-      {/*
-
-      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Box sx={{ height: '50vh' }}>
-          <Map data={currentLapData} />
-        </Box>
-
-        {currentLapData.length > 0 && (
-          <Box sx={{ height: '200px' }}>
-            <LineGraph
-              data={currentLapData}
-              dataKey="speed"
-              name="Speed"
-              unit="km/h"
-              color="#2196f3"
-            />
-          </Box>
-        )}
-      </Box> */}
     </Container>
   );
 }

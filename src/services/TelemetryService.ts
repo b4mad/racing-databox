@@ -130,8 +130,8 @@ export class ApiTelemetryService implements TelemetryService {
 }
 
 export function createTelemetryService(): TelemetryService {
-    if (false && import.meta.env.VITE_USE_MOCK_DATA === 'true') {
+    if (process.env.REACT_APP_USE_MOCK_DATA === 'true') {
         return new MockTelemetryService();
     }
-    return new ApiTelemetryService(import.meta.env.VITE_API_BASE_URL || '');
+    return new ApiTelemetryService('/api');
 }
