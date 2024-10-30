@@ -100,7 +100,11 @@ export class ApiTelemetryService implements TelemetryService {
             throw new Error(`Failed to fetch telemetry data: ${response.statusText}`);
         }
         const rawData = await response.json();
-        return parseTelemetryData(rawData);
+        const { telemetryData, mapDataAvailable } = parseTelemetryData(rawData);
+        return {
+            points: telemetryData,
+            mapDataAvailable
+        };
     }
 
     async getSessionData(sessionId: string): Promise<SessionData> {
