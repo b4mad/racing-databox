@@ -1,5 +1,5 @@
 import { Modal, Box, Typography, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
-import { SessionData } from '../services/types';
+import { SessionInformation } from '../services/types';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -16,7 +16,7 @@ const style = {
 interface SessionNavigationProps {
   open: boolean;
   onClose: () => void;
-  sessionData: SessionData | null;
+  sessionInformation: SessionInformation | null;
   onLapSelect: (lap: number) => void;
   currentLap: number;
 }
@@ -24,11 +24,11 @@ interface SessionNavigationProps {
 export const SessionNavigation = ({ 
   open, 
   onClose, 
-  sessionData, 
+  sessionInformation, 
   onLapSelect,
   currentLap 
 }: SessionNavigationProps) => {
-  if (!sessionData) return null;
+  if (!sessionInformation) return null;
 
   return (
     <Modal
@@ -41,7 +41,7 @@ export const SessionNavigation = ({
           Select Lap
         </Typography>
         <List sx={{ maxHeight: '60vh', overflow: 'auto' }}>
-          {sessionData.laps.map((lap) => (
+          {sessionInformation.laps.map((lap) => (
             <ListItem key={lap} disablePadding>
               <ListItemButton 
                 onClick={() => {

@@ -35,6 +35,11 @@ export interface SessionData {
     mapDataAvailable: boolean;
 }
 
+export interface SessionInformation {
+    laps: number[];
+    mapDataAvailable: boolean;
+}
+
 export interface TelemetryService {
     getLapData(lapNumber: number): Promise<ProcessedTelemetryData>;
     getSessionData(sessionId: string): Promise<SessionData>;

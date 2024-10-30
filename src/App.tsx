@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import './App.css'
 import Grid from '@mui/material/Grid2';
 import { Button, Container, Box, Stack } from '@mui/material';
 import { SessionNavigation } from './components/SessionNavigation';
 import { Map } from './components/Map'
+import { MapLine } from './components/MapLine'
 import { LineGraph } from './components/LineGraph'
 import { createTelemetryService } from './services/TelemetryService'
-import { TelemetryPoint, SessionData, ProcessedTelemetryData } from './services/types'
+import { TelemetryPoint, SessionData, ProcessedTelemetryData, SessionInformation } from './services/types'
 
 
 function formatTime(seconds: number): string {
@@ -26,6 +27,13 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [sessionData, setSessionData] = useState<SessionData | null>(null)
+  const sessionInformation = useMemo<SessionInformation | null>(() => {
+    if (!sessionData) return null;
+    return {
+      laps: sessionData.laps,
+      mapDataAvailable: sessionData.mapDataAvailable
+    };
+  }, [sessionData]);
   const [currentLap, setCurrentLap] = useState<number>(0)
   const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
   const [navigationOpen, setNavigationOpen] = useState(false)
@@ -104,7 +112,7 @@ function App() {
           <SessionNavigation
             open={navigationOpen}
             onClose={() => setNavigationOpen(false)}
-            sessionData={sessionData}
+            sessionInformation={sessionInformation}
             onLapSelect={handleLapSelect}
             currentLap={currentLap}
           />
@@ -113,7 +121,8 @@ function App() {
           <Grid container spacing={2} sx={{ height: "100%" }}>
             <Grid size={6}>
               <Box sx={{ height: "50%" }}>
-                <Map data={currentLapData} />
+                {/* <Map data={currentLapData} /> */}
+                <MapLine data={currentLapData} />
               </Box>
             </Grid>
             <Grid size={6}>
