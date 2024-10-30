@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { Grid } from '@mui/material'
+import Grid2 from '@mui/material/Grid2';
 import { Map } from './components/Map'
 import { LineGraph } from './components/LineGraph'
 import { createTelemetryService } from './services/TelemetryService'
@@ -73,15 +73,16 @@ function App() {
   }, [])
 
   return (
-    <Grid
+    <Grid2
       container
       sx={{
         width: '100vw',
         height: '100vh',
         overflow: 'auto'
       }}
+      spacing={2}
     >
-      <Grid item xs={12} md={6} sx={{ height: '50vh' }}>
+      {/* <Grid2 size={ 6 } >
         {loading ? (
           <div>Loading map data...</div>
         ) : error ? (
@@ -89,11 +90,10 @@ function App() {
         ) : (
           <Map data={data} />
         )}
-      </Grid>
+      </Grid2> */}
 
       {sessionData && sessionData.telemetryByLap.get(sessionData.laps[0]) && (
-        <>
-          <Grid item xs={12} md={6}>
+          <Grid2 size={12}>
             <LineGraph
               data={sessionData.telemetryByLap.get(sessionData.laps[0])!}
               dataKey="speed"
@@ -101,28 +101,9 @@ function App() {
               unit="km/h"
               color="#2196f3"
             />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <LineGraph
-              data={sessionData.telemetryByLap.get(sessionData.laps[0])!}
-              dataKey="throttle"
-              name="Throttle"
-              unit="%"
-              color="#4caf50"
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <LineGraph
-              data={sessionData.telemetryByLap.get(sessionData.laps[0])!}
-              dataKey="brake"
-              name="Brake"
-              unit="%"
-              color="#f44336"
-            />
-          </Grid>
-        </>
+          </Grid2>
       )}
-    </Grid>
+    </Grid2>
   )
 }
 
