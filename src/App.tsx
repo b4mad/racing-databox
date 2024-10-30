@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import Grid2 from '@mui/material/Grid2';
+import { Button } from '@mui/material';
+import { SessionNavigation } from './components/SessionNavigation';
 import { Map } from './components/Map'
 import { LineGraph } from './components/LineGraph'
 import { createTelemetryService } from './services/TelemetryService'
@@ -30,6 +32,8 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [sessionData, setSessionData] = useState<SessionData | null>(null)
+  const [currentLap, setCurrentLap] = useState<number>(0)
+  const [navigationOpen, setNavigationOpen] = useState(false)
 
   useEffect(() => {
     const fetchSessionData = async () => {
@@ -39,6 +43,11 @@ function App() {
         // const sessionId = '1729092115'
         const session = await service.getSessionData(sessionId)
         setSessionData(session)
+        
+        // Set initial lap
+        if (session.laps.length > 0) {
+          setCurrentLap(session.laps[0])
+        }
 
         if (!session.mapDataAvailable) {
           throw new Error('Map data is not available')
@@ -72,16 +81,44 @@ function App() {
     fetchSessionData()
   }, [])
 
+  const handleLapSelect = (lap: number) => {
+    setCurrentLap(lap)
+    // Update the data for the selected lap
+    if (sessionData) {
+      const lapData = sessionData.telemetryByLap.get(lap)
+      if (lapData) {
+        const mapPoints = lapData.map((point: TelemetryPoint) => ({
+          x: point.position!.x,
+          y: point.position!.z,
+          timestamp: formatTime(point.lapTime)
+        }))
+        setData(mapPoints)
+      }
+    }
+  }
+
   return (
-    <Grid2
-      container
-      sx={{
-        width: '100vw',
-        height: '100vh',
-        overflow: 'auto'
-      }}
-      spacing={2}
-    >
+    <>
+      <Button 
+        variant="contained" 
+        onClick={() => setNavigationOpen(true)}
+        sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}
+      >
+        Select Lap
+      </Button>
+
+      <SessionNavigation
+        open={navigationOpen}
+        onClose={() => setNavigationOpen(false)}
+        sessionData={sessionData}
+        onLapSelect={handleLapSelect}
+        currentLap={currentLap}
+      />
+
+      <Grid2
+        container
+        spacing={2}
+      >
       {/* <Grid2 size={ 6 } >
         {loading ? (
           <div>Loading map data...</div>
@@ -92,10 +129,10 @@ function App() {
         )}
       </Grid2> */}
 
-      {sessionData && sessionData.telemetryByLap.get(sessionData.laps[0]) && (
+      {sessionData && sessionData.telemetryByLap.get(currentLap) && (
           <Grid2 size={12}>
             <LineGraph
-              data={sessionData.telemetryByLap.get(sessionData.laps[0])!}
+              data={sessionData.telemetryByLap.get(currentLap)!}
               dataKey="speed"
               name="Speed"
               unit="km/h"
@@ -104,6 +141,7 @@ function App() {
           </Grid2>
       )}
     </Grid2>
+    </>
   )
 }
 
