@@ -47,6 +47,12 @@ module.exports = {
         secure: false,
         logLevel: 'debug',
       },
+      '/graphql': {
+        target: 'http://telemetry.b4mad.racing:30050',
+        changeOrigin: true,
+        secure: false,
+        logLevel: 'debug',
+      },
     },
   },
 };

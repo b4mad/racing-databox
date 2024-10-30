@@ -3,6 +3,7 @@ import './App.css'
 import Grid from '@mui/material/Grid2';
 import { Button, Container, Box, Stack } from '@mui/material';
 import { SessionNavigation } from './components/SessionNavigation';
+import { PaddockNavigation } from './components/PaddockNavigation';
 import { Map } from './components/Map'
 import { MapLine } from './components/MapLine'
 import { LineGraph } from './components/LineGraph'
@@ -37,6 +38,7 @@ function App() {
   const [currentLap, setCurrentLap] = useState<number>(0)
   const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
   const [navigationOpen, setNavigationOpen] = useState(false)
+  const [paddockOpen, setPaddockOpen] = useState(false)
 
   useEffect(() => {
     const fetchSessionData = async () => {
@@ -105,9 +107,23 @@ function App() {
         }}
       >
         <Box sx={{ height: "10vh" }}>
-          <Button variant="contained" onClick={() => setNavigationOpen(true)}>
-            Select Lap
-          </Button>
+          <Stack direction="row" spacing={2}>
+            <Button variant="contained" onClick={() => setPaddockOpen(true)}>
+              Select Game
+            </Button>
+            <Button variant="contained" onClick={() => setNavigationOpen(true)}>
+              Select Lap
+            </Button>
+          </Stack>
+
+          <PaddockNavigation
+            open={paddockOpen}
+            onClose={() => setPaddockOpen(false)}
+            onGameSelect={(game) => {
+              console.log('Selected game:', game);
+              // TODO: Implement game selection logic
+            }}
+          />
 
           <SessionNavigation
             open={navigationOpen}
