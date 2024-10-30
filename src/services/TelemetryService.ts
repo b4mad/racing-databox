@@ -64,7 +64,7 @@ function parseTelemetryData(rawData: RawTelemetryData): {
 }
 
 export class MockTelemetryService implements TelemetryService {
-    async getLapData(lapNumber: number): Promise<ProcessedTelemetryData> {
+    async getLapData(_lapNumber: number): Promise<ProcessedTelemetryData> {
         await new Promise(resolve => setTimeout(resolve, 500));
         const { telemetryData, mapDataAvailable } = parseTelemetryData(mockData as RawTelemetryData);
         return {
@@ -73,7 +73,7 @@ export class MockTelemetryService implements TelemetryService {
         };
     }
 
-    async getSessionData(sessionId: string): Promise<SessionData> {
+    async getSessionData(_sessionId: string): Promise<SessionData> {
         const { telemetryLaps, telemetryData, mapDataAvailable } = parseTelemetryData(mockData as RawTelemetryData);
         const telemetryByLap = new Map();
         telemetryLaps.forEach(lap => {
