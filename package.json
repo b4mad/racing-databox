@@ -8,7 +8,11 @@
     "lint": "eslint .",
     "fetch-games": "ts-node src/scripts/fetchGames.ts",
     "fetch-session": "ts-node src/scripts/fetchSession.ts",
-    "fetch-sessions": "ts-node src/scripts/fetchSessions.ts"
+    "fetch-sessions": "ts-node src/scripts/fetchSessions.ts",
+    "docker:build": "docker build -t racing-visualizer .",
+    "docker:run": "docker run -p 8080:80 racing-visualizer",
+    "build:prod": "NODE_ENV=production webpack --mode production",
+    "serve:prod": "yarn build:prod && serve -s dist -p 3000"
   },
   "dependencies": {
     "@apollo/client": "3.11.8",

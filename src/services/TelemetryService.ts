@@ -130,8 +130,8 @@ export class ApiTelemetryService implements TelemetryService {
 }
 
 export function createTelemetryService(): TelemetryService {
-    if (process.env.REACT_APP_USE_MOCK_DATA === 'true') {
-        return new MockTelemetryService();
+    if (process.env.NODE_ENV === 'development') {
+        return new ApiTelemetryService('/api');
     }
-    return new ApiTelemetryService('/api');
+    return new ApiTelemetryService('https://b4mad.racing/api');
 }

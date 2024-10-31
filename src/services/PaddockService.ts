@@ -4,10 +4,14 @@ import { PaddockSessionData } from './types';
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
 
-    constructor(endpoint: string = '/graphql') {
+    constructor(endpoint?: string) {
+        const defaultEndpoint = process.env.NODE_ENV === 'development' 
+            ? '/graphql'
+            : 'http://telemetry.b4mad.racing:30050/graphql';
+            
         const uri = typeof window !== 'undefined'
-            ? new URL(endpoint, window.location.origin).toString()
-            : endpoint;
+            ? new URL(endpoint || defaultEndpoint, window.location.origin).toString()
+            : endpoint || defaultEndpoint;
 
         this.client = new ApolloClient({
             uri,

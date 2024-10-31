@@ -30,11 +30,7 @@ module.exports = {
       template: './index.html',
     }),
     new webpack.DefinePlugin({
-      'process': { env: {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
-        REACT_APP_USE_MOCK_DATA: JSON.stringify(process.env.REACT_APP_USE_MOCK_DATA || 'false'),
-        REACT_APP_API_BASE_URL: JSON.stringify(process.env.REACT_APP_API_BASE_URL || 'https://b4mad.racing/api')
-      }},
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
     }),
   ],
   devServer: {
