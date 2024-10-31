@@ -1,50 +1,124 @@
-# React + TypeScript + Vite
+# Racing Visualizer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web-based telemetry visualization tool for racing data, built with React and TypeScript.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Interactive track map visualization using position data
+- Real-time telemetry graphs showing:
+  - Speed
+  - Throttle
+  - Brake
+  - Gear
+  - Steering angle
+- Session-based data navigation
+- Lap-by-lap analysis
+- Support for both live and historical data
 
-## Expanding the ESLint configuration
+## Technology Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- React 18
+- TypeScript
+- Material-UI
+- Recharts for data visualization
+- GraphQL for data fetching
+- Webpack for building
 
-- Configure the top-level `parserOptions` property like this:
+## Getting Started
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Prerequisites
+
+- Node.js
+- Yarn package manager
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone [repository-url]
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+2. Install dependencies
+```bash
+yarn install
 ```
+
+### Development
+
+Start the development server:
+```bash
+yarn start
+```
+
+### Production
+
+Build for production:
+```bash
+yarn build:prod
+```
+
+Run production build locally:
+```bash
+yarn serve:prod
+```
+
+### Docker
+
+Build and run with Docker:
+```bash
+yarn docker:build
+yarn docker:run
+```
+
+## Data Structure
+
+The application works with telemetry data points that include:
+- Distance traveled
+- Speed
+- Throttle position
+- Brake position
+- Gear
+- Steering angle
+- Lap timing
+- 3D position data (x, y, z coordinates)
+- Vehicle rotation (yaw, pitch, roll)
+
+## Services
+
+### Telemetry Service
+
+The application provides two implementations of the telemetry service:
+
+1. **MockTelemetryService**: 
+   - Used for development and testing
+   - Provides simulated telemetry data
+   - Includes sample lap data for testing visualizations
+
+2. **ApiTelemetryService**:
+   - Production service for real telemetry data
+   - Connects to REST endpoints
+   - Development endpoint: `/api`
+   - Production endpoint: `https://b4mad.racing/api`
+
+### Paddock Service
+
+GraphQL-based service for session and game management:
+- Connects to telemetry backend (`telemetry.b4mad.racing:30050/graphql`)
+- Provides functionality to:
+  - List available games
+  - Fetch session information
+  - Retrieve detailed session data including lap times
+  - Query lap validity and timing data
+
+The service automatically handles endpoint selection based on the environment:
+- Development: Uses relative `/graphql` endpoint
+- Production: Connects to `http://telemetry.b4mad.racing:30050/graphql`
+
+## Scripts
+
+- `yarn start` - Start development server
+- `yarn build` - Build for production
+- `yarn lint` - Run linting
+- `yarn fetch-games` - Fetch available game sessions
+- `yarn fetch-session` - Fetch specific session data
+- `yarn fetch-sessions` - Fetch all sessions
