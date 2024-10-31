@@ -1,5 +1,5 @@
 {
-  "name": "racing-visualizer",
+  "name": "racing-databox",
   "private": true,
   "version": "0.0.0",
   "scripts": {
@@ -9,8 +9,8 @@
     "fetch-games": "ts-node src/scripts/fetchGames.ts",
     "fetch-session": "ts-node src/scripts/fetchSession.ts",
     "fetch-sessions": "ts-node src/scripts/fetchSessions.ts",
-    "docker:build": "docker build -t racing-visualizer .",
-    "docker:run": "docker run -p 8080:80 racing-visualizer",
+    "docker:build": "docker build -t racing-databox .",
+    "docker:run": "docker run -p 8080:80 racing-databox",
     "build:prod": "NODE_ENV=production webpack --mode production",
     "serve:prod": "yarn build:prod && serve -s dist -p 3000"
   },

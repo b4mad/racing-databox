@@ -1,4 +1,4 @@
-# Racing Visualizer
+# Racing Databox
 
 A web-based telemetry visualization tool for racing data, built with React and TypeScript.
 
@@ -89,7 +89,7 @@ The application works with telemetry data points that include:
 
 The application provides two implementations of the telemetry service:
 
-1. **MockTelemetryService**: 
+1. **MockTelemetryService**:
    - Used for development and testing
    - Provides simulated telemetry data
    - Includes sample lap data for testing visualizations
