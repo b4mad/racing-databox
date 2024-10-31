@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import './App.css'
 import Grid from '@mui/material/Grid2';
 import { Button, Container, Box, Stack } from '@mui/material';
+import { BrowserRouter, Routes, Route, useParams, Navigate } from 'react-router-dom';
 import { SessionNavigation } from './components/SessionNavigation';
 import { PaddockNavigation } from './components/PaddockNavigation';
 import { Map } from './components/Map'
@@ -18,14 +19,13 @@ function formatTime(seconds: number): string {
   return `${minutes}:${remainingSeconds.padStart(6, '0')}`
 }
 
-const getSessionIdFromUrl = () => {
-  const pathParts = window.location.pathname.split('/')
-  const sessionId = pathParts[pathParts.length - 2] // Assuming URL pattern is /session/{sessionId}/{lapNumber}
-  // return sessionId || '1730284531'
-  return sessionId || '1729092115'
-}
-
-function App() {
+function SessionView() {
+  const { sessionId = '1729092115', lapNumber } = useParams();
+  
+  // Ensure sessionId is available
+  if (!sessionId) {
+    return <Navigate to="/" replace />;
+  }
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [sessionData, setSessionData] = useState<SessionData | null>(null)
@@ -49,9 +49,7 @@ function App() {
       try {
         const telemetryService = createTelemetryService()
         const paddockService = new PaddockService()
-        const sessionId = getSessionIdFromUrl()
-
-        // Fetch both telemetry and paddock data
+        // Fetch both telemetry and paddock data using the sessionId from useParams
         const [session, paddockData] = await Promise.all([
           telemetryService.getSessionData(sessionId),
           paddockService.getSessionData(sessionId)
@@ -173,6 +171,18 @@ function App() {
       </Stack>
 
     </Container>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/session/:sessionId/:lapNumber" element={<SessionView />} />
+        <Route path="/session/:sessionId" element={<SessionView />} />
+        <Route path="/" element={<Navigate to="/session/1729092115" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -7,6 +7,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
+    publicPath: '/',
   },
   devtool: 'source-map',
   resolve: {
@@ -36,6 +37,8 @@ module.exports = {
   devServer: {
     port: 3000,
     historyApiFallback: true,
+    hot: true,
+    open: true,
     proxy: {
       '/api': {
         target: 'https://b4mad.racing',
