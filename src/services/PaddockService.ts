@@ -7,7 +7,7 @@ export class PaddockService {
     constructor(endpoint?: string) {
         const defaultEndpoint = process.env.NODE_ENV === 'development' 
             ? '/graphql'
-            : 'http://telemetry.b4mad.racing:30050/graphql';
+            : '/graphql';
             
         const uri = typeof window !== 'undefined'
             ? new URL(endpoint || defaultEndpoint, window.location.origin).toString()

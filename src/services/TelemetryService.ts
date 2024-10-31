@@ -133,5 +133,5 @@ export function createTelemetryService(): TelemetryService {
     if (process.env.NODE_ENV === 'development') {
         return new ApiTelemetryService('/api');
     }
-    return new ApiTelemetryService('https://b4mad.racing/api');
+    return new ApiTelemetryService('/api');
 }
