@@ -36,7 +36,7 @@ function parseTelemetryData(rawData: RawTelemetryData): {
             throttle: row[throttleIndex] * 100, // Convert to percentage
             brake: row[brakeIndex] * 100, // Convert to percentage
             handbrake: row[handbrakeIndex] * 100, // Convert to percentage
-            gear: row[gearIndex],
+            gear: row[gearIndex] - 1,
             steeringAngle: row[steeringIndex],
             lapTime: row[lapTimeIndex],
             lapNumber: row[lapNumberIndex],
