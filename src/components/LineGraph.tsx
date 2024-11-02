@@ -1,27 +1,45 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TelemetryPoint } from '../services/types';
 
+interface DataKeyConfig {
+  key: keyof TelemetryPoint;
+  name: string;
+  color: string;
+}
+
 interface LineGraphProps {
   data: TelemetryPoint[];
-  dataKey: keyof TelemetryPoint;
-  name: string;
+  dataKeys: DataKeyConfig[];
   unit?: string;
-  color?: string;
 }
 
 export function SpeedGraph({ currentLapData }: { currentLapData: TelemetryPoint[] }) {
   return (
     <LineGraph
       data={currentLapData}
-      dataKey="speed"
-      name="Speed"
+      dataKeys={[
+        { key: "speed", name: "Speed", color: "#2196f3" }
+      ]}
       unit="km/h"
-      color="#2196f3"
     />
   );
 }
 
-export function LineGraph({ data, dataKey, name, unit = '', color = '#8884d8' }: LineGraphProps) {
+export function PedalsGraph({ currentLapData }: { currentLapData: TelemetryPoint[] }) {
+  return (
+    <LineGraph
+      data={currentLapData}
+      dataKeys={[
+        { key: "throttle", name: "Throttle", color: "#4caf50" },
+        { key: "brake", name: "Brake", color: "#f44336" },
+        { key: "handbrake", name: "Handbrake", color: "#ff9800" }
+      ]}
+      unit="%"
+    />
+  );
+}
+
+export function LineGraph({ data, dataKeys, unit = '' }: LineGraphProps) {
   return (
     <div className="graph-container" style={{ width: '100%', height: '200px' }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -35,10 +53,7 @@ export function LineGraph({ data, dataKey, name, unit = '', color = '#8884d8' }:
             name="Distance"
             unit="m"
           />
-          <YAxis
-            name={name}
-            unit={unit}
-          />
+          <YAxis unit={unit} />
           <Tooltip
             content={({ payload, label }) => {
               if (payload && payload.length) {
@@ -49,7 +64,11 @@ export function LineGraph({ data, dataKey, name, unit = '', color = '#8884d8' }:
                     border: '1px solid #ccc'
                   }}>
                     <p>Distance: {label}m</p>
-                    <p>{name}: {payload[0].value}{unit}</p>
+                    {payload.map((entry) => (
+                      <p key={entry.name}>
+                        {entry.name}: {entry.value}{unit}
+                      </p>
+                    ))}
                   </div>
                 );
               }
@@ -57,13 +76,16 @@ export function LineGraph({ data, dataKey, name, unit = '', color = '#8884d8' }:
             }}
           />
           <Legend />
-          <Line
-            type="monotone"
-            dataKey={dataKey}
-            stroke={color}
-            name={name}
-            dot={false}
-          />
+          {dataKeys.map((config) => (
+            <Line
+              key={config.key}
+              type="monotone"
+              dataKey={config.key}
+              stroke={config.color}
+              name={config.name}
+              dot={false}
+            />
+          ))}
         </LineChart>
       </ResponsiveContainer>
     </div>

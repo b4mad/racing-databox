@@ -1,7 +1,7 @@
 import { Box, Stack } from '@mui/material'
 import Grid from '@mui/material/Grid2'
 import { MapLine } from './MapLine'
-import { SpeedGraph } from './LineGraph'
+import { SpeedGraph, PedalsGraph } from './LineGraph'
 import { TelemetryPoint } from '../services/types'
 
 interface TelemetryVisualizationProps {
@@ -22,9 +22,14 @@ export function TelemetryVisualization({ currentLapData, mapDataAvailable }: Tel
       <Grid size={mapDataAvailable ? 6 : 12}>
         <Stack>
           {currentLapData.length > 0 && (
-            <Box sx={{ height: "200px" }}>
-              <SpeedGraph currentLapData={currentLapData} />
-            </Box>
+            <>
+              <Box sx={{ height: "200px" }}>
+                <SpeedGraph currentLapData={currentLapData} />
+              </Box>
+              <Box sx={{ height: "200px" }}>
+                <PedalsGraph currentLapData={currentLapData} />
+              </Box>
+            </>
           )}
         </Stack>
       </Grid>
