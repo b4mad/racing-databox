@@ -12,6 +12,7 @@ function parseTelemetryData(rawData: RawTelemetryData): {
     const throttleIndex = rawData.columns.indexOf('Throttle');
     const brakeIndex = rawData.columns.indexOf('Brake');
     const gearIndex = rawData.columns.indexOf('Gear');
+    const handbrakeIndex = rawData.columns.indexOf('Handbrake');
     const steeringIndex = rawData.columns.indexOf('SteeringAngle');
     const lapTimeIndex = rawData.columns.indexOf('CurrentLapTime');
     const lapNumberIndex = rawData.columns.indexOf('CurrentLap');
@@ -34,6 +35,7 @@ function parseTelemetryData(rawData: RawTelemetryData): {
             speed: row[speedIndex] * 3.6, // Convert m/s to km/h
             throttle: row[throttleIndex] * 100, // Convert to percentage
             brake: row[brakeIndex] * 100, // Convert to percentage
+            handbrake: row[handbrakeIndex] * 100, // Convert to percentage
             gear: row[gearIndex],
             steeringAngle: row[steeringIndex],
             lapTime: row[lapTimeIndex],

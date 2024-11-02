@@ -3,6 +3,7 @@ export interface TelemetryPoint {
     speed: number;
     throttle: number;
     brake: number;
+    handbrake: number;
     gear: number;
     steeringAngle: number;
     lapTime: number;
