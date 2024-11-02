@@ -24,13 +24,13 @@ export function TelemetryVisualization({ currentLapData, mapDataAvailable }: Tel
           {currentLapData.length > 0 && (
             <>
               <Box sx={{ height: "200px" }}>
-                <SpeedGraph currentLapData={currentLapData} />
+                <SpeedGraph currentLapData={currentLapData} syncId="telemetry" />
               </Box>
               <Box sx={{ height: "200px" }}>
-                <PedalsGraph currentLapData={currentLapData} />
+                <PedalsGraph currentLapData={currentLapData} syncId="telemetry" />
               </Box>
               <Box sx={{ height: "200px" }}>
-                <GearGraph currentLapData={currentLapData} />
+                <GearGraph currentLapData={currentLapData} syncId="telemetry" showBrush={true} />
               </Box>
             </>
           )}
