@@ -11,6 +11,7 @@ interface LineGraphProps {
   data: TelemetryPoint[];
   dataKeys: DataKeyConfig[];
   unit?: string;
+  stepLine?: boolean;
 }
 
 export function SpeedGraph({ currentLapData }: { currentLapData: TelemetryPoint[] }) {
@@ -39,7 +40,20 @@ export function PedalsGraph({ currentLapData }: { currentLapData: TelemetryPoint
   );
 }
 
-export function LineGraph({ data, dataKeys, unit = '' }: LineGraphProps) {
+export function GearGraph({ currentLapData }: { currentLapData: TelemetryPoint[] }) {
+  return (
+    <LineGraph
+      data={currentLapData}
+      dataKeys={[
+        { key: "gear", name: "Gear", color: "#9c27b0" }
+      ]}
+      unit=""
+      stepLine
+    />
+  );
+}
+
+export function LineGraph({ data, dataKeys, unit = '', stepLine = false }: LineGraphProps) {
   return (
     <div className="graph-container" style={{ width: '100%', height: '200px' }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -79,7 +93,7 @@ export function LineGraph({ data, dataKeys, unit = '' }: LineGraphProps) {
           {dataKeys.map((config) => (
             <Line
               key={config.key}
-              type="monotone"
+              type={stepLine ? "stepAfter" : "monotone"}
               dataKey={config.key}
               stroke={config.color}
               name={config.name}
