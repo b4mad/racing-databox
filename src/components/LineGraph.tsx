@@ -27,7 +27,7 @@ function CurrentValueDisplay({ value, label, unit }: CurrentValueDisplayProps) {
       position: 'absolute',
       right: 20,
       top: 10,
-      fontSize: '1.2em'
+      fontSize: '0.8em'
     }}>
       {label}: <span style={{ borderBottom: '2px solid #2196f3' }}>{value}{unit}</span>
     </div>
@@ -80,8 +80,8 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title }
 
   return (
     <div className="graph-container" style={{ width: '100%', height: '200px', position: 'relative' }}>
-      {title && <div style={{ position: 'absolute', left: 20, top: 10, fontSize: '1.2em' }}>{title}</div>}
-      <div style={{ position: 'absolute', left: '50%', top: 10, transform: 'translateX(-50%)', fontSize: '1.2em' }}>
+      {title && <div style={{ position: 'absolute', left: 20, top: 10, fontSize: '1em' }}>{title}</div>}
+      <div style={{ position: 'absolute', left: '50%', top: 10, transform: 'translateX(-50%)', fontSize: '1em' }}>
         {distance}m
       </div>
       <CurrentValueDisplay
