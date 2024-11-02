@@ -9,6 +9,18 @@ interface LineGraphProps {
   color?: string;
 }
 
+export function SpeedGraph({ currentLapData }: { currentLapData: TelemetryPoint[] }) {
+  return (
+    <LineGraph
+      data={currentLapData}
+      dataKey="speed"
+      name="Speed"
+      unit="km/h"
+      color="#2196f3"
+    />
+  );
+}
+
 export function LineGraph({ data, dataKey, name, unit = '', color = '#8884d8' }: LineGraphProps) {
   return (
     <div className="graph-container" style={{ width: '100%', height: '200px' }}>

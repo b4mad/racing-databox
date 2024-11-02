@@ -1,7 +1,7 @@
 import { Box, Stack } from '@mui/material'
 import Grid from '@mui/material/Grid2'
 import { MapLine } from './MapLine'
-import { SpeedGraph } from './SpeedGraph'
+import { SpeedGraph } from './LineGraph'
 import { TelemetryPoint } from '../services/types'
 
 interface TelemetryVisualizationProps {
