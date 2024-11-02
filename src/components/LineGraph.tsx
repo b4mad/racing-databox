@@ -1,4 +1,4 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { TelemetryPoint } from '../services/types';
 
 interface DataKeyConfig {
@@ -94,13 +94,34 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title }
           data={data}
           margin={{ top: 40, right: 20, bottom: 5, left: 20 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+          <CartesianGrid 
+            strokeDasharray="3 3" 
+            stroke="#e0e0e0" 
+            strokeOpacity={0.5}
+          />
           <XAxis
             dataKey="distance"
             name="Distance"
             unit="m"
           />
-          <YAxis unit={unit} />
+          <YAxis 
+            unit={unit} 
+            domain={[0, dataKeys[0].key === 'speed' ? 250 : 'auto']}
+            allowDataOverflow={true}
+          />
+          <ReferenceLine
+            x={distance}
+            stroke="red"
+            strokeWidth={1}
+            label={{
+              position: 'top',
+              value: `${distance}m`,
+              fill: 'red',
+              fontSize: 12
+            }}
+          >
+            <circle r={4} fill="red" />
+          </ReferenceLine>
           <Tooltip
             content={({ payload, label }) => {
               if (payload && payload.length) {
