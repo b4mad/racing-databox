@@ -23,9 +23,9 @@ interface CurrentValueDisplayProps {
 
 function CurrentValueDisplay({ value, label, unit }: CurrentValueDisplayProps) {
   return (
-    <div style={{ 
-      position: 'absolute', 
-      right: 20, 
+    <div style={{
+      position: 'absolute',
+      right: 20,
       top: 10,
       fontSize: '1.2em'
     }}>
@@ -84,9 +84,9 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title }
       <div style={{ position: 'absolute', left: '50%', top: 10, transform: 'translateX(-50%)', fontSize: '1.2em' }}>
         {distance}m
       </div>
-      <CurrentValueDisplay 
-        value={currentValue as number} 
-        label={dataKeys[0].name} 
+      <CurrentValueDisplay
+        value={currentValue as number}
+        label={dataKeys[0].name}
         unit={unit}
       />
       <ResponsiveContainer width="100%" height="100%">
@@ -94,9 +94,9 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title }
           data={data}
           margin={{ top: 40, right: 20, bottom: 5, left: 20 }}
         >
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke="#e0e0e0" 
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#e0e0e0"
             strokeOpacity={0.5}
           />
           <XAxis
@@ -104,44 +104,15 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title }
             name="Distance"
             unit="m"
           />
-          <YAxis 
-            unit={unit} 
+          <YAxis
+            unit={unit}
             domain={[0, dataKeys[0].key === 'speed' ? 250 : 'auto']}
             allowDataOverflow={true}
           />
-          <ReferenceLine
-            x={distance}
-            stroke="red"
-            strokeWidth={1}
-            label={{
-              position: 'top',
-              value: `${distance}m`,
-              fill: 'red',
-              fontSize: 12
-            }}
-          >
-            <circle r={4} fill="red" />
-          </ReferenceLine>
           <Tooltip
-            content={({ payload, label }) => {
-              if (payload && payload.length) {
-                return (
-                  <div className="custom-tooltip" style={{
-                    backgroundColor: 'white',
-                    padding: '10px',
-                    border: '1px solid #ccc'
-                  }}>
-                    <p>Distance: {label}m</p>
-                    {payload.map((entry) => (
-                      <p key={entry.name}>
-                        {entry.name}: {entry.value}{unit}
-                      </p>
-                    ))}
-                  </div>
-                );
-              }
-              return null;
-            }}
+            cursor={{ stroke: 'red', strokeWidth: 1 }}
+            content={() => null}
+            position={{ x: 0, y: 0 }}
           />
           <Legend />
           {dataKeys.map((config) => (
