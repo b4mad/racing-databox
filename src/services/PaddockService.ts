@@ -53,13 +53,12 @@ export class PaddockService {
         return data.allTelemetrySessions.nodes;
     }
 
-    async getSessionData(sessionId: string): Promise<PaddockSessionData> {
+    async getSessionData(sessionId: string): Promise<PaddockSessionData[]> {
         const { data } = await this.client.query({
             query: gql`
                 query GetSessionData($sessionId: String!) {
                     allTelemetrySessions(
                         condition: { sessionId: $sessionId }
-                        first: 1
                     ) {
                         nodes {
                             sessionId
@@ -92,11 +91,14 @@ export class PaddockService {
             variables: { sessionId }
         });
 
-        const session = data.allTelemetrySessions.nodes[0];
+        const sessions = data.allTelemetrySessions.nodes;
 
-        if (!session) {
+        if (!sessions || sessions.length === 0) {
             throw new Error(`Session ${sessionId} not found`);
         }
+
+        // For now, just use the first session
+        const session = sessions[0];
 
         const laps = session.telemetryLapsBySessionId.nodes.map((lap: any) => ({
             number: lap.number,
@@ -104,7 +106,7 @@ export class PaddockService {
             valid: lap.valid
         }));
 
-        return {
+        return sessions.map(session => ({
             session: {
                 ...session,
                 car: session.telemetryCarByCarId,
@@ -113,8 +115,12 @@ export class PaddockService {
                 sessionType: session.telemetrySessiontypeBySessionTypeId,
                 track: session.telemetryTrackByTrackId
             },
-            laps
-        };
+            laps: session.telemetryLapsBySessionId.nodes.map((lap: any) => ({
+                number: lap.number,
+                time: lap.time,
+                valid: lap.valid
+            }))
+        }));
     }
 
 }

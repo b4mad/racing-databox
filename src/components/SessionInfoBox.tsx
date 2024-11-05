@@ -14,16 +14,16 @@ export function SessionInfoBox({ session }: SessionInfoBoxProps) {
       <Box sx={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 1 }}>
         <Typography variant="subtitle2">Car:</Typography>
         <Typography>{session.car.name}</Typography>
-        
+
         <Typography variant="subtitle2">Driver:</Typography>
         <Typography>{session.driver.name}</Typography>
-        
+
         <Typography variant="subtitle2">Game:</Typography>
         <Typography>{session.game.name}</Typography>
-        
+
         <Typography variant="subtitle2">Track:</Typography>
         <Typography>{session.track.name}</Typography>
-        
+
         <Typography variant="subtitle2">Session Type:</Typography>
         <Typography>{session.sessionType.type}</Typography>
       </Box>

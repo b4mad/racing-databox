@@ -43,8 +43,10 @@ export function SessionView() {
           paddockService.getSessionData(sessionId)
         ]);
 
-        setPaddockData(paddockData)
-        setPaddockLaps(paddockData.laps)
+        // Select the first session from the array
+        const firstSession = paddockData[0];
+        setPaddockData(firstSession)
+        setPaddockLaps(firstSession.laps)
         setSessionData(session)
 
         if (session.laps.length > 0) {
@@ -94,7 +96,7 @@ export function SessionView() {
           />
         </Box>
         <Box sx={{ height: "90vh" }}>
-          <TelemetryVisualization 
+          <TelemetryVisualization
             currentLapData={currentLapData}
             mapDataAvailable={sessionData?.mapDataAvailable ?? false}
             session={paddockData?.session ?? null}
