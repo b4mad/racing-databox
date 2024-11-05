@@ -2,21 +2,34 @@ import { Box, Stack } from '@mui/material'
 import Grid from '@mui/material/Grid2'
 import { MapLine } from './MapLine'
 import { SpeedGraph, PedalsGraph, GearGraph } from './LineGraph'
-import { TelemetryPoint } from '../services/types'
+import { SessionInfoBox } from './SessionInfoBox'
+import { TelemetryPoint, PaddockSession } from '../services/types'
 
 interface TelemetryVisualizationProps {
   currentLapData: TelemetryPoint[]
   mapDataAvailable: boolean
+  session: PaddockSession | null
 }
 
-export function TelemetryVisualization({ currentLapData, mapDataAvailable }: TelemetryVisualizationProps) {
+export function TelemetryVisualization({ 
+  currentLapData, 
+  mapDataAvailable,
+  session 
+}: TelemetryVisualizationProps) {
   return (
     <Grid container spacing={2} sx={{ height: "100%" }}>
       {mapDataAvailable && (
         <Grid size={6}>
-          <Box sx={{ height: "50%" }}>
-            <MapLine data={currentLapData} />
-          </Box>
+          <Stack spacing={2} sx={{ height: "100%" }}>
+            <Box sx={{ height: "50%" }}>
+              <MapLine data={currentLapData} />
+            </Box>
+            {session && (
+              <Box sx={{ height: "auto" }}>
+                <SessionInfoBox session={session} />
+              </Box>
+            )}
+          </Stack>
         </Grid>
       )}
       <Grid size={mapDataAvailable ? 6 : 12}>

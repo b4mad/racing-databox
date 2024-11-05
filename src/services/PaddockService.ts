@@ -70,6 +70,21 @@ export class PaddockService {
                                     valid
                                 }
                             }
+                            telemetryCarByCarId {
+                                name
+                            }
+                            telemetryDriverByDriverId {
+                                name
+                            }
+                            telemetryGameByGameId {
+                                name
+                            }
+                            telemetrySessiontypeBySessionTypeId {
+                                type
+                            }
+                            telemetryTrackByTrackId {
+                                name
+                            }
                         }
                     }
                 }
@@ -90,7 +105,14 @@ export class PaddockService {
         }));
 
         return {
-            session,
+            session: {
+                ...session,
+                car: session.telemetryCarByCarId,
+                driver: session.telemetryDriverByDriverId,
+                game: session.telemetryGameByGameId,
+                sessionType: session.telemetrySessiontypeBySessionTypeId,
+                track: session.telemetryTrackByTrackId
+            },
             laps
         };
     }

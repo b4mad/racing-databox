@@ -17,7 +17,8 @@ export function SessionView() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [sessionData, setSessionData] = useState<SessionData | null>(null)
-  const [paddockLaps, setPaddockLaps] = useState<PaddockLap[]>([]);
+  const [paddockLaps, setPaddockLaps] = useState<PaddockLap[]>([])
+  const [paddockData, setPaddockData] = useState<PaddockSessionData | null>(null)
   const [currentLap, setCurrentLap] = useState<number>(0)
   const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
   const [navigationOpen, setNavigationOpen] = useState(false)
@@ -42,7 +43,8 @@ export function SessionView() {
           paddockService.getSessionData(sessionId)
         ]);
 
-        setPaddockLaps(paddockData.laps);
+        setPaddockData(paddockData)
+        setPaddockLaps(paddockData.laps)
         setSessionData(session)
 
         if (session.laps.length > 0) {
@@ -95,6 +97,7 @@ export function SessionView() {
           <TelemetryVisualization 
             currentLapData={currentLapData}
             mapDataAvailable={sessionData?.mapDataAvailable ?? false}
+            session={paddockData?.session ?? null}
           />
         </Box>
       </Stack>

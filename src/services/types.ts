@@ -36,9 +36,38 @@ export interface PaddockLap {
     valid: boolean;
 }
 
+export interface PaddockCar {
+    name: string;
+}
+
+export interface PaddockDriver {
+    name: string;
+}
+
+export interface PaddockGame {
+    name: string;
+}
+
+export interface PaddockSessionType {
+    type: string;
+}
+
+export interface PaddockTrack {
+    name: string;
+}
+
+export interface PaddockSession {
+    sessionId: string;
+    car: PaddockCar;
+    driver: PaddockDriver;
+    game: PaddockGame;
+    sessionType: PaddockSessionType;
+    track: PaddockTrack;
+}
+
 export interface PaddockSessionData {
     laps: PaddockLap[];
-    session: object;
+    session: PaddockSession;
 }
 
 export interface SessionData {
