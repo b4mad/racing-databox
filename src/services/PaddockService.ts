@@ -1,10 +1,14 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
+import { logger } from '../utils/logger';
 import { PaddockSessionData, TrackLandmarks, PaddockLandmark } from './types';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
 
     constructor(endpoint?: string) {
+        console.log('PaddockService constructor called');
+        logger.paddock('PaddockService initializing...');
+
         const defaultEndpoint = process.env.NODE_ENV === 'development'
             ? '/graphql'
             : '/graphql';
@@ -13,7 +17,7 @@ export class PaddockService {
             ? new URL(endpoint || defaultEndpoint, window.location.origin).toString()
             : endpoint || defaultEndpoint;
 
-        console.log('Creating Apollo Client with endpoint:', uri);
+        logger.paddock('Creating Apollo Client with endpoint: %s', uri);
 
         this.client = new ApolloClient({
             uri,
@@ -27,17 +31,17 @@ export class PaddockService {
     }
 
     private async executeQuery(query: any, variables?: any) {
-        console.log('Executing GraphQL query:', {
+        logger.paddock('Executing GraphQL query: %O', {
             query: query.loc?.source.body,
             variables
         });
 
         try {
             const result = await this.client.query({ query, variables });
-            console.log('Query result:', result);
+            logger.paddock('Query result: %O', result);
             return result;
         } catch (error) {
-            console.error('GraphQL query failed:', {
+            logger.paddock('GraphQL query failed: %O', {
                 error,
                 query: query.loc?.source.body,
                 variables
