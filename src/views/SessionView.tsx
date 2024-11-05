@@ -19,6 +19,7 @@ export function SessionView() {
   const [sessionData, setSessionData] = useState<SessionData | null>(null)
   const [paddockLaps, setPaddockLaps] = useState<PaddockLap[]>([])
   const [paddockData, setPaddockData] = useState<PaddockSessionData | null>(null)
+  const [landmarks, setLandmarks] = useState<TrackLandmarks | null>(null)
   const [currentLap, setCurrentLap] = useState<number>(0)
   const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
   const [navigationOpen, setNavigationOpen] = useState(false)
@@ -49,6 +50,12 @@ export function SessionView() {
         setPaddockData(firstSession)
         setPaddockLaps(firstSession.laps)
         setSessionData(session)
+
+        // Fetch landmarks for the track
+        if (firstSession.session.track.id) {
+          const trackLandmarks = await paddockService.getLandmarks(firstSession.session.track.id)
+          setLandmarks(trackLandmarks)
+        }
 
         if (session.laps.length > 0) {
           const firstLap = session.laps[0];
@@ -94,6 +101,7 @@ export function SessionView() {
             sessionInformation={sessionInformation}
             onLapSelect={handleLapSelect}
             currentLap={currentLap}
+            landmarks={landmarks}
           />
         </Box>
         <Box sx={{ height: "90vh" }}>

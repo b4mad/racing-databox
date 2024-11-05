@@ -54,6 +54,7 @@ export interface PaddockSessionType {
 
 export interface PaddockTrack {
     name: string;
+    id: string;
 }
 
 export interface PaddockSession {

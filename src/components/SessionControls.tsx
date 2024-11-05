@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { Button, Stack } from '@mui/material'
 import { PaddockNavigation } from './PaddockNavigation'
 import { SessionNavigation } from './SessionNavigation'
-import { SessionInformation } from '../services/types'
+import { LandmarksDialog } from './LandmarksDialog'
+import { SessionInformation, TrackLandmarks } from '../services/types'
 
 interface SessionControlsProps {
   paddockOpen: boolean
@@ -11,6 +13,7 @@ interface SessionControlsProps {
   sessionInformation: SessionInformation | null
   onLapSelect: (lap: number) => void
   currentLap: number
+  landmarks: TrackLandmarks | null
 }
 
 export function SessionControls({
@@ -20,8 +23,10 @@ export function SessionControls({
   setNavigationOpen,
   sessionInformation,
   onLapSelect,
-  currentLap
+  currentLap,
+  landmarks
 }: SessionControlsProps) {
+  const [landmarksOpen, setLandmarksOpen] = useState(false);
   return (
     <Stack direction="row" spacing={2}>
       <Button variant="contained" onClick={() => setPaddockOpen(true)}>
@@ -30,6 +35,19 @@ export function SessionControls({
       <Button variant="contained" onClick={() => setNavigationOpen(true)}>
         Select Lap
       </Button>
+      <Button 
+        variant="contained" 
+        onClick={() => setLandmarksOpen(true)}
+        disabled={!landmarks}
+      >
+        Track Landmarks
+      </Button>
+
+      <LandmarksDialog
+        open={landmarksOpen}
+        onClose={() => setLandmarksOpen(false)}
+        landmarks={landmarks}
+      />
 
       <PaddockNavigation
         open={paddockOpen}
