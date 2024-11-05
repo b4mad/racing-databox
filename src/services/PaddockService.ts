@@ -53,6 +53,42 @@ export class PaddockService {
         return data.allTelemetrySessions.nodes;
     }
 
+    async getLandmarks(trackId: string): Promise<TrackLandmarks> {
+        const { data } = await this.client.query({
+            query: gql`
+                query GetLandmarks($trackId: String!) {
+                    allTelemetryLandmarks(
+                        condition: { trackId: $trackId }
+                    ) {
+                        edges {
+                            node {
+                                id
+                                name
+                                start
+                                end
+                                kind
+                            }
+                        }
+                    }
+                }
+            `,
+            variables: { trackId }
+        });
+
+        const landmarks = data.allTelemetryLandmarks.edges.map((edge: any) => edge.node);
+        
+        // Sort all landmarks by start position
+        const sortedLandmarks = landmarks.sort((a: PaddockLandmark, b: PaddockLandmark) => 
+            a.start - b.start
+        );
+
+        // Split into turns and segments
+        return {
+            turns: sortedLandmarks.filter((l: PaddockLandmark) => l.kind === 'turn'),
+            segments: sortedLandmarks.filter((l: PaddockLandmark) => l.kind === 'segment')
+        };
+    }
+
     async getSessionData(sessionId: string): Promise<PaddockSessionData[]> {
         const { data } = await this.client.query({
             query: gql`

@@ -82,6 +82,19 @@ export interface SessionInformation {
     lapDetails: PaddockLap[];
 }
 
+export interface PaddockLandmark {
+    id: string;
+    name: string;
+    start: number;
+    end: number | null;
+    kind: 'turn' | 'segment';
+}
+
+export interface TrackLandmarks {
+    turns: PaddockLandmark[];
+    segments: PaddockLandmark[];
+}
+
 export interface TelemetryService {
     getLapData(lapNumber: number): Promise<ProcessedTelemetryData>;
     getSessionData(sessionId: string): Promise<SessionData>;

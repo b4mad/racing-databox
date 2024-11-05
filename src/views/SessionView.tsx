@@ -44,6 +44,7 @@ export function SessionView() {
         ]);
 
         // Select the first session from the array
+        // FIXME: if there are multiple sessions, we should allow the user to select one
         const firstSession = paddockData[0];
         setPaddockData(firstSession)
         setPaddockLaps(firstSession.laps)
