@@ -5,10 +5,10 @@ export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
 
     constructor(endpoint?: string) {
-        const defaultEndpoint = process.env.NODE_ENV === 'development' 
+        const defaultEndpoint = process.env.NODE_ENV === 'development'
             ? '/graphql'
             : '/graphql';
-            
+
         const uri = typeof window !== 'undefined'
             ? new URL(endpoint || defaultEndpoint, window.location.origin).toString()
             : endpoint || defaultEndpoint;

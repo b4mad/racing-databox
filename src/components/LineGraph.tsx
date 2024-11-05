@@ -44,7 +44,7 @@ export function SpeedGraph({ currentLapData, syncId }: { currentLapData: Telemet
         { key: "speed", name: "Speed", color: "#2196f3" }
       ]}
       unit=" km/h"
-      title="Speed in kph"
+      // title="Speed in kph"
       syncId={syncId}
     />
   );
@@ -87,14 +87,14 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, 
   return (
     <div className="graph-container" style={{ width: '100%', height: '200px', position: 'relative' }}>
       {title && <div style={{ position: 'absolute', left: 20, top: 10, fontSize: '1em' }}>{title}</div>}
-      <div style={{ position: 'absolute', left: '50%', top: 10, transform: 'translateX(-50%)', fontSize: '1em' }}>
+      {/* <div style={{ position: 'absolute', left: '50%', top: 10, transform: 'translateX(-50%)', fontSize: '1em' }}>
         {distance}m
-      </div>
-      <CurrentValueDisplay
+      </div> */}
+      {/* <CurrentValueDisplay
         value={currentValue as number}
         label={dataKeys[0].name}
         unit={unit}
-      />
+      /> */}
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
