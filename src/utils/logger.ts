@@ -1,7 +1,7 @@
 import debug from 'debug';
 
 // Add immediate console log to verify the file is loaded
-console.log('Logger initializing...');
+// console.log('Logger initializing...');
 
 // Create namespace for different parts of the application
 export const logger = {
@@ -16,5 +16,5 @@ if (process.env.NODE_ENV === 'development') {
     debug.enable('paddock:*');
     logger.paddock('Debug logging initialized');
 } else {
-    console.log('Not in development mode, NODE_ENV:', process.env.NODE_ENV);
+    // console.log('Not in development mode, NODE_ENV:', process.env.NODE_ENV);
 }
