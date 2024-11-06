@@ -5,10 +5,10 @@ interface SelectSegmentProps {
   open: boolean;
   onClose: () => void;
   landmarks: TrackLandmarks | null;
-  onSegmentSelect: (segmentId: string) => void;
+  setZoomRange: (startMeters: number, endMeters: number) => void;
 }
 
-export function SelectSegment({ open, onClose, landmarks, onSegmentSelect }: SelectSegmentProps) {
+export function SelectSegment({ open, onClose, landmarks, setZoomRange }: SelectSegmentProps) {
   if (!landmarks) return null;
 
   return (
@@ -20,7 +20,7 @@ export function SelectSegment({ open, onClose, landmarks, onSegmentSelect }: Sel
           {landmarks.segments.map((segment) => (
             <ListItem key={segment.id} disablePadding>
               <ListItemButton onClick={() => {
-                onSegmentSelect(segment.id);
+                setZoomRange(segment.start, segment.end ?? segment.start + 100);
                 onClose();
               }}>
                 <ListItemText
@@ -36,7 +36,7 @@ export function SelectSegment({ open, onClose, landmarks, onSegmentSelect }: Sel
           {landmarks.turns.map((turn) => (
             <ListItem key={turn.id} disablePadding>
               <ListItemButton onClick={() => {
-                onSegmentSelect(turn.id);
+                setZoomRange(turn.start, turn.end ?? turn.start + 50);
                 onClose();
               }}>
                 <ListItemText

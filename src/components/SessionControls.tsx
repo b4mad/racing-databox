@@ -38,11 +38,11 @@ export function SessionControls({
   const setZoomRange = (startMeters: number, endMeters: number) => {
     if (currentLapData.length === 0) return;
     const maxDistance = currentLapData[currentLapData.length - 1].distance;
-    
+
     // Clamp values to valid range
     const start = Math.max(0, Math.min(startMeters, maxDistance));
     const end = Math.max(0, Math.min(endMeters, maxDistance));
-    
+
     setZoomState({
       ...zoomState,
       left: start,
@@ -103,10 +103,7 @@ export function SessionControls({
         open={landmarksOpen}
         onClose={() => setLandmarksOpen(false)}
         landmarks={landmarks}
-        onSegmentSelect={(segmentId) => {
-          console.log('Selected segment:', segmentId);
-          // TODO: Implement segment selection logic
-        }}
+        setZoomRange={setZoomRange}
       />
 
       <SelectGame

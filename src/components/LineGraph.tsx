@@ -101,7 +101,7 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, 
               isAnimationActive={false}
             />
           ))}
-          {showBrush && (
+          {/* {showBrush && (
             <Brush
               dataKey="distance"
               height={30}
@@ -109,7 +109,7 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, 
               startIndex={Math.floor(typeof zoomState.left === 'number' ? zoomState.left : 0)}
               endIndex={Math.floor(typeof zoomState.right === 'number' ? zoomState.right : data.length - 1)}
             />
-          )}
+          )} */}
         </LineChart>
       </ResponsiveContainer>
     </div>
