@@ -9,12 +9,19 @@ interface TelemetryVisualizationProps {
   currentLapData: TelemetryPoint[]
   mapDataAvailable: boolean
   session: PaddockSession | null
+  zoomState: {
+    left: number;
+    right: number;
+    top: string | number;
+    bottom: string | number;
+  }
 }
 
-export function TelemetryVisualization({ 
-  currentLapData, 
+export function TelemetryVisualization({
+  currentLapData,
   mapDataAvailable,
-  session 
+  session,
+  zoomState
 }: TelemetryVisualizationProps) {
   return (
     <Grid container spacing={2} sx={{ height: "100%" }}>
@@ -37,13 +44,13 @@ export function TelemetryVisualization({
           {currentLapData.length > 0 && (
             <>
               <Box sx={{ height: "200px" }}>
-                <SpeedGraph currentLapData={currentLapData} syncId="telemetry" />
+                <SpeedGraph currentLapData={currentLapData} syncId="telemetry" zoomState={zoomState} />
               </Box>
               <Box sx={{ height: "200px" }}>
-                <PedalsGraph currentLapData={currentLapData} syncId="telemetry" />
+                <PedalsGraph currentLapData={currentLapData} syncId="telemetry" zoomState={zoomState} />
               </Box>
               <Box sx={{ height: "200px" }}>
-                <GearGraph currentLapData={currentLapData} syncId="telemetry" showBrush={true} />
+                <GearGraph currentLapData={currentLapData} syncId="telemetry" showBrush={true} zoomState={zoomState} />
               </Box>
             </>
           )}

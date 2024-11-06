@@ -24,6 +24,12 @@ export function SessionView() {
   const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
   const [navigationOpen, setNavigationOpen] = useState(false)
   const [paddockOpen, setPaddockOpen] = useState(false)
+  const [zoomState, setZoomState] = useState({
+    left: 0,
+    right: 0,
+    top: 'dataMax+1',
+    bottom: 'dataMin-1'
+  })
 
   const sessionInformation = useMemo<SessionInformation | null>(() => {
     if (!sessionData) return null;
@@ -102,6 +108,9 @@ export function SessionView() {
             onLapSelect={handleLapSelect}
             currentLap={currentLap}
             landmarks={landmarks}
+            zoomState={zoomState}
+            setZoomState={setZoomState}
+            currentLapData={currentLapData}
           />
         </Box>
         <Box sx={{ height: "90vh" }}>
@@ -109,6 +118,7 @@ export function SessionView() {
             currentLapData={currentLapData}
             mapDataAvailable={sessionData?.mapDataAvailable ?? false}
             session={paddockData?.session ?? null}
+            zoomState={zoomState}
           />
         </Box>
       </Stack>

@@ -17,6 +17,12 @@ interface LineGraphProps {
   title?: string;
   syncId?: string;
   showBrush?: boolean;
+  zoomState?: {
+    left: number;
+    right: number;
+    top: string | number;
+    bottom: string | number;
+  };
 }
 
 interface CurrentValueDisplayProps {
@@ -38,7 +44,7 @@ function CurrentValueDisplay({ value, label, unit }: CurrentValueDisplayProps) {
   );
 }
 
-export function SpeedGraph({ currentLapData, syncId }: { currentLapData: TelemetryPoint[], syncId?: string }) {
+export function SpeedGraph({ currentLapData, syncId, zoomState }: { currentLapData: TelemetryPoint[], syncId?: string, zoomState: any }) {
   return (
     <LineGraph
       data={currentLapData}
@@ -48,11 +54,12 @@ export function SpeedGraph({ currentLapData, syncId }: { currentLapData: Telemet
       unit=" km/h"
       // title="Speed in kph"
       syncId={syncId}
+      zoomState={zoomState}
     />
   );
 }
 
-export function PedalsGraph({ currentLapData, syncId }: { currentLapData: TelemetryPoint[], syncId?: string }) {
+export function PedalsGraph({ currentLapData, syncId, zoomState }: { currentLapData: TelemetryPoint[], syncId?: string, zoomState: any }) {
   return (
     <LineGraph
       data={currentLapData}
@@ -63,11 +70,12 @@ export function PedalsGraph({ currentLapData, syncId }: { currentLapData: Teleme
       ]}
       unit="%"
       syncId={syncId}
+      zoomState={zoomState}
     />
   );
 }
 
-export function GearGraph({ currentLapData, syncId, showBrush }: { currentLapData: TelemetryPoint[], syncId?: string, showBrush?: boolean }) {
+export function GearGraph({ currentLapData, syncId, showBrush, zoomState }: { currentLapData: TelemetryPoint[], syncId?: string, showBrush?: boolean, zoomState: any }) {
   return (
     <LineGraph
       data={currentLapData}
@@ -78,59 +86,15 @@ export function GearGraph({ currentLapData, syncId, showBrush }: { currentLapDat
       stepLine
       syncId={syncId}
       showBrush={showBrush}
+      zoomState={zoomState}
     />
   );
 }
 
-export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, syncId, showBrush }: LineGraphProps) {
+export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, syncId, showBrush, zoomState }: LineGraphProps) {
   const currentValue = data.length > 0 ? data[data.length - 1][dataKeys[0].key] : 0;
   const distance = data.length > 0 ? Math.round(data[data.length - 1].distance) : 0;
 
-  const [zoomState, setZoomState] = useState({
-    left: 0,
-    right: data.length > 0 ? data[data.length - 1].distance : 0,
-    top: 'dataMax+1',
-    bottom: 'dataMin-1'
-  });
-
-  const zoomOut = () => {
-    if (data.length === 0) return;
-    setZoomState({
-      ...zoomState,
-      left: 0,
-      right: data[data.length - 1].distance
-    });
-  };
-
-  const zoomToFirstThird = () => {
-    if (data.length === 0) return;
-    const maxDistance = data[data.length - 1].distance;
-    setZoomState({
-      ...zoomState,
-      left: 0,
-      right: maxDistance / 3
-    });
-  };
-
-  const zoomToMiddleThird = () => {
-    if (data.length === 0) return;
-    const maxDistance = data[data.length - 1].distance;
-    setZoomState({
-      ...zoomState,
-      left: maxDistance / 3,
-      right: (maxDistance * 2) / 3
-    });
-  };
-
-  const zoomToLastThird = () => {
-    if (data.length === 0) return;
-    const maxDistance = data[data.length - 1].distance;
-    setZoomState({
-      ...zoomState,
-      left: (maxDistance * 2) / 3,
-      right: maxDistance
-    });
-  };
 
   return (
     <div className="graph-container" style={{ width: '100%', height: '200px', position: 'relative' }}>
@@ -143,12 +107,6 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, 
         label={dataKeys[0].name}
         unit={unit}
       /> */}
-      <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-        <Button size="small" variant="outlined" onClick={zoomOut}>Full Track</Button>
-        <Button size="small" variant="outlined" onClick={zoomToFirstThird}>First Third</Button>
-        <Button size="small" variant="outlined" onClick={zoomToMiddleThird}>Middle Third</Button>
-        <Button size="small" variant="outlined" onClick={zoomToLastThird}>Last Third</Button>
-      </Stack>
       <ResponsiveContainer width="100%" height="85%">
         <LineChart
           data={data}
@@ -161,7 +119,7 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, 
             strokeOpacity={0.5}
           />
           <XAxis
-            dataKey="distance" 
+            dataKey="distance"
             name="Distance"
             unit="m"
             domain={[zoomState.left, zoomState.right]}
