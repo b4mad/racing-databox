@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button, Stack } from '@mui/material'
 import { SelectGame } from './SelectGame'
 import { SessionNavigation } from './SessionNavigation'
-import { LandmarksDialog } from './LandmarksDialog'
+import { SelectSegment } from './SelectSegment'
 import { SessionInformation, TrackLandmarks } from '../services/types'
 
 interface SessionControlsProps {
@@ -40,13 +40,17 @@ export function SessionControls({
         onClick={() => setLandmarksOpen(true)}
         disabled={!landmarks}
       >
-        Track Landmarks
+        Select Segment
       </Button>
 
-      <LandmarksDialog
+      <SelectSegment
         open={landmarksOpen}
         onClose={() => setLandmarksOpen(false)}
         landmarks={landmarks}
+        onSegmentSelect={(segmentId) => {
+          console.log('Selected segment:', segmentId);
+          // TODO: Implement segment selection logic
+        }}
       />
 
       <SelectGame
