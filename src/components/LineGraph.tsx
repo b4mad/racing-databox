@@ -31,23 +31,23 @@ interface LineGraphProps extends BaseGraphProps {
 
 const GRAPH_CONFIGS = {
   speed: {
-    dataKeys: [{ key: "speed", name: "Speed", color: "#2196f3" }],
+    dataKeys: [{ key: "speed" as keyof TelemetryPoint, name: "Speed", color: "#2196f3" }],
     unit: " km/h"
   },
   pedals: {
     dataKeys: [
-      { key: "throttle", name: "Throttle", color: "#4caf50" },
-      { key: "brake", name: "Brake", color: "#f44336" },
-      { key: "handbrake", name: "Handbrake", color: "#ff9800" }
+      { key: "throttle" as keyof TelemetryPoint, name: "Throttle", color: "#4caf50" },
+      { key: "brake" as keyof TelemetryPoint, name: "Brake", color: "#f44336" },
+      { key: "handbrake" as keyof TelemetryPoint, name: "Handbrake", color: "#ff9800" }
     ],
     unit: "%"
   },
   gear: {
-    dataKeys: [{ key: "gear", name: "Gear", color: "#9c27b0" }],
+    dataKeys: [{ key: "gear" as keyof TelemetryPoint, name: "Gear", color: "#9c27b0" }],
     unit: "",
     stepLine: true
   }
-} as const;
+};
 
 export function SpeedGraph(props: BaseGraphProps) {
   return <LineGraph {...props} data={props.currentLapData} {...GRAPH_CONFIGS.speed} />;
@@ -62,10 +62,6 @@ export function GearGraph(props: BaseGraphProps) {
 }
 
 export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, syncId, showBrush, zoomState }: LineGraphProps) {
-  const currentValue = data.length > 0 ? data[data.length - 1][dataKeys[0].key] : 0;
-  const distance = data.length > 0 ? Math.round(data[data.length - 1].distance) : 0;
-
-
   return (
     <div className="graph-container" style={{ width: '100%', height: '200px', position: 'relative' }}>
       {title && <div style={{ position: 'absolute', left: 20, top: 10, fontSize: '1em' }}>{title}</div>}
