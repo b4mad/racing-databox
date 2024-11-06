@@ -37,6 +37,24 @@ export function SessionView() {
     bottom: 'dataMin-1'
   })
 
+  const setZoomRange = (startMeters: number, endMeters: number) => {
+    if (currentLapData.length === 0) return;
+    const maxDistance = currentLapData[currentLapData.length - 1].distance;
+
+    // Clamp values to valid range
+    const start = Math.max(0, Math.min(startMeters, maxDistance));
+    const end = Math.max(0, Math.min(endMeters, maxDistance));
+
+    setZoomState({
+      ...zoomState,
+      left: start,
+      right: end,
+      // Keep default top/bottom scaling
+      top: 'dataMax+1',
+      bottom: 'dataMin-1'
+    });
+  };
+
   const sessionInformation = useMemo<SessionInformation | null>(() => {
     if (!sessionData) return null;
     return {
@@ -134,9 +152,8 @@ export function SessionView() {
             onLapSelect={handleLapSelect}
             currentLap={currentLap}
             landmarks={landmarks}
-            zoomState={zoomState}
-            setZoomState={setZoomState}
             currentLapData={currentLapData}
+            setZoomRange={setZoomRange}
           />
         </Box>
         <Box sx={{ height: "90vh" }}>

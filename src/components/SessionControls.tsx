@@ -15,9 +15,8 @@ interface SessionControlsProps {
   onLapSelect: (lap: number) => void
   currentLap: number
   landmarks: TrackLandmarks | null
-  zoomState: ZoomState
-  setZoomState: React.Dispatch<React.SetStateAction<ZoomState>>
   currentLapData: TelemetryPoint[]
+  setZoomRange: (startMeters: number, endMeters: number) => void
 }
 
 export function SessionControls({
@@ -29,29 +28,11 @@ export function SessionControls({
   onLapSelect,
   currentLap,
   landmarks,
-  zoomState,
-  setZoomState,
-  currentLapData
+  currentLapData,
+  setZoomRange
 }: SessionControlsProps) {
   const [landmarksOpen, setLandmarksOpen] = useState(false);
 
-  const setZoomRange = (startMeters: number, endMeters: number) => {
-    if (currentLapData.length === 0) return;
-    const maxDistance = currentLapData[currentLapData.length - 1].distance;
-
-    // Clamp values to valid range
-    const start = Math.max(0, Math.min(startMeters, maxDistance));
-    const end = Math.max(0, Math.min(endMeters, maxDistance));
-
-    setZoomState({
-      ...zoomState,
-      left: start,
-      right: end,
-      // Keep default top/bottom scaling
-      top: 'dataMax+1',
-      bottom: 'dataMin-1'
-    });
-  };
 
   const zoomOut = () => {
     if (currentLapData.length === 0) return;
