@@ -13,7 +13,7 @@ interface PaddockSessionData {
 }
 
 export function SessionView() {
-  const { sessionId, lapNumber } = useParams();
+  const { sessionId, lapNumber: _lapNumber } = useParams();
 
   if (!sessionId) {
     return <Navigate to="/" replace />;
