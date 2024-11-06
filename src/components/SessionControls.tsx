@@ -35,43 +35,46 @@ export function SessionControls({
 }: SessionControlsProps) {
   const [landmarksOpen, setLandmarksOpen] = useState(false);
 
-  const zoomOut = () => {
+  const setZoomRange = (startMeters: number, endMeters: number) => {
     if (currentLapData.length === 0) return;
+    const maxDistance = currentLapData[currentLapData.length - 1].distance;
+    
+    // Clamp values to valid range
+    const start = Math.max(0, Math.min(startMeters, maxDistance));
+    const end = Math.max(0, Math.min(endMeters, maxDistance));
+    
     setZoomState({
       ...zoomState,
-      left: 0,
-      right: currentLapData[currentLapData.length - 1].distance
+      left: start,
+      right: end,
+      // Keep default top/bottom scaling
+      top: 'dataMax+1',
+      bottom: 'dataMin-1'
     });
+  };
+
+  const zoomOut = () => {
+    if (currentLapData.length === 0) return;
+    const maxDistance = currentLapData[currentLapData.length - 1].distance;
+    setZoomRange(0, maxDistance);
   };
 
   const zoomToFirstThird = () => {
     if (currentLapData.length === 0) return;
     const maxDistance = currentLapData[currentLapData.length - 1].distance;
-    setZoomState({
-      ...zoomState,
-      left: 0,
-      right: maxDistance / 3
-    });
+    setZoomRange(0, maxDistance / 3);
   };
 
   const zoomToMiddleThird = () => {
     if (currentLapData.length === 0) return;
     const maxDistance = currentLapData[currentLapData.length - 1].distance;
-    setZoomState({
-      ...zoomState,
-      left: maxDistance / 3,
-      right: (maxDistance * 2) / 3
-    });
+    setZoomRange(maxDistance / 3, (maxDistance * 2) / 3);
   };
 
   const zoomToLastThird = () => {
     if (currentLapData.length === 0) return;
     const maxDistance = currentLapData[currentLapData.length - 1].distance;
-    setZoomState({
-      ...zoomState,
-      left: (maxDistance * 2) / 3,
-      right: maxDistance
-    });
+    setZoomRange((maxDistance * 2) / 3, maxDistance);
   };
 
   return (
