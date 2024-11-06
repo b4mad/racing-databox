@@ -14,17 +14,17 @@ const style = {
   p: 4,
 };
 
-interface PaddockNavigationProps {
+interface SelectGameProps {
   open: boolean;
   onClose: () => void;
   onGameSelect: (game: string) => void;
 }
 
-export const PaddockNavigation = ({
+export const SelectGame = ({
   open,
   onClose,
   onGameSelect
-}: PaddockNavigationProps) => {
+}: SelectGameProps) => {
   const [games, setGames] = useState<Array<{ name: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,10 +51,10 @@ export const PaddockNavigation = ({
     <Modal
       open={open}
       onClose={onClose}
-      aria-labelledby="paddock-navigation-modal"
+      aria-labelledby="select-game-modal"
     >
       <Box sx={style}>
-        <Typography id="paddock-navigation-modal" variant="h6" component="h2">
+        <Typography id="select-game-modal" variant="h6" component="h2">
           Select Game
         </Typography>
         {error && (

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button, Stack } from '@mui/material'
-import { PaddockNavigation } from './PaddockNavigation'
+import { SelectGame } from './SelectGame'
 import { SessionNavigation } from './SessionNavigation'
 import { LandmarksDialog } from './LandmarksDialog'
 import { SessionInformation, TrackLandmarks } from '../services/types'
@@ -49,7 +49,7 @@ export function SessionControls({
         landmarks={landmarks}
       />
 
-      <PaddockNavigation
+      <SelectGame
         open={paddockOpen}
         onClose={() => setPaddockOpen(false)}
         onGameSelect={(game) => {
