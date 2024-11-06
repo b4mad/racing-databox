@@ -85,9 +85,9 @@ export function SessionControls({
         <Button size="small" variant="outlined" onClick={zoomToMiddleThird}>Middle Third</Button>
         <Button size="small" variant="outlined" onClick={zoomToLastThird}>Last Third</Button>
       </Stack>
-      <Button variant="contained" onClick={() => setPaddockOpen(true)}>
+      {/* <Button variant="contained" onClick={() => setPaddockOpen(true)}>
         Select Game
-      </Button>
+      </Button> */}
       <Button variant="contained" onClick={() => setNavigationOpen(true)}>
         Select Lap
       </Button>
