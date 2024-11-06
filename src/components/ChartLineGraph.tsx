@@ -43,13 +43,14 @@ interface ChartLineGraphProps {
   onZoomChange?: (start: number, end: number) => void;
 }
 
-export function ChartLineGraph({ 
-  data, 
-  dataKeys, 
-  unit = '', 
-  stepLine = false, 
+export function ChartLineGraph({
+  data,
+  dataKeys,
+  unit = '',
+  stepLine = false,
   title,
-  zoomState 
+  zoomState,
+  onZoomChange
 }: ChartLineGraphProps) {
   const chartData = {
     labels: data.map(point => point.distance),
@@ -61,7 +62,7 @@ export function ChartLineGraph({
       borderWidth: 1.5,
       pointRadius: 0,
       tension: stepLine ? 0 : 0.4,
-      stepped: stepLine ? 'after' : undefined
+      stepped: stepLine ? true : undefined
     }))
   };
 
@@ -76,8 +77,8 @@ export function ChartLineGraph({
           display: true,
           text: 'Distance (m)'
         },
-        min: zoomState.left,
-        max: zoomState.right
+        min: typeof zoomState.left === 'number' ? zoomState.left : parseFloat(zoomState.left),
+        max: typeof zoomState.right === 'number' ? zoomState.right : parseFloat(zoomState.right)
       },
       y: {
         title: {

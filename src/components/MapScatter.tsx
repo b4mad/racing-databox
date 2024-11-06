@@ -1,5 +1,6 @@
 import { TelemetryPoint } from '../services/types';
 import { ChartMapScatter } from './ChartMapScatter';
+import { ZoomState } from './types';
 
 interface MapProps {
   data: TelemetryPoint[];
