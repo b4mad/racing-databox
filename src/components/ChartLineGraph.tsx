@@ -91,10 +91,6 @@ export function ChartLineGraph({
     },
     plugins: {
       zoom: {
-        pan: {
-          enabled: true,
-          mode: 'x',
-        },
         zoom: {
           wheel: {
             enabled: true,
@@ -104,6 +100,16 @@ export function ChartLineGraph({
           },
           mode: 'x',
           onZoomComplete: (context: any) => {
+            if (onZoomChange) {
+              const {min, max} = context.chart.scales.x;
+              onZoomChange(min, max);
+            }
+          }
+        },
+        pan: {
+          enabled: true,
+          mode: 'x',
+          onPanComplete: (context: any) => {
             if (onZoomChange) {
               const {min, max} = context.chart.scales.x;
               onZoomChange(min, max);
