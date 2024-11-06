@@ -168,6 +168,7 @@ export function SessionView() {
             mapDataAvailable={sessionData?.mapDataAvailable ?? false}
             session={paddockData?.session ?? null}
             zoomState={zoomState}
+            setZoomRange={setZoomRange}
           />
         </Box>
       </Stack>

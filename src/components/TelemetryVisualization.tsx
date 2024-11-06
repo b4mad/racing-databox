@@ -11,13 +11,15 @@ interface TelemetryVisualizationProps {
   mapDataAvailable: boolean
   session: PaddockSession | null
   zoomState: ZoomState
+  setZoomRange: (startMeters: number, endMeters: number) => void
 }
 
 export function TelemetryVisualization({
   currentLapData,
   mapDataAvailable,
   session,
-  zoomState
+  zoomState,
+  setZoomRange
 }: TelemetryVisualizationProps) {
   return (
     <Grid container spacing={2} sx={{ height: "100%" }}>
@@ -40,13 +42,13 @@ export function TelemetryVisualization({
           {currentLapData.length > 0 && (
             <>
               <Box sx={{ height: "200px" }}>
-                <SpeedGraph currentLapData={currentLapData} syncId="telemetry" zoomState={zoomState} />
+                <SpeedGraph currentLapData={currentLapData} syncId="telemetry" zoomState={zoomState} onZoomChange={setZoomRange} />
               </Box>
               <Box sx={{ height: "200px" }}>
-                <PedalsGraph currentLapData={currentLapData} syncId="telemetry" zoomState={zoomState} />
+                <PedalsGraph currentLapData={currentLapData} syncId="telemetry" zoomState={zoomState} onZoomChange={setZoomRange} />
               </Box>
               <Box sx={{ height: "200px" }}>
-                <GearGraph currentLapData={currentLapData} syncId="telemetry" showBrush={true} zoomState={zoomState} />
+                <GearGraph currentLapData={currentLapData} syncId="telemetry" showBrush={true} zoomState={zoomState} onZoomChange={setZoomRange} />
               </Box>
             </>
           )}

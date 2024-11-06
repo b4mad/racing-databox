@@ -13,6 +13,7 @@ interface BaseGraphProps {
   syncId?: string;
   zoomState: ZoomState;
   showBrush?: boolean;
+  onZoomChange?: (start: number, end: number) => void;
 }
 
 interface LineGraphProps extends BaseGraphProps {
@@ -55,7 +56,7 @@ export function GearGraph(props: BaseGraphProps) {
   return <LineGraph {...props} data={props.currentLapData} {...GRAPH_CONFIGS.gear} />;
 }
 
-export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, syncId, zoomState }: LineGraphProps) {
+export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, syncId, zoomState, onZoomChange }: LineGraphProps) {
   return (
     <ChartLineGraph
       data={data}
@@ -65,6 +66,7 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, 
       title={title}
       syncId={syncId}
       zoomState={zoomState}
+      onZoomChange={onZoomChange}
     />
   );
 }
