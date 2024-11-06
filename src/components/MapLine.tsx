@@ -3,15 +3,17 @@ import { TelemetryPoint } from '../services/types';
 
 interface MapLineProps {
   data: TelemetryPoint[];
+  syncId?: string;
 }
 
-export function MapLine({ data }: MapLineProps) {
+export function MapLine({ data, syncId }: MapLineProps) {
   return (
     <div className="map-container" style={{ width: '100%', height: '100%' }}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
           margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          syncId={syncId}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
@@ -26,31 +28,18 @@ export function MapLine({ data }: MapLineProps) {
             name="Y Position"
             unit="m"
           />
-          {/* <Tooltip
-            content={({ payload }) => {
-              if (payload && payload.length) {
-                const point = payload[0].payload;
-                return (
-                  <div className="custom-tooltip" style={{
-                    backgroundColor: 'white',
-                    padding: '10px',
-                    border: '1px solid #ccc'
-                  }}>
-                    <p>Time: {point.lapTime.toFixed(3)}s</p>
-                    <p>X: {point.position.x.toFixed(1)}m</p>
-                    <p>Y: {point.position.z.toFixed(1)}m</p>
-                  </div>
-                );
-              }
-              return null;
-            }}
-          /> */}
+          <Tooltip
+            cursor={{ stroke: 'red', strokeWidth: 1 }}
+            content={() => null}
+            position={{ x: 0, y: 0 }}
+          />
           <Legend />
           <Line
             type="natural"
             dataKey="position.y"
             stroke="#000000"
             dot={false}
+            activeDot={{ r: 2, fill: "#550000" }}
             name="Track Path"
             yAxisId={0}
           />

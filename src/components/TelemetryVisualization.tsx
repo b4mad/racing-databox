@@ -25,7 +25,7 @@ export function TelemetryVisualization({
         <Grid size={6}>
           <Stack spacing={2} sx={{ height: "100%" }}>
             <Box sx={{ height: "50%" }}>
-              <MapLine data={currentLapData} />
+              <MapLine data={currentLapData} syncId="telemetry" />
             </Box>
             {session && (
               <Box sx={{ height: "auto" }}>
