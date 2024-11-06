@@ -32,9 +32,9 @@ export function SessionView() {
   const [paddockOpen, setPaddockOpen] = useState(false)
   const [zoomState, setZoomState] = useState<ZoomState>({
     left: 0,
-    right: 'dataMax+1',
-    top: 'dataMax+1',
-    bottom: 'dataMin-1'
+    right: 0, // Will be set to max distance once data loads
+    top: 0,   // Will be auto-scaled by Chart.js
+    bottom: 0 // Will be auto-scaled by Chart.js
   })
 
   const setZoomRange = (startMeters: number, endMeters: number) => {
@@ -93,6 +93,12 @@ export function SessionView() {
           const firstLapData = session.telemetryByLap.get(firstLap);
           if (firstLapData) {
             setCurrentLapData(firstLapData);
+            // Set initial zoom state to show full lap
+            const maxDistance = firstLapData[firstLapData.length - 1].distance;
+            setZoomState(prev => ({
+              ...prev,
+              right: maxDistance
+            }));
           }
         }
 
