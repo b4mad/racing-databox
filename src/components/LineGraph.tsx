@@ -1,6 +1,6 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TelemetryPoint } from '../services/types';
 import { ZoomState } from './types';
+import { ChartLineGraph } from './ChartLineGraph';
 
 interface DataKeyConfig {
   key: keyof TelemetryPoint;
@@ -55,63 +55,16 @@ export function GearGraph(props: BaseGraphProps) {
   return <LineGraph {...props} data={props.currentLapData} {...GRAPH_CONFIGS.gear} />;
 }
 
-export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, syncId, showBrush, zoomState }: LineGraphProps) {
+export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, syncId, zoomState }: LineGraphProps) {
   return (
-    <div className="graph-container" style={{ width: '100%', height: '200px', position: 'relative' }}>
-      {title && <div style={{ position: 'absolute', left: 20, top: 10, fontSize: '1em' }}>{title}</div>}
-      <ResponsiveContainer width="100%" height="85%">
-        <LineChart
-          data={data}
-          margin={{ top: 40, right: 20, bottom: 5, left: 20 }}
-          syncId={syncId}
-        >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#e0e0e0"
-            strokeOpacity={0.5}
-          />
-          <XAxis
-            dataKey="distance"
-            name="Distance"
-            unit="m"
-            domain={[zoomState.left, zoomState.right]}
-            type="number"
-            allowDataOverflow
-          />
-          <YAxis
-            unit={unit}
-            domain={[0, dataKeys[0].key === 'speed' ? 250 : 'auto']}
-            allowDataOverflow={true}
-          />
-          <Tooltip
-            cursor={{ stroke: 'red', strokeWidth: 1 }}
-            content={() => null}
-            position={{ x: 0, y: 0 }}
-          />
-          <Legend />
-          {dataKeys.map((config) => (
-            <Line
-              key={config.key}
-              type={stepLine ? "stepAfter" : "monotone"}
-              dataKey={config.key}
-              stroke={config.color}
-              strokeWidth={1.5}
-              name={config.name}
-              dot={false}
-              isAnimationActive={false}
-            />
-          ))}
-          {/* {showBrush && (
-            <Brush
-              dataKey="distance"
-              height={30}
-              stroke="#8884d8"
-              startIndex={Math.floor(typeof zoomState.left === 'number' ? zoomState.left : 0)}
-              endIndex={Math.floor(typeof zoomState.right === 'number' ? zoomState.right : data.length - 1)}
-            />
-          )} */}
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+    <ChartLineGraph
+      data={data}
+      dataKeys={dataKeys}
+      unit={unit}
+      stepLine={stepLine}
+      title={title}
+      syncId={syncId}
+      zoomState={zoomState}
+    />
   );
 }
