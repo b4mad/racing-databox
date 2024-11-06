@@ -1,11 +1,16 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
-import { Container, Box, Stack } from '@mui/material'
+import { Container, Box, Stack, CircularProgress } from '@mui/material'
 import { SessionControls } from '../components/SessionControls'
 import { TelemetryVisualization } from '../components/TelemetryVisualization'
 import { createTelemetryService } from '../services/TelemetryService'
 import { PaddockService } from '../services/PaddockService'
-import { TelemetryPoint, SessionData, SessionInformation, PaddockLap } from '../services/types'
+import { TelemetryPoint, SessionData, SessionInformation, PaddockLap, PaddockSession, TrackLandmarks } from '../services/types'
+
+interface PaddockSessionData {
+  session: PaddockSession;
+  laps: PaddockLap[];
+}
 
 export function SessionView() {
   const { sessionId, lapNumber } = useParams();
@@ -93,6 +98,26 @@ export function SessionView() {
         setCurrentLapData(lapData)
       }
     }
+  }
+
+  if (loading) {
+    return (
+      <Container>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <CircularProgress />
+        </Box>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <Box sx={{ p: 2, color: 'error.main' }}>
+          Error: {error}
+        </Box>
+      </Container>
+    );
   }
 
   return (
