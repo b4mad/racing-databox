@@ -1,12 +1,14 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TelemetryPoint } from '../services/types';
+import { ZoomState } from './types';
 
 interface MapLineProps {
   data: TelemetryPoint[];
   syncId?: string;
+  zoomState: ZoomState;
 }
 
-export function MapLine({ data, syncId }: MapLineProps) {
+export function MapLine({ data, syncId, zoomState }: MapLineProps) {
   return (
     <div className="map-container" style={{ width: '100%', height: '100%' }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -21,12 +23,16 @@ export function MapLine({ data, syncId }: MapLineProps) {
             dataKey="position.x"
             name="X Position"
             unit="m"
+            domain={[zoomState.left, zoomState.right]}
+            allowDataOverflow
           />
           <YAxis
             type="number"
             dataKey="position.y"
             name="Y Position"
             unit="m"
+            domain={[zoomState.bottom, zoomState.top]}
+            allowDataOverflow
           />
           <Tooltip
             cursor={{ stroke: 'red', strokeWidth: 1 }}
