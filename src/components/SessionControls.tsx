@@ -3,7 +3,7 @@ import { Button, Stack } from '@mui/material'
 import { SelectGame } from './SelectGame'
 import { SelectLap } from './SelectLap'
 import { SelectSegment } from './SelectSegment'
-import { SessionInformation, TrackLandmarks } from '../services/types'
+import { SessionInformation, TrackLandmarks, TelemetryPoint } from '../services/types'
 
 interface SessionControlsProps {
   paddockOpen: boolean
