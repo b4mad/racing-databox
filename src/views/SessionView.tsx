@@ -6,6 +6,7 @@ import { TelemetryVisualization } from '../components/TelemetryVisualization'
 import { createTelemetryService } from '../services/TelemetryService'
 import { PaddockService } from '../services/PaddockService'
 import { TelemetryPoint, SessionData, SessionInformation, PaddockLap, PaddockSession, TrackLandmarks } from '../services/types'
+import { ZoomState } from '../components/types'
 
 interface PaddockSessionData {
   session: PaddockSession;
@@ -29,7 +30,7 @@ export function SessionView() {
   const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
   const [navigationOpen, setNavigationOpen] = useState(false)
   const [paddockOpen, setPaddockOpen] = useState(false)
-  const [zoomState, setZoomState] = useState({
+  const [zoomState, setZoomState] = useState<ZoomState>({
     left: 0,
     right: 'dataMax+1',
     top: 'dataMax+1',

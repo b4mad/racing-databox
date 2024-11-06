@@ -1,17 +1,11 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from 'recharts';
 import { TelemetryPoint } from '../services/types';
+import { ZoomState } from './types';
 
 interface DataKeyConfig {
   key: keyof TelemetryPoint;
   name: string;
   color: string;
-}
-
-interface ZoomState {
-  left: string | number;
-  right: string | number;
-  top: string | number;
-  bottom: string | number;
 }
 
 interface BaseGraphProps {

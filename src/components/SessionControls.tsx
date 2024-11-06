@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Button, Stack } from '@mui/material'
 import { SelectGame } from './SelectGame'
 import { SelectLap } from './SelectLap'
 import { SelectSegment } from './SelectSegment'
 import { SessionInformation, TrackLandmarks, TelemetryPoint } from '../services/types'
+import { ZoomState } from './types'
 
 interface SessionControlsProps {
   paddockOpen: boolean
@@ -14,13 +15,8 @@ interface SessionControlsProps {
   onLapSelect: (lap: number) => void
   currentLap: number
   landmarks: TrackLandmarks | null
-  zoomState: {
-    left: string | number;
-    right: string | number;
-    top: string | number;
-    bottom: string | number;
-  }
-  setZoomState: (state: any) => void
+  zoomState: ZoomState
+  setZoomState: React.Dispatch<React.SetStateAction<ZoomState>>
   currentLapData: TelemetryPoint[]
 }
 

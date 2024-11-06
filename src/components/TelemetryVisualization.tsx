@@ -4,17 +4,13 @@ import { MapLine } from './MapLine'
 import { SpeedGraph, PedalsGraph, GearGraph } from './LineGraph'
 import { SessionInfoBox } from './SessionInfoBox'
 import { TelemetryPoint, PaddockSession } from '../services/types'
+import { ZoomState } from './types'
 
 interface TelemetryVisualizationProps {
   currentLapData: TelemetryPoint[]
   mapDataAvailable: boolean
   session: PaddockSession | null
-  zoomState: {
-    left: string | number;
-    right: string | number;
-    top: string | number;
-    bottom: string | number;
-  }
+  zoomState: ZoomState
 }
 
 export function TelemetryVisualization({
