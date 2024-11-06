@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button, Stack } from '@mui/material'
 import { SelectGame } from './SelectGame'
-import { SessionNavigation } from './SessionNavigation'
+import { SelectLap } from './SelectLap'
 import { SelectSegment } from './SelectSegment'
 import { SessionInformation, TrackLandmarks } from '../services/types'
 
@@ -62,7 +62,7 @@ export function SessionControls({
         }}
       />
 
-      <SessionNavigation
+      <SelectLap
         open={navigationOpen}
         onClose={() => setNavigationOpen(false)}
         sessionInformation={sessionInformation}

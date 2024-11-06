@@ -19,7 +19,7 @@ const style = {
   p: 4,
 };
 
-interface SessionNavigationProps {
+interface SelectLapProps {
   open: boolean;
   onClose: () => void;
   sessionInformation: SessionInformation | null;
@@ -27,23 +27,23 @@ interface SessionNavigationProps {
   currentLap: number;
 }
 
-export const SessionNavigation = ({ 
+export const SelectLap = ({ 
   open, 
   onClose, 
   sessionInformation, 
   onLapSelect,
   currentLap 
-}: SessionNavigationProps) => {
+}: SelectLapProps) => {
   if (!sessionInformation) return null;
 
   return (
     <Modal
       open={open}
       onClose={onClose}
-      aria-labelledby="session-navigation-modal"
+      aria-labelledby="select-lap-modal"
     >
       <Box sx={style}>
-        <Typography id="session-navigation-modal" variant="h6" component="h2">
+        <Typography id="select-lap-modal" variant="h6" component="h2">
           Select Lap
         </Typography>
         <List sx={{ maxHeight: '60vh', overflow: 'auto' }}>
