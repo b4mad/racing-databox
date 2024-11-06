@@ -1,7 +1,27 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Line } from 'react-chartjs-2';
 import { TelemetryPoint } from '../services/types';
 import { ZoomState } from './types';
 import { useMemo } from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 interface MapLineProps {
   data: TelemetryPoint[];
@@ -19,7 +39,7 @@ export function MapLine({ data, syncId, zoomState }: MapLineProps) {
 
     // Find points within the zoomed distance range
     const visiblePoints = data.filter(point =>
-      point.distance >= minDistance && 
+      point.distance >= minDistance &&
       point.distance <= maxDistance &&
       point.position !== undefined // Add type guard for position
     );
@@ -42,48 +62,76 @@ export function MapLine({ data, syncId, zoomState }: MapLineProps) {
     };
   }, [data, zoomState.left, zoomState.right]);
 
+  const chartData = {
+    labels: data
+      .filter(point => point.position?.x !== undefined)
+      .map(point => point.position!.x),
+    datasets: [
+      {
+        label: 'Track Path',
+        data: data
+          .filter(point => point.position?.y !== undefined)
+          .map(point => point.position!.y),
+        borderColor: '#000000',
+        backgroundColor: '#550000',
+        pointRadius: 0,
+        pointHoverRadius: 2,
+        tension: 0.4
+      }
+    ]
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        type: 'linear' as const,
+        title: {
+          display: true,
+          text: 'X Position (m)'
+        },
+        min: mapBounds.minX,
+        max: mapBounds.maxX
+      },
+      y: {
+        type: 'linear' as const,
+        title: {
+          display: true,
+          text: 'Y Position (m)'
+        },
+        min: mapBounds.minY,
+        max: mapBounds.maxY
+      }
+    },
+    animation: {
+      duration: 0 // Disable animations for better performance
+    },
+    resizeDelay: 0,
+    elements: {
+      line: {
+        borderWidth: 1 // Thinner lines for better performance
+      }
+    },
+    hover: {
+      intersect: false,
+      mode: 'nearest'
+    },
+    plugins: {
+      tooltip: {
+        enabled: true,
+        mode: 'index' as const,
+        intersect: false
+      },
+      legend: {
+        display: true
+      }
+    }
+  };
+
   return (
     <div className="map-container" style={{ width: '100%', height: '100%' }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={data}
-          margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-          syncId={syncId}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            type="number"
-            dataKey="position.x"
-            name="X Position"
-            unit="m"
-            domain={[mapBounds.minX, mapBounds.maxX]}
-            allowDataOverflow
-          />
-          <YAxis
-            type="number"
-            dataKey="position.y"
-            name="Y Position"
-            unit="m"
-            domain={[mapBounds.minY, mapBounds.maxY]}
-            allowDataOverflow
-          />
-          <Tooltip
-            cursor={{ stroke: 'red', strokeWidth: 1 }}
-            content={() => null}
-            position={{ x: 0, y: 0 }}
-          />
-          <Legend />
-          <Line
-            type="natural"
-            dataKey="position.y"
-            stroke="#000000"
-            dot={false}
-            activeDot={{ r: 2, fill: "#550000" }}
-            name="Track Path"
-            yAxisId={0}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      <Line data={chartData} options={options} />
     </div>
   );
 }
