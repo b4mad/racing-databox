@@ -2,6 +2,7 @@
   "name": "racing-databox",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "DEBUG=paddock:* webpack serve --mode development",
     "start": "webpack serve --mode development",

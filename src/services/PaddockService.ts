@@ -1,19 +1,13 @@
+import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { logger } from '../utils/logger';
 import { PaddockSessionData, TrackLandmarks, PaddockLandmark } from './types';
 
 export class PaddockService {
-    private client: any;
-    private gql: any;
+    private client: ApolloClient<NormalizedCacheObject>;
 
-    private constructor(client: any, gql: any) {
-        this.client = client;
-        this.gql = gql;
-    }
-
-    static async create(endpoint?: string): Promise<PaddockService> {
+    constructor(endpoint?: string) {
+        console.log('PaddockService constructor called');
         logger.paddock('PaddockService initializing...');
-
-        const { ApolloClient, InMemoryCache, gql } = await import('@apollo/client');
 
         const defaultEndpoint = process.env.NODE_ENV === 'development'
             ? '/graphql'
@@ -25,7 +19,7 @@ export class PaddockService {
 
         logger.paddock('Creating Apollo Client with endpoint: %s', uri);
 
-        const client = new ApolloClient({
+        this.client = new ApolloClient({
             uri,
             cache: new InMemoryCache(),
             defaultOptions: {
@@ -34,8 +28,6 @@ export class PaddockService {
                 }
             }
         });
-
-        return new PaddockService(client, gql);
     }
 
     private async executeQuery(query: any, variables?: any) {
