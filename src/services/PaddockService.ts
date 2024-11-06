@@ -125,6 +125,9 @@ export class PaddockService {
                                 number
                                 time
                                 valid
+                                telemetryTrackByTrackId {
+                                    name
+                                }
                             }
                         }
                         telemetryCarByCarId {
@@ -166,11 +169,12 @@ export class PaddockService {
         return sessions.map(session => ({
             session: {
                 ...session,
-                car: session.telemetryCarByCarId,
+                car: session.telemetryCarByCarId || { name: 'Unknown' },
                 driver: session.telemetryDriverByDriverId,
                 game: session.telemetryGameByGameId,
                 sessionType: session.telemetrySessiontypeBySessionTypeId,
-                track: session.telemetryTrackByTrackId
+                track: session.telemetryTrackByTrackId || 
+                       (session.telemetryLapsBySessionId.nodes[0]?.telemetryTrackByTrackId ?? null)
             },
             laps: session.telemetryLapsBySessionId.nodes.map((lap: any) => ({
                 number: lap.number,

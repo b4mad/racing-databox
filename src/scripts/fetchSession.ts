@@ -3,7 +3,7 @@ import { PaddockService } from '../services/PaddockService';
 async function main() {
     try {
         const paddockService = new PaddockService('http://telemetry.b4mad.racing:30050/graphql');
-        const sessionDataArray = await paddockService.getSessionData('1730284531');
+        const sessionDataArray = await paddockService.getSessionData('1730913437');
 
         console.log('Session Data:');
         sessionDataArray.forEach((sessionData, index) => {
