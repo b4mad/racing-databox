@@ -10,8 +10,8 @@ interface TelemetryVisualizationProps {
   mapDataAvailable: boolean
   session: PaddockSession | null
   zoomState: {
-    left: number;
-    right: number;
+    left: string | number;
+    right: string | number;
     top: string | number;
     bottom: string | number;
   }

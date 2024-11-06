@@ -8,8 +8,8 @@ interface DataKeyConfig {
 }
 
 interface ZoomState {
-  left: number;
-  right: number;
+  left: string | number;
+  right: string | number;
   top: string | number;
   bottom: string | number;
 }
@@ -107,7 +107,15 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, 
               isAnimationActive={false}
             />
           ))}
-          {showBrush && <Brush dataKey="distance" height={30} stroke="#8884d8" />}
+          {showBrush && (
+            <Brush
+              dataKey="distance"
+              height={30}
+              stroke="#8884d8"
+              startIndex={Math.floor(typeof zoomState.left === 'number' ? zoomState.left : 0)}
+              endIndex={Math.floor(typeof zoomState.right === 'number' ? zoomState.right : data.length - 1)}
+            />
+          )}
         </LineChart>
       </ResponsiveContainer>
     </div>

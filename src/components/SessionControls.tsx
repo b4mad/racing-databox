@@ -15,8 +15,8 @@ interface SessionControlsProps {
   currentLap: number
   landmarks: TrackLandmarks | null
   zoomState: {
-    left: number;
-    right: number;
+    left: string | number;
+    right: string | number;
     top: string | number;
     bottom: string | number;
   }
@@ -92,8 +92,8 @@ export function SessionControls({
       <Button variant="contained" onClick={() => setNavigationOpen(true)}>
         Select Lap
       </Button>
-      <Button 
-        variant="contained" 
+      <Button
+        variant="contained"
         onClick={() => setLandmarksOpen(true)}
         disabled={!landmarks}
       >
