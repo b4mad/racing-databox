@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Brush } from 'recharts';
 import { TelemetryPoint } from '../services/types';
+import { Button, Stack } from '@mui/material';
 
 interface DataKeyConfig {
   key: keyof TelemetryPoint;
@@ -84,6 +86,52 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, 
   const currentValue = data.length > 0 ? data[data.length - 1][dataKeys[0].key] : 0;
   const distance = data.length > 0 ? Math.round(data[data.length - 1].distance) : 0;
 
+  const [zoomState, setZoomState] = useState({
+    left: 0,
+    right: data.length > 0 ? data[data.length - 1].distance : 0,
+    top: 'dataMax+1',
+    bottom: 'dataMin-1'
+  });
+
+  const zoomOut = () => {
+    if (data.length === 0) return;
+    setZoomState({
+      ...zoomState,
+      left: 0,
+      right: data[data.length - 1].distance
+    });
+  };
+
+  const zoomToFirstThird = () => {
+    if (data.length === 0) return;
+    const maxDistance = data[data.length - 1].distance;
+    setZoomState({
+      ...zoomState,
+      left: 0,
+      right: maxDistance / 3
+    });
+  };
+
+  const zoomToMiddleThird = () => {
+    if (data.length === 0) return;
+    const maxDistance = data[data.length - 1].distance;
+    setZoomState({
+      ...zoomState,
+      left: maxDistance / 3,
+      right: (maxDistance * 2) / 3
+    });
+  };
+
+  const zoomToLastThird = () => {
+    if (data.length === 0) return;
+    const maxDistance = data[data.length - 1].distance;
+    setZoomState({
+      ...zoomState,
+      left: (maxDistance * 2) / 3,
+      right: maxDistance
+    });
+  };
+
   return (
     <div className="graph-container" style={{ width: '100%', height: '200px', position: 'relative' }}>
       {title && <div style={{ position: 'absolute', left: 20, top: 10, fontSize: '1em' }}>{title}</div>}
@@ -95,7 +143,13 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, 
         label={dataKeys[0].name}
         unit={unit}
       /> */}
-      <ResponsiveContainer width="100%" height="100%">
+      <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+        <Button size="small" variant="outlined" onClick={zoomOut}>Full Track</Button>
+        <Button size="small" variant="outlined" onClick={zoomToFirstThird}>First Third</Button>
+        <Button size="small" variant="outlined" onClick={zoomToMiddleThird}>Middle Third</Button>
+        <Button size="small" variant="outlined" onClick={zoomToLastThird}>Last Third</Button>
+      </Stack>
+      <ResponsiveContainer width="100%" height="85%">
         <LineChart
           data={data}
           margin={{ top: 40, right: 20, bottom: 5, left: 20 }}
@@ -107,9 +161,12 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, 
             strokeOpacity={0.5}
           />
           <XAxis
-            dataKey="distance"
+            dataKey="distance" 
             name="Distance"
             unit="m"
+            domain={[zoomState.left, zoomState.right]}
+            type="number"
+            allowDataOverflow
           />
           <YAxis
             unit={unit}
