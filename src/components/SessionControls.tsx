@@ -1,10 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Button, Stack } from '@mui/material'
 import { SelectGame } from './SelectGame'
 import { SelectLap } from './SelectLap'
 import { SelectSegment } from './SelectSegment'
 import { SessionInformation, TrackLandmarks, TelemetryPoint } from '../services/types'
-import { ZoomState } from './types'
 
 interface SessionControlsProps {
   paddockOpen: boolean
@@ -101,7 +100,7 @@ export function SessionControls({
         onClose={() => setNavigationOpen(false)}
         sessionInformation={sessionInformation}
         onLapSelect={onLapSelect}
-        currentLap={currentLap}
+        currentLap={currentLap ?? 0}
       />
     </Stack>
   )

@@ -157,7 +157,7 @@ export function SessionView() {
             setNavigationOpen={setNavigationOpen}
             sessionInformation={sessionInformation}
             onLapSelect={handleLapSelect}
-            currentLap={currentLap}
+            currentLap={currentLap ?? 0}
             landmarks={landmarks}
             currentLapData={currentLapData}
             setZoomRange={setZoomRange}
