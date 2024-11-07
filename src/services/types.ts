@@ -37,24 +37,28 @@ export interface PaddockLap {
 }
 
 export interface PaddockCar {
+    id: number;
     name: string;
 }
 
 export interface PaddockDriver {
+    id: number;
     name: string;
 }
 
 export interface PaddockGame {
+    id: number;
     name: string;
 }
 
 export interface PaddockSessionType {
+    id: number;
     type: string;
 }
 
 export interface PaddockTrack {
+    id: number;
     name: string;
-    id: string;
 }
 
 export interface PaddockSession {

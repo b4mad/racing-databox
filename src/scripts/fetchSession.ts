@@ -1,6 +1,6 @@
-import { PaddockService } from '../services/PaddockService';
+import { PaddockService } from '../services/PaddockService.js';
 
-async function main() {
+const main = async () => {
     try {
         const paddockService = new PaddockService('http://telemetry.b4mad.racing:30050/graphql');
         const sessionDataArray = await paddockService.getSessionData('1730913437');
@@ -15,6 +15,6 @@ async function main() {
         console.error('Error fetching sessions:', error);
         process.exit(1);
     }
-}
+};
 
 main();

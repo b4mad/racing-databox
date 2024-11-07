@@ -79,7 +79,7 @@ export class PaddockService {
         return data.allTelemetrySessions.nodes;
     }
 
-    async getLandmarks(id: string): Promise<TrackLandmarks> {
+    async getLandmarks(id: number): Promise<TrackLandmarks> {
         const { data } = await this.executeQuery(gql`
             query GetLandmarks($id: BigInt!) {
                 allTelemetryLandmarks(
@@ -126,25 +126,30 @@ export class PaddockService {
                                 time
                                 valid
                                 telemetryTrackByTrackId {
+                                    id
                                     name
                                 }
                             }
                         }
                         telemetryCarByCarId {
+                            id
                             name
                         }
                         telemetryDriverByDriverId {
+                            id
                             name
                         }
                         telemetryGameByGameId {
+                            id
                             name
                         }
                         telemetrySessiontypeBySessionTypeId {
+                            id
                             type
                         }
                         telemetryTrackByTrackId {
-                            name
                             id
+                            name
                         }
                     }
                 }
