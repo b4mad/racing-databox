@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
+import { useUrlState } from '../hooks/useUrlState'
 import { Container, Box, Stack, CircularProgress } from '@mui/material'
 import { SessionControls } from '../components/SessionControls'
 import { TelemetryVisualization } from '../components/TelemetryVisualization'
@@ -26,18 +27,36 @@ export function SessionView() {
   const [paddockLaps, setPaddockLaps] = useState<PaddockLap[]>([])
   const [paddockData, setPaddockData] = useState<PaddockSessionData | null>(null)
   const [landmarks, setLandmarks] = useState<TrackLandmarks | null>(null)
-  const [currentLap, setCurrentLap] = useState<number>(0)
+  const [currentLap, setCurrentLap] = useUrlState<number>('lap', 0, String,
+    (val) => {
+      const num = parseInt(val);
+      return isNaN(num) ? 0 : num;
+    }
+  )
   const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
   const [navigationOpen, setNavigationOpen] = useState(false)
   const [paddockOpen, setPaddockOpen] = useState(false)
-  const [zoomState, setZoomState] = useState<ZoomState>({
-    left: 0,
-    right: 0, // Will be set to max distance once data loads
+  const [zoomStart, setZoomStart] = useUrlState<number>('zoomStart', 0, String,
+    (val) => {
+      const num = parseFloat(val);
+      return isNaN(num) ? 0 : Math.max(0, num);
+    }
+  )
+  const [zoomEnd, setZoomEnd] = useUrlState<number>('zoomEnd', 0, String,
+    (val) => {
+      const num = parseFloat(val);
+      return isNaN(num) ? 0 : Math.max(0, num);
+    }
+  )
+
+  const zoomState: ZoomState = {
+    left: zoomStart,
+    right: zoomEnd,
     top: 0,   // Will be auto-scaled by Chart.js
     bottom: 0 // Will be auto-scaled by Chart.js
-  })
+  }
 
-  const setZoomRange = (startMeters: number, endMeters: number) => {
+  const setZoomRange = useCallback((startMeters: number, endMeters: number) => {
     if (currentLapData.length === 0) return;
     const maxDistance = currentLapData[currentLapData.length - 1].distance;
 
@@ -45,15 +64,9 @@ export function SessionView() {
     const start = Math.max(0, Math.min(startMeters, maxDistance));
     const end = Math.max(0, Math.min(endMeters, maxDistance));
 
-    setZoomState({
-      ...zoomState,
-      left: start,
-      right: end,
-      // Keep default top/bottom scaling
-      top: 'dataMax+1',
-      bottom: 'dataMin-1'
-    });
-  };
+    setZoomStart(start);
+    setZoomEnd(end);
+  }, [currentLapData, setZoomStart, setZoomEnd]);
 
   const sessionInformation = useMemo<SessionInformation | null>(() => {
     if (!sessionData) return null;
@@ -88,17 +101,30 @@ export function SessionView() {
         }
 
         if (session.laps.length > 0) {
-          const firstLap = session.laps[0];
-          setCurrentLap(firstLap);
-          const firstLapData = session.telemetryByLap.get(firstLap);
-          if (firstLapData) {
-            setCurrentLapData(firstLapData);
-            // Set initial zoom state to show full lap
-            const maxDistance = firstLapData[firstLapData.length - 1].distance;
-            setZoomState(prev => ({
-              ...prev,
-              right: maxDistance
-            }));
+          // If no lap is set in URL, use first lap
+          const targetLap = currentLap || session.laps[0];
+          if (!session.laps.includes(targetLap)) {
+            setCurrentLap(session.laps[0]);
+            const firstLapData = session.telemetryByLap.get(session.laps[0]);
+            if (firstLapData) {
+              setCurrentLapData(firstLapData);
+              // Set initial zoom state to show full lap if not set in URL
+              const maxDistance = firstLapData[firstLapData.length - 1].distance;
+              if (zoomStart === 0 && zoomEnd === 0) {
+                setZoomStart(0);
+                setZoomEnd(maxDistance);
+              }
+            }
+          } else {
+            const lapData = session.telemetryByLap.get(targetLap);
+            if (lapData) {
+              setCurrentLapData(lapData);
+              // Validate zoom range against actual lap data
+              const maxDistance = lapData[lapData.length - 1].distance;
+              if (zoomEnd > maxDistance) {
+                setZoomEnd(maxDistance);
+              }
+            }
           }
         }
 

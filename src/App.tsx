@@ -6,7 +6,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/session/:sessionId/:lapNumber" element={<SessionView />} />
         <Route path="/session/:sessionId" element={<SessionView />} />
         <Route path="/" element={<Navigate to="/session/1729092115" replace />} />
       </Routes>

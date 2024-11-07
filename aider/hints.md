@@ -23,3 +23,9 @@
 - Functional components with hooks
 - Material UI theming and styling
 - Chart.js for all data visualizations
+
+## URL State Management
+- Custom useUrlState hook for managing state in URL parameters
+- Handles serialization/deserialization of different data types
+- Used for persisting zoom ranges and lap selection
+- Provides shareable URLs that preserve visualization state
