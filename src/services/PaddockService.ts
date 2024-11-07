@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { logger } from '../utils/logger';
-import { PaddockSessionData, TrackLandmarks, PaddockLandmark, PaddockLap } from './types';
+import { PaddockSessionData, TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession } from './types';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
@@ -192,10 +192,7 @@ export class PaddockService {
                                 number
                                 time
                                 valid
-                                telemetryTrackByTrackId {
-                                    id
-                                    name
-                                }
+                                length
                             }
                         }
                         telemetryCarByCarId {
@@ -229,39 +226,45 @@ export class PaddockService {
             throw new Error(`Session ${sessionId} not found`);
         }
 
-        return sessions.map((session: {
-            sessionId: string;
-            telemetryCarByCarId: { name: string } | null;
-            telemetryDriverByDriverId: { name: string };
-            telemetryGameByGameId: { name: string };
-            telemetrySessiontypeBySessionTypeId: { type: string };
-            telemetryTrackByTrackId: { name: string; id: string } | null;
-            telemetryLapsBySessionId: {
-                nodes: Array<{
-                    id: number;
-                    number: number;
-                    time: number;
-                    valid: boolean;
-                    telemetryTrackByTrackId?: { name: string };
-                }>;
+        return sessions.map((session: any): PaddockSessionData => {
+            const paddockSession: PaddockSession = {
+                sessionId: session.sessionId,
+                car: {
+                    id: session.telemetryCarByCarId?.id || 0,
+                    name: session.telemetryCarByCarId?.name || 'Unknown'
+                },
+                driver: {
+                    id: session.telemetryDriverByDriverId?.id || 0,
+                    name: session.telemetryDriverByDriverId?.name || 'Unknown'
+                },
+                game: {
+                    id: session.telemetryGameByGameId?.id || 0,
+                    name: session.telemetryGameByGameId?.name || 'Unknown'
+                },
+                sessionType: {
+                    id: session.telemetrySessiontypeBySessionTypeId?.id || 0,
+                    type: session.telemetrySessiontypeBySessionTypeId?.type || 'Unknown'
+                },
+                track: {
+                    id: session.telemetryTrackByTrackId?.id || 0,
+                    name: session.telemetryTrackByTrackId?.name || 'Unknown'
+                }
             };
-        }) => ({
-            session: {
-                ...session,
-                car: session.telemetryCarByCarId || { name: 'Unknown' },
-                driver: session.telemetryDriverByDriverId,
-                game: session.telemetryGameByGameId,
-                sessionType: session.telemetrySessiontypeBySessionTypeId,
-                track: session.telemetryTrackByTrackId ||
-                       (session.telemetryLapsBySessionId.nodes[0]?.telemetryTrackByTrackId ?? null)
-            },
-            laps: session.telemetryLapsBySessionId.nodes.map((lap: any) => ({
+
+            const laps: PaddockLap[] = session.telemetryLapsBySessionId.nodes.map((lap: any): PaddockLap => ({
                 id: lap.id,
                 number: lap.number,
                 time: lap.time,
-                valid: lap.valid
-            }))
-        }));
+                valid: lap.valid,
+                length: lap.length,
+                session: paddockSession
+            }));
+
+            return {
+                session: paddockSession,
+                laps
+            };
+        });
     }
 
 }
