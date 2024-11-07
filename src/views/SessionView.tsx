@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
-import { useUrlState } from '../hooks/useUrlState'
+import { NumberParam, useQueryParam } from 'use-query-params'
 import { Container, Box, Stack, CircularProgress } from '@mui/material'
 import { SessionControls } from '../components/SessionControls'
 import { TelemetryVisualization } from '../components/TelemetryVisualization'
@@ -27,31 +27,16 @@ export function SessionView() {
   const [paddockLaps, setPaddockLaps] = useState<PaddockLap[]>([])
   const [paddockData, setPaddockData] = useState<PaddockSessionData | null>(null)
   const [landmarks, setLandmarks] = useState<TrackLandmarks | null>(null)
-  const [currentLap, setCurrentLap] = useUrlState<number>('lap', 0, String,
-    (val) => {
-      const num = parseInt(val);
-      return isNaN(num) ? 0 : num;
-    }
-  )
+  const [currentLap, setCurrentLap] = useQueryParam('lap', NumberParam);
   const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
   const [navigationOpen, setNavigationOpen] = useState(false)
   const [paddockOpen, setPaddockOpen] = useState(false)
-  const [zoomStart, setZoomStart] = useUrlState<number>('zoomStart', 0, String,
-    (val) => {
-      const num = parseFloat(val);
-      return isNaN(num) ? 0 : Math.max(0, num);
-    }
-  )
-  const [zoomEnd, setZoomEnd] = useUrlState<number>('zoomEnd', 0, String,
-    (val) => {
-      const num = parseFloat(val);
-      return isNaN(num) ? 0 : Math.max(0, num);
-    }
-  )
+  const [zoomStart, setZoomStart] = useQueryParam('zoomStart', NumberParam);
+  const [zoomEnd, setZoomEnd] = useQueryParam('zoomEnd', NumberParam);
 
   const zoomState: ZoomState = {
-    left: zoomStart,
-    right: zoomEnd,
+    left: zoomStart || 0,
+    right: zoomEnd || 0,
     top: 0,   // Will be auto-scaled by Chart.js
     bottom: 0 // Will be auto-scaled by Chart.js
   }

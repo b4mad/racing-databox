@@ -21,7 +21,7 @@ export function useUrlState<T>(
         return newSearchParams;
       });
     },
-    [key, searchParams, setSearchParams, serialize]
+    [key, setSearchParams, serialize]
   );
 
   return [value, setValue];
