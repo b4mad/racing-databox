@@ -1,17 +1,25 @@
-We are using yarn as our package manager.
+## Package Management
+- Using yarn as package manager
 
-Chart.js Migration Notes:
-1. Install dependencies:
-   yarn remove recharts
-   yarn add chart.js react-chartjs-2
+## Key Dependencies
+- React 18.x with TypeScript
+- Material UI (MUI) v6 for components
+- Chart.js v4 with zoom plugin for visualizations
+- Apollo Client for GraphQL
+- React Router v6 for routing
 
-2. Component Migration Order:
-   - LineGraph.tsx (priority)
-   - MapScatter.tsx
-   
-3. Key Steps:
-   - Create new wrapper components
-   - Transform data for Chart.js format
-   - Implement Chart.js specific configurations
-   - Test each component thoroughly
+## Development Setup
+- Webpack dev server runs on port 3000
+- Proxies configured for API (/api) and GraphQL (/graphql) endpoints
 
+## TypeScript Configuration
+- Strict mode enabled
+- Using ES2020 target
+- React JSX mode
+- Module resolution: Bundler
+
+## Code Conventions
+- TypeScript interfaces for all props and data types
+- Functional components with hooks
+- Material UI theming and styling
+- Chart.js for all data visualizations

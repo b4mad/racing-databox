@@ -26,3 +26,4 @@ dist-ssr
 .aider*
 .env
 .env*
+aider/ignore
