@@ -15,7 +15,7 @@ interface PaddockSessionData {
 }
 
 export function SessionView() {
-  const { sessionId, lapNumber: _lapNumber } = useParams();
+  const { sessionId } = useParams();
 
   if (!sessionId) {
     return <Navigate to="/" replace />;
@@ -103,28 +103,18 @@ export function SessionView() {
         if (session.laps.length > 0) {
           // If no lap is set in URL, use first lap
           const targetLap = currentLap || session.laps[0];
-          if (!session.laps.includes(targetLap)) {
-            setCurrentLap(session.laps[0]);
-            const firstLapData = session.telemetryByLap.get(session.laps[0]);
-            if (firstLapData) {
-              setCurrentLapData(firstLapData);
-              // Set initial zoom state to show full lap if not set in URL
-              const maxDistance = firstLapData[firstLapData.length - 1].distance;
-              if (zoomStart === 0 && zoomEnd === 0) {
-                setZoomStart(0);
-                setZoomEnd(maxDistance);
-              }
-            }
-          } else {
-            const lapData = session.telemetryByLap.get(targetLap);
-            if (lapData) {
-              setCurrentLapData(lapData);
-              // Validate zoom range against actual lap data
-              const maxDistance = lapData[lapData.length - 1].distance;
-              if (zoomEnd > maxDistance) {
-                setZoomEnd(maxDistance);
-              }
-            }
+          const selectedLap = session.laps.includes(targetLap) ? targetLap : session.laps[0];
+
+          setCurrentLap(selectedLap);
+          const lapData = session.telemetryByLap.get(selectedLap);
+
+          if (lapData) {
+            setCurrentLapData(lapData);
+            const maxDistance = lapData[lapData.length - 1].distance;
+
+            // New lap selected - initialize zoom range
+            setZoomStart(zoomStart || 0);
+            setZoomEnd(zoomEnd || maxDistance);
           }
         }
 

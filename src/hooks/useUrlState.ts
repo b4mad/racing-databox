@@ -9,7 +9,7 @@ export function useUrlState<T>(
 ): [T, (value: T) => void] {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const value = searchParams.has(key)
+  const value = searchParams.get(key) !== null
     ? deserialize(searchParams.get(key)!)
     : defaultValue;
 
