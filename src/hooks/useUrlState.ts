@@ -15,9 +15,11 @@ export function useUrlState<T>(
 
   const setValue = useCallback(
     (newValue: T) => {
-      const newSearchParams = new URLSearchParams(searchParams);
-      newSearchParams.set(key, serialize(newValue));
-      setSearchParams(newSearchParams);
+      setSearchParams(prev => {
+        const newSearchParams = new URLSearchParams(prev);
+        newSearchParams.set(key, serialize(newValue));
+        return newSearchParams;
+      });
     },
     [key, searchParams, setSearchParams, serialize]
   );
