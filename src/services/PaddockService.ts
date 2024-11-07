@@ -129,25 +129,25 @@ export class PaddockService {
                             telemetryCarByCarId {
                                 name
                                 id
-                                telemetrySessionsByCarId {
-                                    edges {
-                                        node {
-                                            driverId
-                                            telemetryGameByGameId {
-                                                id
-                                                name
-                                            }
-                                            telemetrySessiontypeBySessionTypeId {
-                                                id
-                                                type
-                                            }
-                                        }
-                                    }
-                                }
                             }
                             telemetryTrackByTrackId {
                                 id
                                 name
+                            }
+                            telemetrySessionBySessionId {
+                                sessionId
+                                telemetryDriverByDriverId {
+                                    id
+                                    name
+                                }
+                                telemetryGameByGameId {
+                                    id
+                                    name
+                                }
+                                telemetrySessiontypeBySessionTypeId {
+                                    id
+                                    type
+                                }
                             }
                         }
                     }
@@ -160,21 +160,19 @@ export class PaddockService {
                 id: edge.node.telemetryCarByCarId.id,
                 name: edge.node.telemetryCarByCarId.name
             };
-            const driver = edge.node.telemetryCarByCarId.telemetrySessionsByCarId.edges[0]?.node.driverId;
-
-            const sessionNode = edge.node.telemetryCarByCarId.telemetrySessionsByCarId.edges[0]?.node;
+            const sessionNode = edge.node.telemetrySessionBySessionId;
             return {
                 id: edge.node.id,
                 length: edge.node.length,
                 time: edge.node.time,
                 valid: edge.node.valid,
                 session: {
-                    sessionId: edge.node.id,
+                    sessionId: sessionNode.sessionId,
                     car,
-                    driver: { id: driver, name: driver },
-                    game: sessionNode?.telemetryGameByGameId || { id: 0, name: "Unknown" },
-                    sessionType: sessionNode?.telemetrySessiontypeBySessionTypeId || { id: 0, type: "Unknown" },
-                    track: edge.node.telemetryTrackByTrackId || { id: 0, name: "Unknown" }
+                    driver: sessionNode.telemetryDriverByDriverId,
+                    game: sessionNode.telemetryGameByGameId,
+                    sessionType: sessionNode.telemetrySessiontypeBySessionTypeId,
+                    track: edge.node.telemetryTrackByTrackId
                 }
             };
         });
@@ -190,6 +188,7 @@ export class PaddockService {
                         sessionId
                         telemetryLapsBySessionId {
                             nodes {
+                                id
                                 number
                                 time
                                 valid
@@ -230,15 +229,6 @@ export class PaddockService {
             throw new Error(`Session ${sessionId} not found`);
         }
 
-        // // For now, just use the first session
-        // const session = sessions[0];
-
-        // const laps = session.telemetryLapsBySessionId.nodes.map((lap: any) => ({
-        //     number: lap.number,
-        //     time: lap.time,
-        //     valid: lap.valid
-        // }));
-
         return sessions.map((session: {
             sessionId: string;
             telemetryCarByCarId: { name: string } | null;
@@ -248,6 +238,7 @@ export class PaddockService {
             telemetryTrackByTrackId: { name: string; id: string } | null;
             telemetryLapsBySessionId: {
                 nodes: Array<{
+                    id: number;
                     number: number;
                     time: number;
                     valid: boolean;
@@ -265,6 +256,7 @@ export class PaddockService {
                        (session.telemetryLapsBySessionId.nodes[0]?.telemetryTrackByTrackId ?? null)
             },
             laps: session.telemetryLapsBySessionId.nodes.map((lap: any) => ({
+                id: lap.id,
                 number: lap.number,
                 time: lap.time,
                 valid: lap.valid
