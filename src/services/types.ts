@@ -30,6 +30,24 @@ export interface RawTelemetryData {
     data: number[][];
 }
 
+export interface SessionData {
+    laps: number[];
+    telemetryByLap: Map<number, TelemetryPoint[]>;
+    mapDataAvailable: boolean;
+}
+
+export interface SessionInformation {
+    laps: number[];
+    mapDataAvailable: boolean;
+    lapDetails: PaddockLap[];
+}
+
+
+export interface TelemetryService {
+    getLapData(lapNumber: number): Promise<ProcessedTelemetryData>;
+    getSessionData(sessionId: string): Promise<SessionData>;
+}
+
 export interface PaddockLap {
     number: number;
     time: number;
@@ -74,17 +92,6 @@ export interface PaddockSession {
     laps: PaddockLap[];
 }
 
-export interface SessionData {
-    laps: number[];
-    telemetryByLap: Map<number, TelemetryPoint[]>;
-    mapDataAvailable: boolean;
-}
-
-export interface SessionInformation {
-    laps: number[];
-    mapDataAvailable: boolean;
-    lapDetails: PaddockLap[];
-}
 
 export interface PaddockLandmark {
     id: string;
@@ -97,9 +104,4 @@ export interface PaddockLandmark {
 export interface TrackLandmarks {
     turns: PaddockLandmark[];
     segments: PaddockLandmark[];
-}
-
-export interface TelemetryService {
-    getLapData(lapNumber: number): Promise<ProcessedTelemetryData>;
-    getSessionData(sessionId: string): Promise<SessionData>;
 }
