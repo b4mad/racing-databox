@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { logger } from '../utils/logger';
-import { PaddockSessionData, TrackLandmarks, PaddockLandmark } from './types';
+import { PaddockSessionData, TrackLandmarks, PaddockLandmark, PaddockLap } from './types';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
@@ -110,6 +110,61 @@ export class PaddockService {
             turns: sortedLandmarks.filter((l: PaddockLandmark) => l.kind === 'turn'),
             segments: sortedLandmarks.filter((l: PaddockLandmark) => l.kind === 'segment')
         };
+    }
+
+    async getLaps(trackId: number, carId: number, limit: number = 10): Promise<PaddockLap[]> {
+        const { data } = await this.executeQuery(gql`
+            query GetLaps($trackId: BigInt!, $carId: BigInt!, $limit: Int!) {
+                allTelemetryLaps(
+                    orderBy: TIME_DESC
+                    condition: {trackId: $trackId, carId: $carId}
+                    first: $limit
+                ) {
+                    edges {
+                        node {
+                            id
+                            length
+                            time
+                            valid
+                            telemetryCarByCarId {
+                                name
+                                id
+                                telemetrySessionsByCarId {
+                                    edges {
+                                        node {
+                                            driverId
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        `, { trackId, carId, limit });
+
+        return data.allTelemetryLaps.edges.map((edge: any) => {
+            const car = {
+                id: edge.node.telemetryCarByCarId.id,
+                name: edge.node.telemetryCarByCarId.name
+            };
+            const driver = edge.node.telemetryCarByCarId.telemetrySessionsByCarId.edges[0]?.node.driverId;
+
+            return {
+                id: edge.node.id,
+                length: edge.node.length,
+                time: edge.node.time,
+                valid: edge.node.valid,
+                session: {
+                    sessionId: edge.node.id,
+                    car,
+                    driver: { id: driver, name: driver },
+                    game: { id: 0, name: "" },  // These fields would need to be added to the GraphQL query
+                    sessionType: { id: 0, type: "" },
+                    track: { id: 0, name: "" }
+                }
+            };
+        });
     }
 
     async getSessionData(sessionId: string): Promise<PaddockSessionData[]> {

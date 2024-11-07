@@ -17,14 +17,16 @@
                 "webpack:///src/*": "${webRoot}/src/*",
                 "webpack:///*": "*"
             },
-            // "sourceMapPathOverrides": {
-            //     "/@fs/*": "*"
-            // },
-            // "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-profile",
-            // "userDataDir": "${env:HOME}/Library/Application Support/Google/Chrome",
-            // "runtimeArgs": [
-            //     "--remote-debugging-port=9222"
-            // ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug fetchSession",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/src/scripts/fetchSession.ts",
+            "runtimeArgs": ["-r", "ts-node/register"],
+            "console": "integratedTerminal",
+            "outFiles": ["${workspaceFolder}/dist/**/*.js"]
         }
     ]
 }

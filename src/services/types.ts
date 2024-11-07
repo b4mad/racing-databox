@@ -34,6 +34,9 @@ export interface PaddockLap {
     number: number;
     time: number;
     valid: boolean;
+    length?: number;
+    id?: string;
+    session?: PaddockSession;
 }
 
 export interface PaddockCar {
