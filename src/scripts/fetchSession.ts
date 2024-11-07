@@ -11,14 +11,14 @@ const main = async () => {
 
         console.log('Session Data:');
         for (const sessionData of sessionDataArray) {
-            console.log('\nSession Info:', sessionData.session);
+            console.log('\nSession Info:', sessionData.sessionId);
             console.log('Session Laps:', sessionData.laps);
 
             // Use track and car info to fetch additional laps
-            if (sessionData.session.track?.id && sessionData.session.car?.id) {
+            if (sessionData.track?.id && sessionData.car?.id) {
                 const additionalLaps = await paddockService.getLaps(
-                    sessionData.session.track.id,
-                    sessionData.session.car.id,
+                    sessionData.track.id,
+                    sessionData.car.id,
                     10 // Fetch last 10 laps
                 );
                 console.log('\nAdditional laps for this car/track combination:');

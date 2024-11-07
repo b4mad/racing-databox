@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { logger } from '../utils/logger';
-import { PaddockSessionData, TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession } from './types';
+import { TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession } from './types';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
@@ -178,7 +178,7 @@ export class PaddockService {
         });
     }
 
-    async getSessionData(sessionId: string): Promise<PaddockSessionData[]> {
+    async getSessionData(sessionId: string): Promise<PaddockSession[]> {
         const { data } = await this.executeQuery(gql`
             query GetSessionData($sessionId: String!) {
                 allTelemetrySessions(
@@ -226,8 +226,9 @@ export class PaddockService {
             throw new Error(`Session ${sessionId} not found`);
         }
 
-        return sessions.map((session: any): PaddockSessionData => {
-            const paddockSession: PaddockSession = {
+        return sessions.map((session: any): PaddockSession => {
+            // First create the session without laps
+            const sessionBase = {
                 sessionId: session.sessionId,
                 car: {
                     id: session.telemetryCarByCarId?.id || 0,
@@ -248,22 +249,27 @@ export class PaddockService {
                 track: {
                     id: session.telemetryTrackByTrackId?.id || 0,
                     name: session.telemetryTrackByTrackId?.name || 'Unknown'
-                }
+                },
+                laps: []
             };
 
-            const laps: PaddockLap[] = session.telemetryLapsBySessionId.nodes.map((lap: any): PaddockLap => ({
+            // Then create the laps array with reference to the session
+            const laps = session.telemetryLapsBySessionId.nodes.map((lap: any): PaddockLap => ({
                 id: lap.id,
                 number: lap.number,
                 time: lap.time,
                 valid: lap.valid,
                 length: lap.length,
-                session: paddockSession
+                session: sessionBase
             }));
 
-            return {
-                session: paddockSession,
+            // Finally combine them
+            const paddockSession: PaddockSession = {
+                ...sessionBase,
                 laps
             };
+
+            return paddockSession;
         });
     }
 

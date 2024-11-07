@@ -71,11 +71,7 @@ export interface PaddockSession {
     game: PaddockGame;
     sessionType: PaddockSessionType;
     track: PaddockTrack;
-}
-
-export interface PaddockSessionData {
     laps: PaddockLap[];
-    session: PaddockSession;
 }
 
 export interface SessionData {

@@ -9,10 +9,6 @@ import { PaddockService } from '../services/PaddockService'
 import { TelemetryPoint, SessionData, SessionInformation, PaddockLap, PaddockSession, TrackLandmarks } from '../services/types'
 import { ZoomState } from '../components/types'
 
-interface PaddockSessionData {
-  session: PaddockSession;
-  laps: PaddockLap[];
-}
 
 export function SessionView() {
   const { sessionId } = useParams();
@@ -25,7 +21,7 @@ export function SessionView() {
   const [loading, setLoading] = useState(true)
   const [sessionData, setSessionData] = useState<SessionData | null>(null)
   const [paddockLaps, setPaddockLaps] = useState<PaddockLap[]>([])
-  const [paddockData, setPaddockData] = useState<PaddockSessionData | null>(null)
+  const [paddockData, setPaddockData] = useState<PaddockSession | null>(null)
   const [landmarks, setLandmarks] = useState<TrackLandmarks | null>(null)
   const [currentLap, setCurrentLap] = useQueryParam('lap', NumberParam);
   const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
@@ -80,8 +76,8 @@ export function SessionView() {
         setSessionData(session)
 
         // Fetch landmarks for the track
-        if (firstSession.session.track.id) {
-          const trackLandmarks = await paddockService.getLandmarks(firstSession.session.track.id)
+        if (firstSession.track.id) {
+          const trackLandmarks = await paddockService.getLandmarks(firstSession.track.id)
           setLandmarks(trackLandmarks)
         }
 
@@ -167,7 +163,7 @@ export function SessionView() {
           <TelemetryVisualization
             currentLapData={currentLapData}
             mapDataAvailable={sessionData?.mapDataAvailable ?? false}
-            session={paddockData?.session ?? null}
+            session={paddockData ?? null}
             zoomState={zoomState}
             setZoomRange={setZoomRange}
           />
