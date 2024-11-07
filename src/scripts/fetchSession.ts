@@ -1,4 +1,4 @@
-import { PaddockService } from '../services/PaddockService.js';
+import { PaddockService } from '../services/PaddockService';
 
 const main = async () => {
     try {
