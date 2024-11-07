@@ -133,9 +133,21 @@ export class PaddockService {
                                     edges {
                                         node {
                                             driverId
+                                            telemetryGameByGameId {
+                                                id
+                                                name
+                                            }
+                                            telemetrySessiontypeBySessionTypeId {
+                                                id
+                                                type
+                                            }
                                         }
                                     }
                                 }
+                            }
+                            telemetryTrackByTrackId {
+                                id
+                                name
                             }
                         }
                     }
@@ -150,6 +162,7 @@ export class PaddockService {
             };
             const driver = edge.node.telemetryCarByCarId.telemetrySessionsByCarId.edges[0]?.node.driverId;
 
+            const sessionNode = edge.node.telemetryCarByCarId.telemetrySessionsByCarId.edges[0]?.node;
             return {
                 id: edge.node.id,
                 length: edge.node.length,
@@ -159,9 +172,9 @@ export class PaddockService {
                     sessionId: edge.node.id,
                     car,
                     driver: { id: driver, name: driver },
-                    game: { id: 0, name: "" },  // These fields would need to be added to the GraphQL query
-                    sessionType: { id: 0, type: "" },
-                    track: { id: 0, name: "" }
+                    game: sessionNode?.telemetryGameByGameId || { id: 0, name: "Unknown" },
+                    sessionType: sessionNode?.telemetrySessiontypeBySessionTypeId || { id: 0, type: "Unknown" },
+                    track: edge.node.telemetryTrackByTrackId || { id: 0, name: "Unknown" }
                 }
             };
         });
