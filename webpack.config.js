@@ -49,12 +49,29 @@ export default {
         changeOrigin: true,
         secure: false,
         logLevel: 'debug',
+        onProxyReq: (proxyReq, req) => {
+          console.log(`[API Proxy] ${req.method} ${req.url}`);
+        },
+        onProxyRes: (proxyRes, req) => {
+          console.log(`[API Proxy] ${proxyRes.statusCode} ${req.method} ${req.url}`);
+        },
       },
       '/graphql': {
         target: 'http://telemetry.b4mad.racing:30050',
         changeOrigin: true,
         secure: false,
         logLevel: 'debug',
+        onProxyReq: (proxyReq, req) => {
+          console.log(`[GraphQL Proxy] ${req.method} ${req.url}`);
+          if (req.method === 'POST') {
+            const body = JSON.parse(req.body || '{}');
+            console.log('[GraphQL Query]', body.query);
+            console.log('[GraphQL Variables]', body.variables);
+          }
+        },
+        onProxyRes: (proxyRes, req) => {
+          console.log(`[GraphQL Proxy] ${proxyRes.statusCode} ${req.method} ${req.url}`);
+        },
       },
     },
   },

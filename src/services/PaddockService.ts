@@ -1,7 +1,6 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { logger } from '../utils/logger';
 import { TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession, PaddockCar, PaddockDriver } from './types';
-import { log } from 'console';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
