@@ -90,6 +90,58 @@ export class PaddockService {
         return data.telemetryCarById;
     }
 
+    async getDriver(driverId: number) {
+        logger.paddock('Fetching driver with id %d', driverId);
+        const { data } = await this.executeQuery(gql`
+            query GetDriver($driverId: BigInt!) {
+                telemetryDriverById(id: $driverId) {
+                    id
+                    name
+                }
+            }
+        `, { driverId });
+        return data.telemetryDriverById;
+    }
+
+    async getTrack(trackId: number) {
+        logger.paddock('Fetching track with id %d', trackId);
+        const { data } = await this.executeQuery(gql`
+            query GetTrack($trackId: BigInt!) {
+                telemetryTrackById(id: $trackId) {
+                    id
+                    name
+                }
+            }
+        `, { trackId });
+        return data.telemetryTrackById;
+    }
+
+    async getGame(gameId: number) {
+        logger.paddock('Fetching game with id %d', gameId);
+        const { data } = await this.executeQuery(gql`
+            query GetGame($gameId: BigInt!) {
+                telemetryGameById(id: $gameId) {
+                    id
+                    name
+                }
+            }
+        `, { gameId });
+        return data.telemetryGameById;
+    }
+
+    async getSessionType(sessionTypeId: number) {
+        logger.paddock('Fetching session type with id %d', sessionTypeId);
+        const { data } = await this.executeQuery(gql`
+            query GetSessionType($sessionTypeId: BigInt!) {
+                telemetrySessiontypeById(id: $sessionTypeId) {
+                    id
+                    type
+                }
+            }
+        `, { sessionTypeId });
+        return data.telemetrySessiontypeById;
+    }
+
     async getGames(): Promise<Array<{ name: string }>> {
         const { data } = await this.executeQuery(gql`
             query GetGames {
@@ -154,8 +206,14 @@ export class PaddockService {
                 carId = node.telemetryLapsBySessionId.nodes[0].carId;
             }
 
-            // Only fetch car details if we have a valid carId
-            const carDetails = carId ? await this.getCar(carId) : null;
+            // Fetch details for all entities
+            const [carDetails, driverDetails, trackDetails, gameDetails, sessionTypeDetails] = await Promise.all([
+                carId ? await this.getCar(carId) : null,
+                node.driverId ? await this.getDriver(node.driverId) : null,
+                node.trackId ? await this.getTrack(node.trackId) : null,
+                node.gameId ? await this.getGame(node.gameId) : null,
+                node.sessionTypeId ? await this.getSessionType(node.sessionTypeId) : null,
+            ]);
 
             return {
                 id: node.id,
@@ -166,19 +224,19 @@ export class PaddockService {
                 },
                 driver: {
                     id: Number(node.driverId),
-                    name: undefined
+                    name: driverDetails?.name
                 },
                 game: {
                     id: Number(node.gameId),
-                    name: undefined
+                    name: gameDetails?.name
                 },
                 sessionType: {
                     id: Number(node.sessionTypeId),
-                    type: undefined
+                    type: sessionTypeDetails?.type
                 },
                 track: {
                     id: Number(node.trackId),
-                    name: undefined
+                    name: trackDetails?.name
                 },
                 laps: node.telemetryLapsBySessionId.nodes.map((lap: any) => ({
                     id: Number(lap.id),
