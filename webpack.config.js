@@ -2,6 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { fileURLToPath } from 'url';
+import bodyParser from 'body-parser';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,6 +44,14 @@ export default {
     historyApiFallback: true,
     hot: true,
     open: true,
+    setupMiddlewares: (middlewares, devServer) => {
+      if (!devServer) {
+        throw new Error('webpack-dev-server is not defined');
+      }
+
+      devServer.app.use(bodyParser.json());
+      return middlewares;
+    },
     proxy: {
       '/api': {
         target: 'https://b4mad.racing',
@@ -63,10 +72,15 @@ export default {
         logLevel: 'debug',
         onProxyReq: (proxyReq, req) => {
           console.log(`[GraphQL Proxy] ${req.method} ${req.url}`);
-          if (req.method === 'POST') {
-            const body = JSON.parse(req.body || '{}');
-            console.log('[GraphQL Query]', body.query);
-            console.log('[GraphQL Variables]', body.variables);
+          if (req.method === 'POST' && req.body) {
+            console.log('[GraphQL Query]', req.body.query);
+            console.log('[GraphQL Variables]', req.body.variables);
+
+            // Restream body data
+            const bodyData = JSON.stringify(req.body);
+            proxyReq.setHeader('Content-Type', 'application/json');
+            proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+            proxyReq.write(bodyData);
           }
         },
         onProxyRes: (proxyRes, req) => {
