@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { logger } from '../utils/logger';
-import { TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, PaddockGame, PaddockSessionType } from './types';
+import { TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, PaddockGame, PaddockSessionType, PaginatedResponse } from './types';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
@@ -184,14 +184,20 @@ export class PaddockService {
         return data.allTelemetryGames.nodes;
     }
 
-    async getSessions(limit: number = 10, driverId?: number | null, carId?: number | null, trackId?: number | null): Promise<Array<PaddockSession>> {
-        logger.paddock('Fetching sessions with limit %d, driverId %s, carId %s, trackId %s', limit, driverId, carId, trackId);
+    async getSessions(
+        first: number = 20,
+        after?: string,
+        filters?: { driverId?: number | null, carId?: number | null, trackId?: number | null }
+    ): Promise<PaginatedResponse<PaddockSession>> {
+        logger.paddock('Fetching sessions with first %d, after %s, filters %O', first, after, filters);
         const { data } = await this.executeQuery(gql`
-            query GetSessions($limit: Int!, $driverId: BigInt, $carId: BigInt, $trackId: BigInt) {
+            query GetSessions($first: Int!, $after: Cursor, $driverId: BigInt, $carId: BigInt, $trackId: BigInt) {
                 allTelemetrySessions(
-                    first: $limit
+                    first: $first
+                    after: $after
                     condition: { driverId: $driverId, carId: $carId, trackId: $trackId }
                 ) {
+                    totalCount
                     edges {
                         node {
                             id
@@ -231,9 +237,11 @@ export class PaddockService {
                     }
                 }
             }
-        `, { limit, driverId, carId, trackId });
+        `, { first, after, driverId: filters?.driverId, carId: filters?.carId, trackId: filters?.trackId });
 
-        const sessions = data.allTelemetrySessions.edges.map((edge: any): PaddockSession => {
+        const { edges, totalCount } = data.allTelemetrySessions;
+        const hasNextPage = edges.length === first;
+        const sessions = edges.map((edge: any): PaddockSession => {
             const node = edge.node;
             return {
                 id: node.id,
@@ -269,7 +277,16 @@ export class PaddockService {
                 }))
             };
         });
-        return sessions;
+        logger.paddock('Fetched %d sessions', sessions.length);
+        logger.paddock('Total session count: %d', totalCount);
+        logger.paddock('Has next page: %s', hasNextPage);
+        logger.paddock('End cursor: %s', hasNextPage ? edges[edges.length - 1]?.cursor : undefined);
+        return {
+            items: sessions,
+            totalCount,
+            hasNextPage,
+            endCursor: hasNextPage ? edges[edges.length - 1]?.cursor : undefined
+        };
     }
 
     async getLandmarks(id: number): Promise<TrackLandmarks> {

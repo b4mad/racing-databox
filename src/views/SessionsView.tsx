@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Container, Box, Stack, CircularProgress } from '@mui/material'
+import { Container, Box, Stack, CircularProgress, Button } from '@mui/material'
 import { NumberParam, useQueryParam } from 'use-query-params'
 import { SessionListItem } from '../components/SessionListItem'
 import { PaddockService } from '../services/PaddockService'
@@ -9,7 +9,10 @@ import { SessionsViewNav } from '../components/SessionsViewNav'
 export function SessionsView() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [sessions, setSessions] = useState<PaddockSession[]>([])
+  const [sessions, setSessions] = useState<PaddockSession[]>([]);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [endCursor, setEndCursor] = useState<string>();
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [cars, setCars] = useState<PaddockCar[]>([])
   const [drivers, setDrivers] = useState<PaddockDriver[]>([])
   const [tracks, setTracks] = useState<PaddockTrack[]>([])
@@ -23,18 +26,30 @@ export function SessionsView() {
 
       if (isInitialLoad) {
         const [sessionsData, carsData, driversData, tracksData] = await Promise.all([
-          paddockService.getSessions(10, selectedDriver ?? undefined, selectedCar ?? undefined, selectedTrack ?? undefined),
+          paddockService.getSessions(20, undefined, {
+            driverId: selectedDriver ?? undefined,
+            carId: selectedCar ?? undefined,
+            trackId: selectedTrack ?? undefined
+          }),
           paddockService.getAllCars(10),
           paddockService.getAllDrivers(10),
           paddockService.getAllTracks(10)
         ])
-        setSessions(sessionsData)
+        setSessions(sessionsData.items);
+        setHasNextPage(sessionsData.hasNextPage);
+        setEndCursor(sessionsData.endCursor);
         setCars(carsData)
         setDrivers(driversData)
         setTracks(tracksData)
       } else {
-        const sessionsData = await paddockService.getSessions(10, selectedDriver, selectedCar, selectedTrack)
-        setSessions(sessionsData)
+        const sessionsData = await paddockService.getSessions(20, undefined, {
+          driverId: selectedDriver ?? undefined,
+          carId: selectedCar ?? undefined,
+          trackId: selectedTrack ?? undefined
+        });
+        setSessions(sessionsData.items);
+        setHasNextPage(sessionsData.hasNextPage);
+        setEndCursor(sessionsData.endCursor);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load data')
@@ -93,7 +108,7 @@ export function SessionsView() {
         selectedTrack={selectedTrack}
         onTrackChange={setSelectedTrack}
       />
-      <Stack sx={{ height: "100vh", py: 2 }}>
+      <Stack sx={{ py: 2 }}>
         {sessions
           .filter(session =>
             (!selectedCar || session.car.id === selectedCar) &&
@@ -103,6 +118,32 @@ export function SessionsView() {
           .map(session => (
             <SessionListItem key={session.sessionId} session={session} />
           ))}
+        {hasNextPage && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={async () => {
+                setIsLoadingMore(true);
+                try {
+                  const paddockService = new PaddockService();
+                  const moreData = await paddockService.getSessions(20, endCursor, {
+                    driverId: selectedDriver ?? undefined,
+                    carId: selectedCar ?? undefined,
+                    trackId: selectedTrack ?? undefined
+                  });
+                  setSessions(prev => [...prev, ...moreData.items]);
+                  setHasNextPage(moreData.hasNextPage);
+                  setEndCursor(moreData.endCursor);
+                } finally {
+                  setIsLoadingMore(false);
+                }
+              }}
+              disabled={isLoadingMore}
+            >
+              {isLoadingMore ? <CircularProgress size={24} /> : 'Load More'}
+            </Button>
+          </Box>
+        )}
       </Stack>
     </Container>
   );

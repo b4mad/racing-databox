@@ -43,6 +43,13 @@ export interface SessionInformation {
 }
 
 
+export interface PaginatedResponse<T> {
+    items: T[];
+    totalCount: number;
+    hasNextPage: boolean;
+    endCursor?: string;
+}
+
 export interface TelemetryService {
     getLapData(lapNumber: number): Promise<ProcessedTelemetryData>;
     getSessionData(sessionId: string): Promise<SessionData>;
