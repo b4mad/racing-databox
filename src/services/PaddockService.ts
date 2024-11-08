@@ -219,7 +219,7 @@ export class PaddockService {
             }
         `, { limit, driverId, carId, trackId });
 
-        const sessions = await Promise.all(data.allTelemetrySessions.edges.map(async (edge: any): Promise<PaddockSession> => {
+        const sessions = data.allTelemetrySessions.edges.map((edge: any): PaddockSession => {
             const node = edge.node;
             return {
                 id: node.id,
@@ -254,7 +254,7 @@ export class PaddockService {
                     end: lap.end
                 }))
             };
-        }));
+        });
         return sessions;
     }
 

@@ -7,16 +7,20 @@
       "name": "Dallara P217 LMP2"
     },
     "driver": {
-      "id": 1
+      "id": 1,
+      "name": "Jim"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 2
+      "id": 2,
+      "type": "Race"
     },
     "track": {
-      "id": 37
+      "id": 37,
+      "name": "roadamerica full"
     },
     "laps": [
       {
@@ -110,16 +114,20 @@
       "name": "Ray Formula 1600"
     },
     "driver": {
-      "id": 15
+      "id": 15,
+      "name": "SShukes"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 4
+      "id": 4,
+      "type": "Qualify"
     },
     "track": {
-      "id": 80
+      "id": 80,
+      "name": "charlotte 2018 legendsrclong"
     },
     "laps": [
       {
@@ -168,16 +176,20 @@
       "name": "Toyota GR86"
     },
     "driver": {
-      "id": 1
+      "id": 1,
+      "name": "Jim"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 2
+      "id": 2,
+      "type": "Race"
     },
     "track": {
-      "id": 81
+      "id": 81,
+      "name": "limerock 2019 chicanewestb"
     },
     "laps": [
       {
@@ -217,16 +229,20 @@
       "name": "Porsche 911 GT3 R"
     },
     "driver": {
-      "id": 1
+      "id": 1,
+      "name": "Jim"
     },
     "game": {
-      "id": 5
+      "id": 5,
+      "name": "Automobilista 2"
     },
     "sessionType": {
-      "id": 1
+      "id": 1,
+      "type": "Practice"
     },
     "track": {
-      "id": 82
+      "id": 82,
+      "name": "Silverstone:Silverstone_GP"
     },
     "laps": [
       {
@@ -253,19 +269,22 @@
     "id": "682",
     "sessionId": "1680321317",
     "car": {
-      "id": 0
+      "id": null
     },
     "driver": {
-      "id": 1
+      "id": 1,
+      "name": "Jim"
     },
     "game": {
-      "id": 5
+      "id": 5,
+      "name": "Automobilista 2"
     },
     "sessionType": {
-      "id": 1
+      "id": 1,
+      "type": "Practice"
     },
     "track": {
-      "id": 0
+      "id": null
     },
     "laps": []
   },
@@ -277,16 +296,20 @@
       "name": "Formula Classic Gen2 Model1"
     },
     "driver": {
-      "id": 1
+      "id": 1,
+      "name": "Jim"
     },
     "game": {
-      "id": 5
+      "id": 5,
+      "name": "Automobilista 2"
     },
     "sessionType": {
-      "id": 5
+      "id": 5,
+      "type": "HotLap"
     },
     "track": {
-      "id": 84
+      "id": 84,
+      "name": "Adelaide:Adelaide_Historic"
     },
     "laps": [
       {
@@ -322,19 +345,22 @@
     "id": "684",
     "sessionId": "1680323587",
     "car": {
-      "id": 0
+      "id": null
     },
     "driver": {
-      "id": 1
+      "id": 1,
+      "name": "Jim"
     },
     "game": {
-      "id": 5
+      "id": 5,
+      "name": "Automobilista 2"
     },
     "sessionType": {
-      "id": 4
+      "id": 4,
+      "type": "Qualify"
     },
     "track": {
-      "id": 0
+      "id": null
     },
     "laps": []
   },
@@ -342,19 +368,22 @@
     "id": "685",
     "sessionId": "1680324100",
     "car": {
-      "id": 0
+      "id": null
     },
     "driver": {
-      "id": 1
+      "id": 1,
+      "name": "Jim"
     },
     "game": {
-      "id": 5
+      "id": 5,
+      "name": "Automobilista 2"
     },
     "sessionType": {
-      "id": 4
+      "id": 4,
+      "type": "Qualify"
     },
     "track": {
-      "id": 0
+      "id": null
     },
     "laps": []
   },
@@ -366,16 +395,20 @@
       "name": "Porsche 911 GT3.R"
     },
     "driver": {
-      "id": 1
+      "id": 1,
+      "name": "Jim"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 1
+      "id": 1,
+      "type": "Practice"
     },
     "track": {
-      "id": 37
+      "id": 37,
+      "name": "roadamerica full"
     },
     "laps": [
       {
@@ -397,16 +430,20 @@
       "name": "Porsche 911 GT3 R"
     },
     "driver": {
-      "id": 1
+      "id": 1,
+      "name": "Jim"
     },
     "game": {
-      "id": 5
+      "id": 5,
+      "name": "Automobilista 2"
     },
     "sessionType": {
-      "id": 4
+      "id": 4,
+      "type": "Qualify"
     },
     "track": {
-      "id": 82
+      "id": 82,
+      "name": "Silverstone:Silverstone_GP"
     },
     "laps": [
       {

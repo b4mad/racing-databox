@@ -3,19 +3,22 @@
     "id": "862",
     "sessionId": "1669233999",
     "car": {
-      "id": 0
+      "id": null
     },
     "driver": {
-      "id": 10
+      "id": 10,
+      "name": "durandom"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 2
+      "id": 2,
+      "type": "Race"
     },
     "track": {
-      "id": 0
+      "id": null
     },
     "laps": []
   },
@@ -27,16 +30,20 @@
       "name": "Ferrari 488 GT3 Evo 2020"
     },
     "driver": {
-      "id": 10
+      "id": 10,
+      "name": "durandom"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 4
+      "id": 4,
+      "type": "Qualify"
     },
     "track": {
-      "id": 57
+      "id": 57,
+      "name": "lagunaseca"
     },
     "laps": [
       {
@@ -67,16 +74,20 @@
       "name": "Ferrari 488 GT3 Evo 2020"
     },
     "driver": {
-      "id": 10
+      "id": 10,
+      "name": "durandom"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 2
+      "id": 2,
+      "type": "Race"
     },
     "track": {
-      "id": 57
+      "id": 57,
+      "name": "lagunaseca"
     },
     "laps": [
       {
@@ -161,16 +172,20 @@
       "name": "Ferrari 488 GT3 Evo 2020"
     },
     "driver": {
-      "id": 10
+      "id": 10,
+      "name": "durandom"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 2
+      "id": 2,
+      "type": "Race"
     },
     "track": {
-      "id": 93
+      "id": 93,
+      "name": "magnycours gp"
     },
     "laps": [
       {
@@ -255,16 +270,20 @@
       "name": "Porsche 911 GT3.R"
     },
     "driver": {
-      "id": 10
+      "id": 10,
+      "name": "durandom"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 4
+      "id": 4,
+      "type": "Qualify"
     },
     "track": {
-      "id": 108
+      "id": 108,
+      "name": "donington gp"
     },
     "laps": [
       {
@@ -286,16 +305,20 @@
       "name": "Porsche 911 GT3.R"
     },
     "driver": {
-      "id": 10
+      "id": 10,
+      "name": "durandom"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 2
+      "id": 2,
+      "type": "Race"
     },
     "track": {
-      "id": 108
+      "id": 108,
+      "name": "donington gp"
     },
     "laps": [
       {
@@ -380,16 +403,20 @@
       "name": "Ferrari 488 GT3 Evo 2020"
     },
     "driver": {
-      "id": 10
+      "id": 10,
+      "name": "durandom"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 4
+      "id": 4,
+      "type": "Qualify"
     },
     "track": {
-      "id": 93
+      "id": 93,
+      "name": "magnycours gp"
     },
     "laps": [
       {
@@ -420,16 +447,20 @@
       "name": "Ferrari 488 GT3 Evo 2020"
     },
     "driver": {
-      "id": 10
+      "id": 10,
+      "name": "durandom"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 2
+      "id": 2,
+      "type": "Race"
     },
     "track": {
-      "id": 93
+      "id": 93,
+      "name": "magnycours gp"
     },
     "laps": [
       {
@@ -514,16 +545,20 @@
       "name": "Ferrari 488 GT3 Evo 2020"
     },
     "driver": {
-      "id": 10
+      "id": 10,
+      "name": "durandom"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 4
+      "id": 4,
+      "type": "Qualify"
     },
     "track": {
-      "id": 93
+      "id": 93,
+      "name": "magnycours gp"
     },
     "laps": [
       {
@@ -545,16 +580,20 @@
       "name": "Ferrari 488 GT3 Evo 2020"
     },
     "driver": {
-      "id": 10
+      "id": 10,
+      "name": "durandom"
     },
     "game": {
-      "id": 1
+      "id": 1,
+      "name": "iRacing"
     },
     "sessionType": {
-      "id": 2
+      "id": 2,
+      "type": "Race"
     },
     "track": {
-      "id": 93
+      "id": 93,
+      "name": "magnycours gp"
     },
     "laps": [
       {
