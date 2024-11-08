@@ -33,8 +33,8 @@ export function SessionListItem({ session }: SessionListItemProps) {
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
-          <Typography variant="h6">{session.car.name}</Typography>
-          <Typography>{session.track.name}</Typography>
+          <Typography variant="h6">{session.car.name || `Car #${session.car.id}`}</Typography>
+          <Typography>{session.track.name || `Track #${session.track.id}`}</Typography>
         </Box>
 
         <Box sx={{ display: 'flex', gap: 4, alignItems: 'center' }}>

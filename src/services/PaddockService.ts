@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { logger } from '../utils/logger';
 import { TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession } from './types';
+import { Car, Driver, Game, SessionType, Track } from '../models/Paddock';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
@@ -105,21 +106,11 @@ export class PaddockService {
             const node = edge.node;
             return {
                 sessionId: node.sessionId,
-                car: {
-                    id: node.carId
-                },
-                driver: {
-                    id: node.driverId,
-                },
-                game: {
-                    id: node.gameId,
-                },
-                sessionType: {
-                    id: node.sessionTypeId,
-                },
-                track: {
-                    id: node.trackId,
-                },
+                car: new Car(node.carId),
+                driver: new Driver(node.driverId),
+                game: new Game(node.gameId),
+                sessionType: new SessionType(node.sessionTypeId),
+                track: new Track(node.trackId),
                 laps: node.telemetryLapsBySessionId.nodes.map((lap: any) => ({
                     id: lap.id,
                     number: lap.number,
@@ -210,10 +201,10 @@ export class PaddockService {
         `, { trackId, carId, limit });
 
         return data.allTelemetryLaps.edges.map((edge: any) => {
-            const car = {
-                id: edge.node.telemetryCarByCarId.id,
-                name: edge.node.telemetryCarByCarId.name
-            };
+            const car = new Car(
+                edge.node.telemetryCarByCarId.id,
+                edge.node.telemetryCarByCarId.name
+            );
             const sessionNode = edge.node.telemetrySessionBySessionId;
             return {
                 id: edge.node.id,
@@ -284,26 +275,26 @@ export class PaddockService {
             // First create the session without laps
             const sessionBase = {
                 sessionId: session.sessionId,
-                car: {
-                    id: session.telemetryCarByCarId?.id || 0,
-                    name: session.telemetryCarByCarId?.name || 'Unknown'
-                },
-                driver: {
-                    id: session.telemetryDriverByDriverId?.id || 0,
-                    name: session.telemetryDriverByDriverId?.name || 'Unknown'
-                },
-                game: {
-                    id: session.telemetryGameByGameId?.id || 0,
-                    name: session.telemetryGameByGameId?.name || 'Unknown'
-                },
-                sessionType: {
-                    id: session.telemetrySessiontypeBySessionTypeId?.id || 0,
-                    type: session.telemetrySessiontypeBySessionTypeId?.type || 'Unknown'
-                },
-                track: {
-                    id: session.telemetryTrackByTrackId?.id || 0,
-                    name: session.telemetryTrackByTrackId?.name || 'Unknown'
-                },
+                car: new Car(
+                    session.telemetryCarByCarId?.id || 0,
+                    session.telemetryCarByCarId?.name || 'Unknown'
+                ),
+                driver: new Driver(
+                    session.telemetryDriverByDriverId?.id || 0,
+                    session.telemetryDriverByDriverId?.name
+                ),
+                game: new Game(
+                    session.telemetryGameByGameId?.id || 0,
+                    session.telemetryGameByGameId?.name
+                ),
+                sessionType: new SessionType(
+                    session.telemetrySessiontypeBySessionTypeId?.id || 0,
+                    session.telemetrySessiontypeBySessionTypeId?.type
+                ),
+                track: new Track(
+                    session.telemetryTrackByTrackId?.id || 0,
+                    session.telemetryTrackByTrackId?.name
+                ),
                 laps: []
             };
 
