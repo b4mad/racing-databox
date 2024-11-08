@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { logger } from '../utils/logger';
-import { TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession } from './types';
+import { TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession, PaddockCar, PaddockDriver } from './types';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
@@ -48,6 +48,34 @@ export class PaddockService {
             });
             throw error;
         }
+    }
+
+    async getAllDrivers(limit: number = 10): Promise<PaddockDriver[]> {
+        const { data } = await this.executeQuery(gql`
+            query GetAllDrivers($limit: Int!) {
+                allTelemetryDrivers(first: $limit) {
+                    nodes {
+                        id
+                        name
+                    }
+                }
+            }
+        `, { limit });
+        return data.allTelemetryDrivers.nodes;
+    }
+
+    async getAllCars(limit: number = 10): Promise<PaddockCar[]> {
+        const { data } = await this.executeQuery(gql`
+            query GetAllCars($limit: Int!) {
+                allTelemetryCars(first: $limit) {
+                    nodes {
+                        id
+                        name
+                    }
+                }
+            }
+        `, { limit });
+        return data.allTelemetryCars.nodes;
     }
 
     async getCar(carId: number) {
