@@ -18,10 +18,10 @@ export function SessionsView() {
   const fetchData = async (isInitialLoad = false) => {
     try {
       const paddockService = new PaddockService()
-      
+
       if (isInitialLoad) {
         const [sessionsData, carsData, driversData] = await Promise.all([
-          paddockService.getSessions(10, selectedDriver ?? undefined),
+          paddockService.getSessions(10, selectedDriver ?? undefined, selectedCar ?? undefined),
           paddockService.getAllCars(10),
           paddockService.getAllDrivers(10)
         ])
@@ -29,7 +29,7 @@ export function SessionsView() {
         setCars(carsData)
         setDrivers(driversData)
       } else {
-        const sessionsData = await paddockService.getSessions(10, selectedDriver)
+        const sessionsData = await paddockService.getSessions(10, selectedDriver, selectedCar)
         setSessions(sessionsData)
       }
     } catch (err) {
@@ -47,12 +47,13 @@ export function SessionsView() {
     fetchData(true)
   }, [])
 
-  // Refresh sessions when selected driver changes
+  // Refresh sessions when selected driver or car changes
   useEffect(() => {
-    if (selectedDriver !== undefined && selectedDriver !== null) {
+    if ((selectedDriver !== undefined && selectedDriver !== null) ||
+        (selectedCar !== undefined && selectedCar !== null)) {
       fetchData(false)
     }
-  }, [selectedDriver])
+  }, [selectedDriver, selectedCar])
 
   if (loading) {
     return (

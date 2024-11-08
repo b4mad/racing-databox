@@ -49,11 +49,11 @@ export interface TelemetryService {
 }
 
 export interface PaddockLap {
+    id: number;
     number: number;
     time: number;
     valid: boolean;
     length?: number;
-    id?: string;
     session?: PaddockSession;
 }
 
@@ -95,7 +95,7 @@ export interface PaddockSession {
 
 
 export interface PaddockLandmark {
-    id: string;
+    id: number;
     name: string;
     start: number;
     end: number | null;

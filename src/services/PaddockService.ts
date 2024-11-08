@@ -103,13 +103,13 @@ export class PaddockService {
         return data.allTelemetryGames.nodes;
     }
 
-    async getSessions(limit: number = 10, driverId?: number | null): Promise<Array<PaddockSession>> {
-        logger.paddock('Fetching sessions with limit %d and driverId %s', limit, driverId);
+    async getSessions(limit: number = 10, driverId?: number | null, carId?: number | null, trackId?: number | null): Promise<Array<PaddockSession>> {
+        logger.paddock('Fetching sessions with limit %d, driverId %s, carId %s, trackId %s', limit, driverId, carId, trackId);
         const { data } = await this.executeQuery(gql`
-            query GetSessions($limit: Int!, $driverId: BigInt) {
+            query GetSessions($limit: Int!, $driverId: BigInt, $carId: BigInt, $trackId: BigInt) {
                 allTelemetrySessions(
                     first: $limit
-                    condition: { driverId: $driverId }
+                    condition: { driverId: $driverId, carId: $carId, trackId: $trackId }
                 ) {
                     edges {
                         node {
@@ -143,7 +143,7 @@ export class PaddockService {
                     }
                 }
             }
-        `, { limit, driverId });
+        `, { limit, driverId, carId, trackId });
 
         const sessions = await Promise.all(data.allTelemetrySessions.edges.map(async (edge: any): Promise<PaddockSession> => {
             const node = edge.node;
@@ -161,7 +161,7 @@ export class PaddockService {
                 id: node.id,
                 sessionId: node.sessionId,
                 car: {
-                    id: carId,
+                    id: Number(carId),
                     name: carDetails?.name
                 },
                 driver: {
@@ -169,19 +169,19 @@ export class PaddockService {
                     name: undefined
                 },
                 game: {
-                    id: node.gameId,
+                    id: Number(node.gameId),
                     name: undefined
                 },
                 sessionType: {
-                    id: node.sessionTypeId,
+                    id: Number(node.sessionTypeId),
                     type: undefined
                 },
                 track: {
-                    id: node.trackId,
+                    id: Number(node.trackId),
                     name: undefined
                 },
                 laps: node.telemetryLapsBySessionId.nodes.map((lap: any) => ({
-                    id: lap.id,
+                    id: Number(lap.id),
                     number: lap.number,
                     time: lap.time,
                     valid: lap.valid,

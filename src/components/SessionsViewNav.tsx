@@ -22,18 +22,18 @@ export function SessionsViewNav({
   return (
     <Box sx={{ display: 'flex', gap: 2, py: 2 }}>
       <EntitySelect
-        entities={cars}
-        selectedId={selectedCar}
-        onChange={onCarChange}
-        label="Car"
-        getDisplayName={(car) => car.name || `Car #${car.id}`}
-      />
-      <EntitySelect
         entities={drivers}
         selectedId={selectedDriver}
         onChange={onDriverChange}
         label="Driver"
         getDisplayName={(driver) => driver.name || `Driver #${driver.id}`}
+      />
+      <EntitySelect
+        entities={cars}
+        selectedId={selectedCar}
+        onChange={onCarChange}
+        label="Car"
+        getDisplayName={(car) => car.name || `Car #${car.id}`}
       />
     </Box>
   );
