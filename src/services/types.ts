@@ -83,9 +83,8 @@ export interface PaddockTrack {
 }
 
 export interface PaddockSession {
+    id: number;
     sessionId: string;
-    // start: number;
-    // end: number;
     car: PaddockCar;
     driver: PaddockDriver;
     game: PaddockGame;

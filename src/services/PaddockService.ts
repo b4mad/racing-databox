@@ -157,6 +157,7 @@ export class PaddockService {
             const carDetails = carId ? await this.getCar(carId) : null;
 
             return {
+                id: node.id,
                 sessionId: node.sessionId,
                 car: {
                     id: carId,
@@ -298,6 +299,7 @@ export class PaddockService {
                     condition: { sessionId: $sessionId }
                 ) {
                     nodes {
+                        id
                         sessionId
                         telemetryLapsBySessionId {
                             nodes {
@@ -343,6 +345,7 @@ export class PaddockService {
             // First create the session without laps
             const sessionBase = {
                 sessionId: session.sessionId,
+                id: session.id,
                 car: {
                     id: session.telemetryCarByCarId?.id || 0,
                     name: session.telemetryCarByCarId?.name || 'Unknown'
