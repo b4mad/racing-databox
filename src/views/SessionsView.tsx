@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Container, Box, Stack, CircularProgress, Button } from '@mui/material'
+import { Container, Box, Stack, CircularProgress } from '@mui/material'
+import InfiniteScroll from 'react-infinite-scroll-component'
 import { NumberParam, useQueryParam } from 'use-query-params'
 import { SessionListItem } from '../components/SessionListItem'
 import { PaddockService } from '../services/PaddockService'
@@ -108,43 +109,48 @@ export function SessionsView() {
         selectedTrack={selectedTrack}
         onTrackChange={setSelectedTrack}
       />
-      <Stack sx={{ py: 2 }}>
-        {sessions
-          .filter(session =>
-            (!selectedCar || session.car.id === selectedCar) &&
-            (!selectedDriver || session.driver.id === selectedDriver) &&
-            (!selectedTrack || session.track.id === selectedTrack)
-          )
-          .map(session => (
-            <SessionListItem key={session.sessionId} session={session} />
-          ))}
-        {hasNextPage && (
+      <InfiniteScroll
+        dataLength={sessions.length}
+        next={async () => {
+          setIsLoadingMore(true);
+          try {
+            const paddockService = new PaddockService();
+            const moreData = await paddockService.getSessions(20, endCursor, {
+              driverId: selectedDriver ?? undefined,
+              carId: selectedCar ?? undefined,
+              trackId: selectedTrack ?? undefined
+            });
+            setSessions(prev => [...prev, ...moreData.items]);
+            setHasNextPage(moreData.hasNextPage);
+            setEndCursor(moreData.endCursor);
+          } finally {
+            setIsLoadingMore(false);
+          }
+        }}
+        hasMore={hasNextPage}
+        loader={
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
-            <Button
-              variant="outlined"
-              onClick={async () => {
-                setIsLoadingMore(true);
-                try {
-                  const paddockService = new PaddockService();
-                  const moreData = await paddockService.getSessions(20, endCursor, {
-                    driverId: selectedDriver ?? undefined,
-                    carId: selectedCar ?? undefined,
-                    trackId: selectedTrack ?? undefined
-                  });
-                  setSessions(prev => [...prev, ...moreData.items]);
-                  setHasNextPage(moreData.hasNextPage);
-                  setEndCursor(moreData.endCursor);
-                } finally {
-                  setIsLoadingMore(false);
-                }
-              }}
-              disabled={isLoadingMore}
-            >
-              {isLoadingMore ? <CircularProgress size={24} /> : 'Load More'}
-            </Button>
+            <CircularProgress />
           </Box>
-        )}
-      </Stack>
+        }
+        endMessage={
+          <Box sx={{ textAlign: 'center', py: 2, color: 'text.secondary' }}>
+            No more sessions to load
+          </Box>
+        }
+      >
+        <Stack sx={{ py: 2 }}>
+          {sessions
+            .filter(session =>
+              (!selectedCar || session.car.id === selectedCar) &&
+              (!selectedDriver || session.driver.id === selectedDriver) &&
+              (!selectedTrack || session.track.id === selectedTrack)
+            )
+            .map(session => (
+              <SessionListItem key={session.sessionId} session={session} />
+            ))}
+        </Stack>
+      </InfiniteScroll>
     </Container>
   );
 }
