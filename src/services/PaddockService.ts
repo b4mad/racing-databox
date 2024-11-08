@@ -63,20 +63,74 @@ export class PaddockService {
         return data.allTelemetryGames.nodes;
     }
 
-    async getSessions(groupBy?: string, limit: number = 10): Promise<Array<any>> {
+    async getSessions(limit: number = 10): Promise<Array<PaddockSession>> {
         const { data } = await this.executeQuery(gql`
             query GetSessions($limit: Int!) {
                 allTelemetrySessions(first: $limit) {
-                    nodes {
-                        sessionId
-                        start
-                        end
-                        ${groupBy ? 'count' : ''}
+                    edges {
+                        node {
+                            carId
+                            driverId
+                            end
+                            gameId
+                            id
+                            sessionId
+                            sessionTypeId
+                            start
+                            trackId
+                            telemetryLapsBySessionId {
+                                nodes {
+                                    id
+                                    length
+                                    number
+                                    start
+                                    carId
+                                    completed
+                                    created
+                                    end
+                                    fastLapId
+                                    modified
+                                    valid
+                                    trackId
+                                    time
+                                }
+                            }
+                        }
                     }
                 }
             }
         `, { limit });
-        return data.allTelemetrySessions.nodes;
+
+        return data.allTelemetrySessions.edges.map((edge: any): PaddockSession => {
+            const node = edge.node;
+            return {
+                sessionId: node.sessionId,
+                car: {
+                    id: node.carId
+                },
+                driver: {
+                    id: node.driverId,
+                },
+                game: {
+                    id: node.gameId,
+                },
+                sessionType: {
+                    id: node.sessionTypeId,
+                },
+                track: {
+                    id: node.trackId,
+                },
+                laps: node.telemetryLapsBySessionId.nodes.map((lap: any) => ({
+                    id: lap.id,
+                    number: lap.number,
+                    time: lap.time,
+                    valid: lap.valid,
+                    length: lap.length,
+                    start: lap.start,
+                    end: lap.end
+                }))
+            };
+        });
     }
 
     async getLandmarks(id: number): Promise<TrackLandmarks> {
