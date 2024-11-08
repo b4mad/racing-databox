@@ -106,3 +106,13 @@ export interface TrackLandmarks {
     turns: PaddockLandmark[];
     segments: PaddockLandmark[];
 }
+
+export interface PaddockTrack {
+    id: number;
+    name?: string;
+}
+
+export interface PaddockGame {
+    id: number;
+    name?: string;
+}

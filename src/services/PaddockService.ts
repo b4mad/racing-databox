@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { logger } from '../utils/logger';
-import { TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession, PaddockCar, PaddockDriver } from './types';
+import { TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, PaddockGame, PaddockSessionType } from './types';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
@@ -77,7 +77,7 @@ export class PaddockService {
         return data.allTelemetryCars.nodes;
     }
 
-    async getCar(carId: number) {
+    async getCar(carId: number): Promise<PaddockCar> {
         logger.paddock('Fetching car with id %d', carId);
         const { data } = await this.executeQuery(gql`
             query GetCar($carId: BigInt!) {
@@ -87,10 +87,13 @@ export class PaddockService {
                 }
             }
         `, { carId });
-        return data.telemetryCarById;
+        return {
+            id: Number(data.telemetryCarById.id),
+            name: data.telemetryCarById.name
+        };
     }
 
-    async getDriver(driverId: number) {
+    async getDriver(driverId: number): Promise<PaddockDriver> {
         logger.paddock('Fetching driver with id %d', driverId);
         const { data } = await this.executeQuery(gql`
             query GetDriver($driverId: BigInt!) {
@@ -100,10 +103,13 @@ export class PaddockService {
                 }
             }
         `, { driverId });
-        return data.telemetryDriverById;
+        return {
+            id: Number(data.telemetryDriverById.id),
+            name: data.telemetryDriverById.name
+        };
     }
 
-    async getTrack(trackId: number) {
+    async getTrack(trackId: number): Promise<PaddockTrack> {
         logger.paddock('Fetching track with id %d', trackId);
         const { data } = await this.executeQuery(gql`
             query GetTrack($trackId: BigInt!) {
@@ -113,10 +119,13 @@ export class PaddockService {
                 }
             }
         `, { trackId });
-        return data.telemetryTrackById;
+        return {
+            id: Number(data.telemetryTrackById.id),
+            name: data.telemetryTrackById.name
+        };
     }
 
-    async getGame(gameId: number) {
+    async getGame(gameId: number): Promise<PaddockGame> {
         logger.paddock('Fetching game with id %d', gameId);
         const { data } = await this.executeQuery(gql`
             query GetGame($gameId: BigInt!) {
@@ -126,10 +135,13 @@ export class PaddockService {
                 }
             }
         `, { gameId });
-        return data.telemetryGameById;
+        return {
+            id: Number(data.telemetryGameById.id),
+            name: data.telemetryGameById.name
+        };
     }
 
-    async getSessionType(sessionTypeId: number) {
+    async getSessionType(sessionTypeId: number): Promise<PaddockSessionType> {
         logger.paddock('Fetching session type with id %d', sessionTypeId);
         const { data } = await this.executeQuery(gql`
             query GetSessionType($sessionTypeId: BigInt!) {
@@ -139,7 +151,10 @@ export class PaddockService {
                 }
             }
         `, { sessionTypeId });
-        return data.telemetrySessiontypeById;
+        return {
+            id: Number(data.telemetrySessiontypeById.id),
+            type: data.telemetrySessiontypeById.type
+        };
     }
 
     async getGames(): Promise<Array<{ name: string }>> {
