@@ -163,7 +163,7 @@ export class PaddockService {
                     name: carDetails?.name
                 },
                 driver: {
-                    id: node.driverId,
+                    id: Number(node.driverId),
                     name: undefined
                 },
                 game: {
