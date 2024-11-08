@@ -1,10 +1,33 @@
 import { PaddockService } from '../services/PaddockService';
+import * as fs from 'fs';
+import * as path from 'path';
 
 describe('fetchSessions', () => {
     const paddockService = new PaddockService('http://telemetry.b4mad.racing:30050/graphql');
 
-    it('should fetch sessions for driver ID 10', async () => {
+    // Create fixtures directory if it doesn't exist
+    const fixturesDir = path.join(__dirname, 'fixtures');
+    if (!fs.existsSync(fixturesDir)){
+        fs.mkdirSync(fixturesDir, { recursive: true });
+    }
+
+    // Store test responses
+    let currentResponse: any = null;
+
+    // Save responses after each test
+    afterEach(async () => {
+        const testInfo = expect.getState().currentTestName;
+        if (testInfo && currentResponse) {
+            const testName = testInfo.replace(/\s+/g, '_');
+            const fixturePath = path.join(fixturesDir, `${testName}.json`);
+            fs.writeFileSync(fixturePath, JSON.stringify(currentResponse, null, 2));
+        }
+        currentResponse = null;
+    });
+
+    it('should fetch sessions for driver ID 10', async function() {
         const sessions = await paddockService.getSessions(10, 10);
+        currentResponse = sessions;
 
         // Verify we got some sessions back
         expect(sessions.length).toBeGreaterThan(0);
@@ -20,8 +43,9 @@ describe('fetchSessions', () => {
         });
     }, 10000); // Increase timeout to 10s for API call
 
-    it('should fetch sessions with default limit when no driver ID specified', async () => {
+    it('should fetch sessions with default limit when no driver ID specified', async function() {
         const sessions = await paddockService.getSessions(10);
+        currentResponse = sessions;
 
         expect(sessions.length).toBeLessThanOrEqual(10);
         expect(sessions.length).toBeGreaterThan(0);
@@ -34,8 +58,9 @@ describe('fetchSessions', () => {
         });
     }, 10000);
 
-    it('should include valid lap data in sessions', async () => {
+    it('should include valid lap data in sessions', async function() {
         const sessions = await paddockService.getSessions(5, 10);
+        currentResponse = sessions;
 
         sessions.forEach(session => {
             session.laps.forEach(lap => {
