@@ -63,6 +63,20 @@ export class PaddockService {
         return data.allTelemetryDrivers.nodes;
     }
 
+    async getAllTracks(limit: number = 10): Promise<PaddockTrack[]> {
+        const { data } = await this.executeQuery(gql`
+            query GetAllTracks($limit: Int!) {
+                allTelemetryTracks(first: $limit) {
+                    nodes {
+                        id
+                        name
+                    }
+                }
+            }
+        `, { limit });
+        return data.allTelemetryTracks.nodes;
+    }
+
     async getAllCars(limit: number = 10): Promise<PaddockCar[]> {
         const { data } = await this.executeQuery(gql`
             query GetAllCars($limit: Int!) {

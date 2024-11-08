@@ -3,7 +3,7 @@ import { Container, Box, Stack, CircularProgress } from '@mui/material'
 import { NumberParam, useQueryParam } from 'use-query-params'
 import { SessionListItem } from '../components/SessionListItem'
 import { PaddockService } from '../services/PaddockService'
-import { PaddockSession, PaddockCar, PaddockDriver } from '../services/types'
+import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack } from '../services/types'
 import { SessionsViewNav } from '../components/SessionsViewNav'
 
 export function SessionsView() {
@@ -12,24 +12,28 @@ export function SessionsView() {
   const [sessions, setSessions] = useState<PaddockSession[]>([])
   const [cars, setCars] = useState<PaddockCar[]>([])
   const [drivers, setDrivers] = useState<PaddockDriver[]>([])
+  const [tracks, setTracks] = useState<PaddockTrack[]>([])
   const [selectedCar, setSelectedCar] = useQueryParam('car', NumberParam)
   const [selectedDriver, setSelectedDriver] = useQueryParam('driver', NumberParam)
+  const [selectedTrack, setSelectedTrack] = useQueryParam('track', NumberParam)
 
   const fetchData = async (isInitialLoad = false) => {
     try {
       const paddockService = new PaddockService()
 
       if (isInitialLoad) {
-        const [sessionsData, carsData, driversData] = await Promise.all([
-          paddockService.getSessions(10, selectedDriver ?? undefined, selectedCar ?? undefined),
+        const [sessionsData, carsData, driversData, tracksData] = await Promise.all([
+          paddockService.getSessions(10, selectedDriver ?? undefined, selectedCar ?? undefined, selectedTrack ?? undefined),
           paddockService.getAllCars(10),
-          paddockService.getAllDrivers(10)
+          paddockService.getAllDrivers(10),
+          paddockService.getAllTracks(10)
         ])
         setSessions(sessionsData)
         setCars(carsData)
         setDrivers(driversData)
+        setTracks(tracksData)
       } else {
-        const sessionsData = await paddockService.getSessions(10, selectedDriver, selectedCar)
+        const sessionsData = await paddockService.getSessions(10, selectedDriver, selectedCar, selectedTrack)
         setSessions(sessionsData)
       }
     } catch (err) {
@@ -50,7 +54,8 @@ export function SessionsView() {
   // Refresh sessions when selected driver or car changes
   useEffect(() => {
     if ((selectedDriver !== undefined && selectedDriver !== null) ||
-        (selectedCar !== undefined && selectedCar !== null)) {
+        (selectedCar !== undefined && selectedCar !== null) ||
+        (selectedTrack !== undefined && selectedTrack !== null)) {
       fetchData(false)
     }
   }, [selectedDriver, selectedCar])
@@ -84,12 +89,16 @@ export function SessionsView() {
         drivers={drivers}
         selectedDriver={selectedDriver}
         onDriverChange={setSelectedDriver}
+        tracks={tracks}
+        selectedTrack={selectedTrack}
+        onTrackChange={setSelectedTrack}
       />
       <Stack sx={{ height: "100vh", py: 2 }}>
         {sessions
           .filter(session =>
             (!selectedCar || session.car.id === selectedCar) &&
-            (!selectedDriver || session.driver.id === selectedDriver)
+            (!selectedDriver || session.driver.id === selectedDriver) &&
+            (!selectedTrack || session.track.id === selectedTrack)
           )
           .map(session => (
             <SessionListItem key={session.sessionId} session={session} />

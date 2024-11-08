@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { PaddockCar, PaddockDriver } from '../services/types';
+import { PaddockCar, PaddockDriver, PaddockTrack } from '../services/types';
 import { EntitySelect } from './EntitySelect';
 
 interface SessionsViewNavProps {
@@ -9,6 +9,9 @@ interface SessionsViewNavProps {
   drivers: PaddockDriver[];
   selectedDriver?: number | undefined | null;
   onDriverChange: (driverId: number | undefined) => void;
+  tracks: PaddockTrack[];
+  selectedTrack?: number | undefined | null;
+  onTrackChange: (trackId: number | undefined) => void;
 }
 
 export function SessionsViewNav({
@@ -17,7 +20,10 @@ export function SessionsViewNav({
   onCarChange,
   drivers,
   selectedDriver,
-  onDriverChange
+  onDriverChange,
+  tracks,
+  selectedTrack,
+  onTrackChange
 }: SessionsViewNavProps) {
   return (
     <Box sx={{ display: 'flex', gap: 2, py: 2 }}>
@@ -34,6 +40,13 @@ export function SessionsViewNav({
         onChange={onCarChange}
         label="Car"
         getDisplayName={(car) => car.name || `Car #${car.id}`}
+      />
+      <EntitySelect
+        entities={tracks}
+        selectedId={selectedTrack}
+        onChange={onTrackChange}
+        label="Track"
+        getDisplayName={(track) => track.name || `Track #${track.id}`}
       />
     </Box>
   );
