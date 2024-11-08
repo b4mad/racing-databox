@@ -103,10 +103,13 @@ export class PaddockService {
         return data.allTelemetryGames.nodes;
     }
 
-    async getSessions(limit: number = 10): Promise<Array<PaddockSession>> {
+    async getSessions(limit: number = 10, driverId?: number): Promise<Array<PaddockSession>> {
         const { data } = await this.executeQuery(gql`
-            query GetSessions($limit: Int!) {
-                allTelemetrySessions(first: $limit) {
+            query GetSessions($limit: Int!, $driverId: BigInt) {
+                allTelemetrySessions(
+                    first: $limit
+                    condition: { driverId: $driverId }
+                ) {
                     edges {
                         node {
                             carId
@@ -139,7 +142,7 @@ export class PaddockService {
                     }
                 }
             }
-        `, { limit });
+        `, { limit, driverId });
 
         const sessions = await Promise.all(data.allTelemetrySessions.edges.map(async (edge: any): Promise<PaddockSession> => {
             const node = edge.node;
