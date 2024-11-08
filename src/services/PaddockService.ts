@@ -1,12 +1,12 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { logger } from '../utils/logger';
 import { TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession, PaddockCar, PaddockDriver } from './types';
+import { log } from 'console';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
 
     constructor(endpoint?: string) {
-        console.log('PaddockService constructor called');
         logger.paddock('PaddockService initializing...');
 
         const defaultEndpoint = process.env.NODE_ENV === 'development'
@@ -79,6 +79,7 @@ export class PaddockService {
     }
 
     async getCar(carId: number) {
+        logger.paddock('Fetching car with id %d', carId);
         const { data } = await this.executeQuery(gql`
             query GetCar($carId: BigInt!) {
                 telemetryCarById(id: $carId) {
@@ -103,7 +104,8 @@ export class PaddockService {
         return data.allTelemetryGames.nodes;
     }
 
-    async getSessions(limit: number = 10, driverId?: number): Promise<Array<PaddockSession>> {
+    async getSessions(limit: number = 10, driverId?: number | null): Promise<Array<PaddockSession>> {
+        logger.paddock('Fetching sessions with limit %d and driverId %s', limit, driverId);
         const { data } = await this.executeQuery(gql`
             query GetSessions($limit: Int!, $driverId: BigInt) {
                 allTelemetrySessions(

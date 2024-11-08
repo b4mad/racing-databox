@@ -15,19 +15,25 @@ export function SessionsView() {
   const [selectedCar, setSelectedCar] = useQueryParam('car', NumberParam)
   const [selectedDriver, setSelectedDriver] = useQueryParam('driver', NumberParam)
 
-  const fetchData = async () => {
+  const fetchData = async (isInitialLoad = false) => {
     try {
       const paddockService = new PaddockService()
-      const [sessionsData, carsData, driversData] = await Promise.all([
-        paddockService.getSessions(),
-        paddockService.getAllCars(10),
-        paddockService.getAllDrivers(10)
-      ])
-      setSessions(sessionsData)
-      setCars(carsData)
-      setDrivers(driversData)
+      
+      if (isInitialLoad) {
+        const [sessionsData, carsData, driversData] = await Promise.all([
+          paddockService.getSessions(10, selectedDriver ?? undefined),
+          paddockService.getAllCars(10),
+          paddockService.getAllDrivers(10)
+        ])
+        setSessions(sessionsData)
+        setCars(carsData)
+        setDrivers(driversData)
+      } else {
+        const sessionsData = await paddockService.getSessions(10, selectedDriver)
+        setSessions(sessionsData)
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load sessions')
+      setError(err instanceof Error ? err.message : 'Failed to load data')
       if (process.env.NODE_ENV === 'development') {
         throw err;
       }
@@ -38,23 +44,13 @@ export function SessionsView() {
 
   // Initial data load
   useEffect(() => {
-    fetchData()
+    fetchData(true)
   }, [])
 
   // Refresh sessions when selected driver changes
   useEffect(() => {
-    const refreshSessions = async () => {
-      try {
-        const paddockService = new PaddockService()
-        const sessionsData = await paddockService.getSessions(10, selectedDriver)
-        setSessions(sessionsData)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to refresh sessions')
-      }
-    }
-    
-    if (selectedDriver !== undefined) {
-      refreshSessions()
+    if (selectedDriver !== undefined && selectedDriver !== null) {
+      fetchData(false)
     }
   }, [selectedDriver])
 
