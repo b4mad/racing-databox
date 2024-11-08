@@ -7,13 +7,13 @@ interface Entity {
 
 interface EntitySelectProps<T extends Entity> {
   entities: T[];
-  selectedId?: number;
+  selectedId?: number | undefined | null;
   onChange: (id: number | undefined) => void;
   label: string;
   getDisplayName: (entity: T) => string;
 }
 
-export function EntitySelect<T extends Entity>({ 
+export function EntitySelect<T extends Entity>({
   entities,
   selectedId,
   onChange,

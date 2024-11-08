@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Container, Box, Stack, CircularProgress } from '@mui/material'
+import { NumberParam, useQueryParam } from 'use-query-params'
 import { SessionListItem } from '../components/SessionListItem'
 import { PaddockService } from '../services/PaddockService'
 import { PaddockSession, PaddockCar, PaddockDriver } from '../services/types'
@@ -11,8 +12,8 @@ export function SessionsView() {
   const [sessions, setSessions] = useState<PaddockSession[]>([])
   const [cars, setCars] = useState<PaddockCar[]>([])
   const [drivers, setDrivers] = useState<PaddockDriver[]>([])
-  const [selectedCar, setSelectedCar] = useState<number>()
-  const [selectedDriver, setSelectedDriver] = useState<number>()
+  const [selectedCar, setSelectedCar] = useQueryParam('car', NumberParam)
+  const [selectedDriver, setSelectedDriver] = useQueryParam('driver', NumberParam)
 
   useEffect(() => {
     const fetchData = async () => {

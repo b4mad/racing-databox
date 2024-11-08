@@ -4,20 +4,20 @@ import { EntitySelect } from './EntitySelect';
 
 interface SessionsViewNavProps {
   cars: PaddockCar[];
-  selectedCar?: number;
+  selectedCar?: number | undefined | null;
   onCarChange: (carId: number | undefined) => void;
   drivers: PaddockDriver[];
-  selectedDriver?: number;
+  selectedDriver?: number | undefined | null;
   onDriverChange: (driverId: number | undefined) => void;
 }
 
-export function SessionsViewNav({ 
-  cars, 
-  selectedCar, 
+export function SessionsViewNav({
+  cars,
+  selectedCar,
   onCarChange,
   drivers,
   selectedDriver,
-  onDriverChange 
+  onDriverChange
 }: SessionsViewNavProps) {
   return (
     <Box sx={{ display: 'flex', gap: 2, py: 2 }}>
