@@ -50,6 +50,18 @@ export class PaddockService {
         }
     }
 
+    async getCar(carId: number) {
+        const { data } = await this.executeQuery(gql`
+            query GetCar($carId: BigInt!) {
+                telemetryCarById(id: $carId) {
+                    id
+                    name
+                }
+            }
+        `, { carId });
+        return data.telemetryCarById;
+    }
+
     async getGames(): Promise<Array<{ name: string }>> {
         const { data } = await this.executeQuery(gql`
             query GetGames {
@@ -101,13 +113,23 @@ export class PaddockService {
             }
         `, { limit });
 
-        return data.allTelemetrySessions.edges.map((edge: any): PaddockSession => {
+        const sessions = await Promise.all(data.allTelemetrySessions.edges.map(async (edge: any): Promise<PaddockSession> => {
             const node = edge.node;
+            let carId = node.carId;
+
+            // If carId is undefined, try to get it from the first lap
+            if (!carId && node.telemetryLapsBySessionId.nodes.length > 0) {
+                carId = node.telemetryLapsBySessionId.nodes[0].carId;
+            }
+
+            // Only fetch car details if we have a valid carId
+            const carDetails = carId ? await this.getCar(carId) : null;
+
             return {
                 sessionId: node.sessionId,
                 car: {
-                    id: node.carId,
-                    name: undefined
+                    id: carId,
+                    name: carDetails?.name
                 },
                 driver: {
                     id: node.driverId,
@@ -135,7 +157,8 @@ export class PaddockService {
                     end: lap.end
                 }))
             };
-        });
+        }));
+        return sessions;
     }
 
     async getLandmarks(id: number): Promise<TrackLandmarks> {
