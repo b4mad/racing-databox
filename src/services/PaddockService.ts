@@ -180,30 +180,37 @@ export class PaddockService {
                 ) {
                     edges {
                         node {
-                            carId
-                            driverId
-                            end
-                            gameId
                             id
                             sessionId
-                            sessionTypeId
-                            start
-                            trackId
+                            telemetryCarByCarId {
+                                id
+                                name
+                            }
+                            telemetryDriverByDriverId {
+                                id
+                                name
+                            }
+                            telemetryGameByGameId {
+                                id
+                                name
+                            }
+                            telemetrySessiontypeBySessionTypeId {
+                                id
+                                type
+                            }
+                            telemetryTrackByTrackId {
+                                id
+                                name
+                            }
                             telemetryLapsBySessionId {
                                 nodes {
                                     id
                                     length
                                     number
-                                    start
-                                    carId
-                                    completed
-                                    created
-                                    end
-                                    fastLapId
-                                    modified
-                                    valid
-                                    trackId
                                     time
+                                    valid
+                                    start
+                                    end
                                 }
                             }
                         }
@@ -214,44 +221,28 @@ export class PaddockService {
 
         const sessions = await Promise.all(data.allTelemetrySessions.edges.map(async (edge: any): Promise<PaddockSession> => {
             const node = edge.node;
-            let carId = node.carId;
-
-            // If carId is undefined, try to get it from the first lap
-            if (!carId && node.telemetryLapsBySessionId.nodes.length > 0) {
-                carId = node.telemetryLapsBySessionId.nodes[0].carId;
-            }
-
-            // Fetch details for all entities
-            const [carDetails, driverDetails, trackDetails, gameDetails, sessionTypeDetails] = await Promise.all([
-                carId ? await this.getCar(carId) : null,
-                node.driverId ? await this.getDriver(node.driverId) : null,
-                node.trackId ? await this.getTrack(node.trackId) : null,
-                node.gameId ? await this.getGame(node.gameId) : null,
-                node.sessionTypeId ? await this.getSessionType(node.sessionTypeId) : null,
-            ]);
-
             return {
                 id: node.id,
                 sessionId: node.sessionId,
                 car: {
-                    id: Number(carId),
-                    name: carDetails?.name
+                    id: Number(node.telemetryCarByCarId?.id),
+                    name: node.telemetryCarByCarId?.name
                 },
                 driver: {
-                    id: Number(node.driverId),
-                    name: driverDetails?.name
+                    id: Number(node.telemetryDriverByDriverId?.id),
+                    name: node.telemetryDriverByDriverId?.name
                 },
                 game: {
-                    id: Number(node.gameId),
-                    name: gameDetails?.name
+                    id: Number(node.telemetryGameByGameId?.id),
+                    name: node.telemetryGameByGameId?.name
                 },
                 sessionType: {
-                    id: Number(node.sessionTypeId),
-                    type: sessionTypeDetails?.type
+                    id: Number(node.telemetrySessiontypeBySessionTypeId?.id),
+                    type: node.telemetrySessiontypeBySessionTypeId?.type
                 },
                 track: {
-                    id: Number(node.trackId),
-                    name: trackDetails?.name
+                    id: Number(node.telemetryTrackByTrackId?.id),
+                    name: node.telemetryTrackByTrackId?.name
                 },
                 laps: node.telemetryLapsBySessionId.nodes.map((lap: any) => ({
                     id: Number(lap.id),
