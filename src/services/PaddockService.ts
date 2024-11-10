@@ -187,16 +187,21 @@ export class PaddockService {
     async getSessions(
         first: number = 20,
         after?: string,
-        filters?: { driverId?: number | null, carId?: number | null, trackId?: number | null }
+        filters?: {
+            driverId?: number | null,
+            carId?: number | null,
+            trackId?: number | null,
+            sessionId?: string
+        }
     ): Promise<PaginatedResponse<PaddockSession>> {
         logger.paddock('Fetching sessions with first %d, after %s, filters %O', first, after, filters);
         const { data } = await this.executeQuery(gql`
-            query GetSessions($first: Int!, $after: Cursor, $driverId: BigInt, $carId: BigInt, $trackId: BigInt) {
+            query GetSessions($first: Int!, $after: Cursor, $driverId: BigInt, $carId: BigInt, $trackId: BigInt, $sessionId: String) {
                 allTelemetrySessions(
                     orderBy: END_DESC
                     first: $first
                     after: $after
-                    condition: { driverId: $driverId, carId: $carId, trackId: $trackId }
+                    condition: { driverId: $driverId, carId: $carId, trackId: $trackId, sessionId: $sessionId }
                 ) {
                     totalCount
                     pageInfo {
@@ -242,7 +247,7 @@ export class PaddockService {
                     }
                 }
             }
-        `, { first, after, driverId: filters?.driverId, carId: filters?.carId, trackId: filters?.trackId });
+        `, { first, after, driverId: filters?.driverId, carId: filters?.carId, trackId: filters?.trackId, sessionId: filters?.sessionId });
 
         if (!data.allTelemetrySessions) {
             return {
@@ -402,101 +407,5 @@ export class PaddockService {
         });
     }
 
-    async getSessionData(sessionId: string): Promise<PaddockSession[]> {
-        const { data } = await this.executeQuery(gql`
-            query GetSessionData($sessionId: String!) {
-                allTelemetrySessions(
-                    condition: { sessionId: $sessionId }
-                ) {
-                    nodes {
-                        id
-                        sessionId
-                        telemetryLapsBySessionId {
-                            nodes {
-                                id
-                                number
-                                time
-                                valid
-                                length
-                            }
-                        }
-                        telemetryCarByCarId {
-                            id
-                            name
-                        }
-                        telemetryDriverByDriverId {
-                            id
-                            name
-                        }
-                        telemetryGameByGameId {
-                            id
-                            name
-                        }
-                        telemetrySessiontypeBySessionTypeId {
-                            id
-                            type
-                        }
-                        telemetryTrackByTrackId {
-                            id
-                            name
-                        }
-                    }
-                }
-            }
-        `, { sessionId });
-
-        const sessions = data.allTelemetrySessions.nodes;
-
-        if (!sessions || sessions.length === 0) {
-            throw new Error(`Session ${sessionId} not found`);
-        }
-
-        return sessions.map((session: any): PaddockSession => {
-            // First create the session without laps
-            const sessionBase = {
-                sessionId: session.sessionId,
-                id: session.id,
-                car: {
-                    id: session.telemetryCarByCarId?.id || 0,
-                    name: session.telemetryCarByCarId?.name || 'Unknown'
-                },
-                driver: {
-                    id: session.telemetryDriverByDriverId?.id || 0,
-                    name: session.telemetryDriverByDriverId?.name
-                },
-                game: {
-                    id: session.telemetryGameByGameId?.id || 0,
-                    name: session.telemetryGameByGameId?.name
-                },
-                sessionType: {
-                    id: session.telemetrySessiontypeBySessionTypeId?.id || 0,
-                    type: session.telemetrySessiontypeBySessionTypeId?.type
-                },
-                track: {
-                    id: session.telemetryTrackByTrackId?.id || 0,
-                    name: session.telemetryTrackByTrackId?.name
-                },
-                laps: []
-            };
-
-            // Then create the laps array with reference to the session
-            const laps = session.telemetryLapsBySessionId.nodes.map((lap: any): PaddockLap => ({
-                id: lap.id,
-                number: lap.number,
-                time: lap.time,
-                valid: lap.valid,
-                length: lap.length,
-                session: sessionBase
-            }));
-
-            // Finally combine them
-            const paddockSession: PaddockSession = {
-                ...sessionBase,
-                laps
-            };
-
-            return paddockSession;
-        });
-    }
 
 }

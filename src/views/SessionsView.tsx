@@ -7,13 +7,13 @@ import { SessionsViewNav } from '../components/SessionsViewNav'
 import { useSession } from '../hooks/useSession'
 
 export function SessionsView() {
-  const { 
-    sessions, 
-    cars, 
-    drivers, 
-    tracks, 
-    loading, 
-    error, 
+  const {
+    sessions,
+    cars,
+    drivers,
+    tracks,
+    loading,
+    error,
     hasNextPage,
     fetchSessions,
     fetchMoreSessions,
