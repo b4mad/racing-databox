@@ -6,7 +6,7 @@ import { Container, Box, Stack, CircularProgress } from '@mui/material'
 import { useSession } from '../hooks/useSession'
 import { SessionControls } from '../components/SessionControls'
 import { TelemetryVisualization } from '../components/TelemetryVisualization'
-import { TelemetryPoint, SessionInformation } from '../services/types'
+import { SessionInformation, TelemetryCacheEntry } from '../services/types'
 import { ZoomState } from '../components/types'
 
 
@@ -21,7 +21,7 @@ export function SessionView() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [currentLap, setCurrentLap] = useQueryParam('lap', NumberParam);
-  const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
+  const [lapsData, setLapsData] = useState<{ [lapNumber: number]: TelemetryCacheEntry }>({})
   const [navigationOpen, setNavigationOpen] = useState(false)
   const [paddockOpen, setPaddockOpen] = useState(false)
   const [zoomStart, setZoomStart] = useQueryParam('zoomStart', NumberParam);
@@ -35,8 +35,9 @@ export function SessionView() {
   }
 
   const setZoomRange = useCallback((startMeters: number, endMeters: number) => {
-    if (currentLapData.length === 0) return;
-    const maxDistance = currentLapData[currentLapData.length - 1].distance;
+    const currentLapEntry = lapsData[currentLap ?? 0];
+    if (!currentLapEntry?.points.length) return;
+    const maxDistance = currentLapEntry.points[currentLapEntry.points.length - 1].distance;
 
     // Clamp values to valid range
     const start = Math.max(0, Math.min(startMeters, maxDistance));
@@ -44,7 +45,7 @@ export function SessionView() {
 
     setZoomStart(start);
     setZoomEnd(end);
-  }, [currentLapData, setZoomStart, setZoomEnd]);
+  }, [lapsData, currentLap, setZoomStart, setZoomEnd]);
 
   const sessionInformation = useMemo<SessionInformation | undefined>(() => {
     const session = getSession(sessionId);
@@ -57,7 +58,7 @@ export function SessionView() {
   }, [sessionId, getSession]);
 
   // Load telemetry data when lap changes
-  const { getTelemetryForLap, telemetryCache } = useTelemetry();
+  const { getTelemetryForLap } = useTelemetry();
 
   useEffect(() => {
     if (currentLap) {
@@ -66,7 +67,10 @@ export function SessionView() {
         const lap = session.laps.find(l => l.number === currentLap);
         if (lap) {
           getTelemetryForLap(sessionId, lap.id)
-            .then(entry => setCurrentLapData(entry.points))
+            .then(entry => setLapsData(prev => ({
+              ...prev,
+              [currentLap]: entry
+            })))
             .catch(error => {
               console.error('Failed to load telemetry:', error);
               setError('Failed to load telemetry data');
@@ -95,7 +99,7 @@ export function SessionView() {
             throw new Error(`Could not find lap with number ${selectedLap}`);
           }
           const telemetry = await getTelemetryForLap(sessionId, selectedLapId);
-          setCurrentLapData(telemetry.points);
+          setLapsData({ [selectedLap]: telemetry });
 
           if (telemetry.points.length > 0) {
             const maxDistance = telemetry.points[telemetry.points.length - 1].distance;
@@ -130,7 +134,10 @@ export function SessionView() {
     }
 
     getTelemetryForLap(sessionId, selectedLap.id)
-      .then(entry => setCurrentLapData(entry.points))
+      .then(entry => setLapsData(prev => ({
+        ...prev,
+        [lap]: entry
+      })))
       .catch(error => {
         console.error('Failed to load telemetry:', error);
         setError('Failed to load telemetry data');
@@ -170,14 +177,13 @@ export function SessionView() {
             onLapSelect={handleLapSelect}
             currentLap={currentLap ?? 0}
             landmarks={undefined} // TODO: Implement landmarks fetching
-            currentLapData={currentLapData}
+            currentLapData={lapsData[currentLap ?? 0]?.points ?? []}
             setZoomRange={setZoomRange}
           />
         </Box>
         <Box sx={{ height: "90vh" }}>
           <TelemetryVisualization
-            currentLapData={currentLapData}
-            mapDataAvailable={telemetryCache[currentLap]?.mapDataAvailable ?? false}
+            currentLapData={lapsData[currentLap ?? 0]?.points ?? []}
             session={getSession(sessionId) || null}
             zoomState={zoomState}
             setZoomRange={setZoomRange}

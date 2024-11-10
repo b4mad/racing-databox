@@ -8,7 +8,7 @@ import { ZoomState } from './types'
 
 interface TelemetryVisualizationProps {
   currentLapData: TelemetryPoint[]
-  mapDataAvailable: boolean
+  compareLapData?: TelemetryPoint[]
   session: PaddockSession | null
   zoomState: ZoomState
   setZoomRange: (startMeters: number, endMeters: number) => void

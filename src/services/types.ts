@@ -117,3 +117,12 @@ export interface PaddockGame {
     id: number;
     name?: string;
 }
+
+export interface TelemetryCacheEntry {
+    points: TelemetryPoint[];
+    mapDataAvailable: boolean;
+}
+
+export interface TelemetryCache {
+    [lapId: number]: TelemetryCacheEntry;
+}

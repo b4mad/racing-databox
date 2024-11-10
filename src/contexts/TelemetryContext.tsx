@@ -1,15 +1,6 @@
 import { createContext, useState, ReactNode, useCallback } from 'react';
-import { TelemetryPoint } from '../services/types';
+import { TelemetryCache, TelemetryCacheEntry } from '../services/types';
 import { createTelemetryService } from '../services/TelemetryService';
-
-interface TelemetryCacheEntry {
-  points: TelemetryPoint[];
-  mapDataAvailable: boolean;
-}
-
-interface TelemetryCache {
-  [lapId: number]: TelemetryCacheEntry;
-}
 
 interface TelemetryContextType {
   telemetryCache: TelemetryCache;
