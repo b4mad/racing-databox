@@ -198,6 +198,10 @@ export class PaddockService {
                     condition: { driverId: $driverId, carId: $carId, trackId: $trackId }
                 ) {
                     totalCount
+                    pageInfo {
+                        hasNextPage
+                        endCursor
+                    }
                     edges {
                         node {
                             id
@@ -239,9 +243,18 @@ export class PaddockService {
             }
         `, { first, after, driverId: filters?.driverId, carId: filters?.carId, trackId: filters?.trackId });
 
-        const { edges, totalCount } = data.allTelemetrySessions;
-        const hasNextPage = edges.length === first;
-        const sessions = edges.map((edge: any): PaddockSession => {
+        if (!data.allTelemetrySessions) {
+            return {
+                items: [],
+                totalCount: 0,
+                hasNextPage: false,
+                endCursor: undefined
+            };
+        }
+
+        const { edges = [], totalCount = 0, pageInfo = {} } = data.allTelemetrySessions;
+        const { hasNextPage, endCursor } = pageInfo;
+        const sessions = edges?.map((edge: any): PaddockSession => {
             const node = edge.node;
             return {
                 id: node.id,
@@ -277,15 +290,15 @@ export class PaddockService {
                 }))
             };
         });
-        logger.paddock('Fetched %d sessions', sessions.length);
-        logger.paddock('Total session count: %d', totalCount);
-        logger.paddock('Has next page: %s', hasNextPage);
-        logger.paddock('End cursor: %s', hasNextPage ? edges[edges.length - 1]?.cursor : undefined);
+        // logger.paddock('Fetched %d sessions', sessions.length);
+        // logger.paddock('Total session count: %d', totalCount);
+        // logger.paddock('Has next page: %s', hasNextPage);
+        // logger.paddock('End cursor: %s', hasNextPage ? endCursor : undefined);
         return {
             items: sessions,
             totalCount,
             hasNextPage,
-            endCursor: hasNextPage ? edges[edges.length - 1]?.cursor : undefined
+            endCursor: hasNextPage ? endCursor : undefined
         };
     }
 

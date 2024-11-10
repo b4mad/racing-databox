@@ -13,7 +13,7 @@ export function SessionsView() {
   const [sessions, setSessions] = useState<PaddockSession[]>([]);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [endCursor, setEndCursor] = useState<string>();
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [_isLoadingMore, setIsLoadingMore] = useState(false);
   const [cars, setCars] = useState<PaddockCar[]>([])
   const [drivers, setDrivers] = useState<PaddockDriver[]>([])
   const [tracks, setTracks] = useState<PaddockTrack[]>([])
@@ -147,7 +147,7 @@ export function SessionsView() {
               (!selectedTrack || session.track.id === selectedTrack)
             )
             .map(session => (
-              <SessionListItem key={session.sessionId} session={session} />
+              <SessionListItem key={session.id} session={session} />
             ))}
         </Stack>
       </InfiniteScroll>
