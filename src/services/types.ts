@@ -30,12 +30,6 @@ export interface RawTelemetryData {
     data: number[][];
 }
 
-export interface SessionData {
-    laps: number[];
-    telemetryByLap: Map<number, TelemetryPoint[]>;
-    mapDataAvailable: boolean;
-}
-
 export interface SessionInformation {
     laps: number[];
     mapDataAvailable: boolean;
@@ -51,8 +45,7 @@ export interface PaginatedResponse<T> {
 }
 
 export interface TelemetryService {
-    getLapData(lapNumber: number): Promise<ProcessedTelemetryData>;
-    getSessionData(sessionId: string): Promise<SessionData>;
+    getLapData(lapId: number): Promise<ProcessedTelemetryData>;
 }
 
 export interface PaddockLap {
@@ -62,6 +55,7 @@ export interface PaddockLap {
     valid: boolean;
     length?: number;
     session?: PaddockSession;
+    telemetry?: TelemetryPoint[];
 }
 
 export interface PaddockCar {

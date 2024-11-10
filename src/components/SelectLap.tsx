@@ -22,17 +22,17 @@ const style = {
 interface SelectLapProps {
   open: boolean;
   onClose: () => void;
-  sessionInformation: SessionInformation | null;
+  sessionInformation: SessionInformation | null | undefined;
   onLapSelect: (lap: number) => void;
   currentLap: number;
 }
 
-export const SelectLap = ({ 
-  open, 
-  onClose, 
-  sessionInformation, 
+export const SelectLap = ({
+  open,
+  onClose,
+  sessionInformation,
   onLapSelect,
-  currentLap 
+  currentLap
 }: SelectLapProps) => {
   if (!sessionInformation) return null;
 
@@ -49,14 +49,14 @@ export const SelectLap = ({
         <List sx={{ maxHeight: '60vh', overflow: 'auto' }}>
           {sessionInformation.laps.map((lap) => (
             <ListItem key={lap} disablePadding>
-              <ListItemButton 
+              <ListItemButton
                 onClick={() => {
                   onLapSelect(lap);
                   onClose();
                 }}
                 selected={lap === currentLap}
               >
-                <ListItemText 
+                <ListItemText
                   primary={`Lap ${lap}`}
                   secondary={(() => {
                     const lapDetail = sessionInformation.lapDetails.find(detail => detail.number === lap);

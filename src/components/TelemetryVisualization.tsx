@@ -17,7 +17,7 @@ interface TelemetryVisualizationProps {
 export function TelemetryVisualization({
   currentLapData,
   mapDataAvailable,
-  session,
+  session = null,
   zoomState,
   setZoomRange
 }: TelemetryVisualizationProps) {

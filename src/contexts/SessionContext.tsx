@@ -1,15 +1,7 @@
 import { createContext, useCallback, useState, ReactNode } from 'react';
 import { PaddockService } from '../services/PaddockService';
 import { createTelemetryService } from '../services/TelemetryService';
-import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, SessionData, TrackLandmarks } from '../services/types';
-
-interface CachedSession {
-  paddockData: PaddockSession;
-  sessionData: SessionData;
-  landmarks?: TrackLandmarks;
-  loading: boolean;
-  error: string | null;
-}
+import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, TelemetryPoint } from '../services/types';
 
 interface SessionContextType {
   // List view state
@@ -30,9 +22,10 @@ interface SessionContextType {
   setSelectedDriver: (id: number | null | undefined) => void;
   setSelectedTrack: (id: number | null | undefined) => void;
 
-  // Individual session cache
-  getSession: (sessionId: string) => CachedSession | undefined;
-  fetchSession: (sessionId: string) => Promise<CachedSession>;
+  // Individual session operations
+  getSession: (sessionId: string) => PaddockSession | undefined;
+  fetchSession: (sessionId: string) => Promise<PaddockSession>;
+  fetchLapTelemetry: (_sessionId: string, lapId: number) => Promise<TelemetryPoint[]>;
 }
 
 export const SessionContext = createContext<SessionContextType | undefined>(undefined);
@@ -54,8 +47,6 @@ export function SessionProvider({ children }: SessionProviderProps) {
   const [selectedDriver, setSelectedDriver] = useState<number | null>();
   const [selectedTrack, setSelectedTrack] = useState<number | null>();
 
-  // Session cache
-  const [sessionCache, setSessionCache] = useState<Map<string, CachedSession>>(new Map());
 
   const fetchSessions = useCallback(async (isInitialLoad = false) => {
     try {
@@ -119,70 +110,41 @@ export function SessionProvider({ children }: SessionProviderProps) {
   }, [endCursor, selectedDriver, selectedCar, selectedTrack]);
 
   const getSession = useCallback((sessionId: string) => {
-    return sessionCache.get(sessionId);
-  }, [sessionCache]);
-
-  const findSessionInList = useCallback((sessionId: string): PaddockSession | undefined => {
     return sessions.find(session => session.sessionId === sessionId);
   }, [sessions]);
 
-  const fetchSession = useCallback(async (sessionId: string): Promise<CachedSession> => {
-    // Return cached data if available
-    const cached = sessionCache.get(sessionId);
-    if (cached && !cached.loading && !cached.error) {
-      return cached;
-    }
+  const fetchLapTelemetry = useCallback(async (_sessionId: string, lapId: number) => {
+    const telemetryService = createTelemetryService();
+    return telemetryService.getLapData(lapId).then(data => data.points);
+  }, []);
 
-    // Set loading state
-    setSessionCache(prev => new Map(prev).set(sessionId, {
-      ...cached,
-      loading: true,
-      error: null
-    } as CachedSession));
+  const fetchSession = useCallback(async (sessionId: string): Promise<PaddockSession> => {
+    // First try to find the session in our list
+    let session = getSession(sessionId);
 
-    try {
-      const telemetryService = createTelemetryService();
+    // If not found, fetch it
+    if (!session) {
       const paddockService = new PaddockService();
-
-      // First try to find the session in our list
-      let paddockData = findSessionInList(sessionId);
-      
-      // If not found, fetch it
-      if (!paddockData) {
-        const response = await paddockService.getSessions(1, undefined, { sessionId });
-        if (response.items.length === 0) {
-          throw new Error(`Session ${sessionId} not found`);
-        }
-        paddockData = response.items[0];
+      const response = await paddockService.getSessions(1, undefined, { sessionId });
+      if (response.items.length === 0) {
+        throw new Error(`Session ${sessionId} not found`);
       }
+      session = response.items[0];
 
-      const [sessionData, landmarks] = await Promise.all([
-        telemetryService.getSessionData(sessionId),
-        paddockData.track?.id ? paddockService.getLandmarks(paddockData.track.id) : undefined
-      ]);
-
-      const cachedSession: CachedSession = {
-        paddockData,
-        sessionData,
-        landmarks,
-        loading: false,
-        error: null
-      };
-
-      setSessionCache(prev => new Map(prev).set(sessionId, cachedSession));
-      return cachedSession;
-
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to load session data';
-      const errorState: CachedSession = {
-        ...cached,
-        loading: false,
-        error: errorMsg
-      } as CachedSession;
-
-      setSessionCache(prev => new Map(prev).set(sessionId, errorState));
-      throw err;
+      // Add to sessions list if session exists
+      if (session) {
+        setSessions(prev => {
+          const newSessions = [...prev, session].filter((s): s is PaddockSession => s !== undefined);
+          return newSessions;
+        });
+      }
     }
+
+    if (!session) {
+      throw new Error(`Failed to load session ${sessionId}`);
+    }
+
+    return session;
   }, []);
 
   return (
@@ -206,6 +168,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
         setSelectedTrack,
         getSession,
         fetchSession,
+        fetchLapTelemetry,
       }}
     >
       {children}

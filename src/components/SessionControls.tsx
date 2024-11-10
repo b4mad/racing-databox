@@ -10,7 +10,7 @@ interface SessionControlsProps {
   setPaddockOpen: (open: boolean) => void
   navigationOpen: boolean
   setNavigationOpen: (open: boolean) => void
-  sessionInformation: SessionInformation | null
+  sessionInformation?: SessionInformation
   onLapSelect: (lap: number) => void
   currentLap: number
   landmarks: TrackLandmarks | null | undefined

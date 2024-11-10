@@ -13,7 +13,7 @@ interface BaseGraphProps {
   syncId?: string;
   zoomState: ZoomState;
   showBrush?: boolean;
-  onZoomChange?: (start: number, end: number) => void;
+  onZoomChange?: (startMeters: number, endMeters: number) => void;
 }
 
 interface LineGraphProps extends BaseGraphProps {

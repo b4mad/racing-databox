@@ -11,7 +11,7 @@ import { ZoomState } from '../components/types'
 
 export function SessionView() {
   const { sessionId } = useParams();
-  const { getSession, fetchSession } = useSession();
+  const { getSession, fetchSession, fetchLapTelemetry } = useSession();
 
   if (!sessionId) {
     return <Navigate to="/" replace />;
@@ -45,36 +45,56 @@ export function SessionView() {
     setZoomEnd(end);
   }, [currentLapData, setZoomStart, setZoomEnd]);
 
-  const sessionInformation = useMemo<SessionInformation | null>(() => {
-    const cachedSession = getSession(sessionId);
-    if (!cachedSession?.sessionData) return null;
+  const sessionInformation = useMemo<SessionInformation | undefined>(() => {
+    const session = getSession(sessionId);
+    if (!session?.laps) return undefined;
     return {
-      laps: cachedSession.sessionData.laps,
-      mapDataAvailable: cachedSession.sessionData.mapDataAvailable,
-      lapDetails: cachedSession.paddockData.laps
+      laps: session.laps.map(lap => lap.number),
+      mapDataAvailable: session.laps.some(lap => lap.telemetry?.some(point => point.position)),
+      lapDetails: session.laps
     };
   }, [sessionId, getSession]);
+
+  // Load telemetry data when lap changes
+  useEffect(() => {
+    if (currentLap) {
+      fetchLapTelemetry(sessionId, currentLap).then((telemetry: TelemetryPoint[]) => {
+        const session = getSession(sessionId);
+        if (session) {
+          const lap = session.laps.find(l => l.number === currentLap);
+          if (lap) {
+            lap.telemetry = telemetry;
+          }
+        }
+        setCurrentLapData(telemetry);
+      });
+    }
+  }, [sessionId, currentLap, fetchLapTelemetry, getSession]);
 
   useEffect(() => {
     const loadSession = async () => {
       try {
         setLoading(true);
-        const cachedSession = await fetchSession(sessionId);
+        const session = await fetchSession(sessionId);
 
-        if (cachedSession.sessionData.laps.length > 0) {
+        if (session.laps.length > 0) {
           // If no lap is set in URL, use first lap
-          const targetLap = currentLap || cachedSession.sessionData.laps[0];
-          const selectedLap = cachedSession.sessionData.laps.includes(targetLap)
-            ? targetLap
-            : cachedSession.sessionData.laps[0];
+          const targetLap = currentLap || session.laps[0].number;
+          const selectedLap = session.laps.find(l => l.number === targetLap)?.number || session.laps[0].number;
 
           setCurrentLap(selectedLap);
-          const lapData = cachedSession.sessionData.telemetryByLap.get(selectedLap);
-
-          if (lapData) {
-            setCurrentLapData(lapData);
-            const maxDistance = lapData[lapData.length - 1].distance;
-
+          
+          // Fetch telemetry for the selected lap
+          const selectedLapId = session.laps.find(l => l.number === selectedLap)?.id;
+          if (!selectedLapId) {
+            throw new Error(`Could not find lap with number ${selectedLap}`);
+          }
+          const telemetry = await fetchLapTelemetry(sessionId, selectedLapId);
+          setCurrentLapData(telemetry);
+          
+          if (telemetry.length > 0) {
+            const maxDistance = telemetry[telemetry.length - 1].distance;
+            
             // New lap selected - initialize zoom range
             setZoomStart(zoomStart || 0);
             setZoomEnd(zoomEnd || maxDistance);
@@ -97,13 +117,14 @@ export function SessionView() {
 
   const handleLapSelect = (lap: number) => {
     setCurrentLap(lap);
-    const cachedSession = getSession(sessionId);
-    if (cachedSession?.sessionData) {
-      const lapData = cachedSession.sessionData.telemetryByLap.get(lap);
-      if (lapData) {
-        setCurrentLapData(lapData);
-      }
+    const lapId = getSession(sessionId)?.laps.find(l => l.number === lap)?.id;
+    if (!lapId) {
+      console.error(`Could not find lap with number ${lap}`);
+      return;
     }
+    fetchLapTelemetry(sessionId, lapId).then(telemetry => {
+      setCurrentLapData(telemetry);
+    });
   }
 
   if (loading) {
@@ -138,7 +159,7 @@ export function SessionView() {
             sessionInformation={sessionInformation}
             onLapSelect={handleLapSelect}
             currentLap={currentLap ?? 0}
-            landmarks={getSession(sessionId)?.landmarks}
+            landmarks={undefined} // TODO: Implement landmarks fetching
             currentLapData={currentLapData}
             setZoomRange={setZoomRange}
           />
@@ -146,8 +167,8 @@ export function SessionView() {
         <Box sx={{ height: "90vh" }}>
           <TelemetryVisualization
             currentLapData={currentLapData}
-            mapDataAvailable={getSession(sessionId)?.sessionData.mapDataAvailable ?? false}
-            session={getSession(sessionId)?.paddockData ?? null}
+            mapDataAvailable={currentLapData.some(point => point.position !== undefined)}
+            session={getSession(sessionId) || null}
             zoomState={zoomState}
             setZoomRange={setZoomRange}
           />

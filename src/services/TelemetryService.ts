@@ -1,5 +1,4 @@
-import { RawTelemetryData, ProcessedTelemetryData, TelemetryPoint, TelemetryService, SessionData } from './types';
-import mockData from '../mock-data/lap-1.json';
+import { RawTelemetryData, ProcessedTelemetryData, TelemetryPoint, TelemetryService } from './types';
 
 function parseTelemetryData(rawData: RawTelemetryData): {
     telemetryLaps: number[];
@@ -65,30 +64,6 @@ function parseTelemetryData(rawData: RawTelemetryData): {
     };
 }
 
-export class MockTelemetryService implements TelemetryService {
-    async getLapData(_lapNumber: number): Promise<ProcessedTelemetryData> {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const { telemetryData, mapDataAvailable } = parseTelemetryData(mockData as RawTelemetryData);
-        return {
-            points: telemetryData,
-            mapDataAvailable
-        };
-    }
-
-    async getSessionData(_sessionId: string): Promise<SessionData> {
-        const { telemetryLaps, telemetryData, mapDataAvailable } = parseTelemetryData(mockData as RawTelemetryData);
-        const telemetryByLap = new Map();
-        telemetryLaps.forEach(lap => {
-            telemetryByLap.set(lap, telemetryData.filter(point => point.lapNumber === lap));
-        });
-        return {
-            laps: telemetryLaps,
-            telemetryByLap,
-            mapDataAvailable
-        };
-    }
-}
-
 export class ApiTelemetryService implements TelemetryService {
     private baseUrl: string;
 
@@ -96,8 +71,8 @@ export class ApiTelemetryService implements TelemetryService {
         this.baseUrl = baseUrl;
     }
 
-    async getLapData(lapNumber: number): Promise<ProcessedTelemetryData> {
-        const response = await fetch(`${this.baseUrl}/lap/${lapNumber}`);
+    async getLapData(lapId: number): Promise<ProcessedTelemetryData> {
+        const response = await fetch(`${this.baseUrl}/lap/${lapId}`);
         if (!response.ok) {
             throw new Error(`Failed to fetch telemetry data: ${response.statusText}`);
         }
@@ -109,31 +84,8 @@ export class ApiTelemetryService implements TelemetryService {
         };
     }
 
-    async getSessionData(sessionId: string): Promise<SessionData> {
-        const response = await fetch(`${this.baseUrl}/session/${sessionId}`);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch session data: ${response.statusText}`);
-        }
-        const rawData = await response.json();
-        const { telemetryLaps, telemetryData, mapDataAvailable } = parseTelemetryData(rawData);
-
-        // Organize telemetry data by lap
-        const telemetryByLap = new Map();
-        telemetryLaps.forEach(lap => {
-            telemetryByLap.set(lap, telemetryData.filter(item => item.lapNumber === lap));
-        });
-
-        return {
-            laps: telemetryLaps,
-            telemetryByLap,
-            mapDataAvailable
-        };
-    }
 }
 
 export function createTelemetryService(): TelemetryService {
-    if (process.env.NODE_ENV === 'development') {
-        return new ApiTelemetryService('/api');
-    }
     return new ApiTelemetryService('/api');
 }

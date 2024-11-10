@@ -34,8 +34,8 @@ export function MapLine({ data, syncId, zoomState }: MapLineProps) {
   const mapBounds = useMemo(() => {
     if (data.length === 0) return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
 
-    const minDistance = typeof zoomState.left === 'number' ? zoomState.left : 0;
-    const maxDistance = typeof zoomState.right === 'number' ? zoomState.right : data[data.length - 1].distance;
+    const minDistance = Number(zoomState.left) || 0;
+    const maxDistance = Number(zoomState.right) || data[data.length - 1].distance;
 
     // Find points within the zoomed distance range
     const visiblePoints = data.filter(point =>
