@@ -1,80 +1,66 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Container, Box, Stack, CircularProgress } from '@mui/material'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { NumberParam, useQueryParam } from 'use-query-params'
 import { SessionListItem } from '../components/SessionListItem'
-import { PaddockService } from '../services/PaddockService'
-import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack } from '../services/types'
 import { SessionsViewNav } from '../components/SessionsViewNav'
+import { useSession } from '../hooks/useSession'
 
 export function SessionsView() {
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [sessions, setSessions] = useState<PaddockSession[]>([]);
-  const [hasNextPage, setHasNextPage] = useState(false);
-  const [endCursor, setEndCursor] = useState<string>();
-  const [_isLoadingMore, setIsLoadingMore] = useState(false);
-  const [cars, setCars] = useState<PaddockCar[]>([])
-  const [drivers, setDrivers] = useState<PaddockDriver[]>([])
-  const [tracks, setTracks] = useState<PaddockTrack[]>([])
-  const [selectedCar, setSelectedCar] = useQueryParam('car', NumberParam)
-  const [selectedDriver, setSelectedDriver] = useQueryParam('driver', NumberParam)
-  const [selectedTrack, setSelectedTrack] = useQueryParam('track', NumberParam)
+  const { 
+    sessions, 
+    cars, 
+    drivers, 
+    tracks, 
+    loading, 
+    error, 
+    hasNextPage,
+    fetchSessions,
+    fetchMoreSessions,
+    selectedCar,
+    selectedDriver,
+    selectedTrack,
+    setSelectedCar: setContextSelectedCar,
+    setSelectedDriver: setContextSelectedDriver,
+    setSelectedTrack: setContextSelectedTrack
+  } = useSession();
 
-  const fetchData = async (isInitialLoad = false) => {
-    try {
-      const paddockService = new PaddockService()
+  const [urlSelectedCar, setUrlSelectedCar] = useQueryParam('car', NumberParam)
+  const [urlSelectedDriver, setUrlSelectedDriver] = useQueryParam('driver', NumberParam)
+  const [urlSelectedTrack, setUrlSelectedTrack] = useQueryParam('track', NumberParam)
 
-      if (isInitialLoad) {
-        const [sessionsData, carsData, driversData, tracksData] = await Promise.all([
-          paddockService.getSessions(20, undefined, {
-            driverId: selectedDriver ?? undefined,
-            carId: selectedCar ?? undefined,
-            trackId: selectedTrack ?? undefined
-          }),
-          paddockService.getAllCars(10),
-          paddockService.getAllDrivers(10),
-          paddockService.getAllTracks(10)
-        ])
-        setSessions(sessionsData.items);
-        setHasNextPage(sessionsData.hasNextPage);
-        setEndCursor(sessionsData.endCursor);
-        setCars(carsData)
-        setDrivers(driversData)
-        setTracks(tracksData)
-      } else {
-        const sessionsData = await paddockService.getSessions(20, undefined, {
-          driverId: selectedDriver ?? undefined,
-          carId: selectedCar ?? undefined,
-          trackId: selectedTrack ?? undefined
-        });
-        setSessions(sessionsData.items);
-        setHasNextPage(sessionsData.hasNextPage);
-        setEndCursor(sessionsData.endCursor);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load data')
-      if (process.env.NODE_ENV === 'development') {
-        throw err;
-      }
-    } finally {
-      setLoading(false)
-    }
+  // Sync URL params with context
+  const handleCarChange = (value: number | null | undefined) => {
+    setUrlSelectedCar(value)
+    setContextSelectedCar(value)
   }
 
-  // Initial data load
+  const handleDriverChange = (value: number | null | undefined) => {
+    setUrlSelectedDriver(value)
+    setContextSelectedDriver(value)
+  }
+
+  const handleTrackChange = (value: number | null | undefined) => {
+    setUrlSelectedTrack(value)
+    setContextSelectedTrack(value)
+  }
+
+  // Initial data load and URL param sync
   useEffect(() => {
-    fetchData(true)
+    setContextSelectedCar(urlSelectedCar)
+    setContextSelectedDriver(urlSelectedDriver)
+    setContextSelectedTrack(urlSelectedTrack)
+    fetchSessions(true)
   }, [])
 
-  // Refresh sessions when selected driver or car changes
+  // Refresh sessions when selected filters change
   useEffect(() => {
     if ((selectedDriver !== undefined && selectedDriver !== null) ||
         (selectedCar !== undefined && selectedCar !== null) ||
         (selectedTrack !== undefined && selectedTrack !== null)) {
-      fetchData(false)
+      fetchSessions(false)
     }
-  }, [selectedDriver, selectedCar])
+  }, [selectedDriver, selectedCar, selectedTrack])
 
   if (loading) {
     return (
@@ -100,33 +86,18 @@ export function SessionsView() {
     <Container>
       <SessionsViewNav
         cars={cars}
-        selectedCar={selectedCar}
-        onCarChange={setSelectedCar}
+        selectedCar={urlSelectedCar}
+        onCarChange={handleCarChange}
         drivers={drivers}
-        selectedDriver={selectedDriver}
-        onDriverChange={setSelectedDriver}
+        selectedDriver={urlSelectedDriver}
+        onDriverChange={handleDriverChange}
         tracks={tracks}
-        selectedTrack={selectedTrack}
-        onTrackChange={setSelectedTrack}
+        selectedTrack={urlSelectedTrack}
+        onTrackChange={handleTrackChange}
       />
       <InfiniteScroll
         dataLength={sessions.length}
-        next={async () => {
-          setIsLoadingMore(true);
-          try {
-            const paddockService = new PaddockService();
-            const moreData = await paddockService.getSessions(20, endCursor, {
-              driverId: selectedDriver ?? undefined,
-              carId: selectedCar ?? undefined,
-              trackId: selectedTrack ?? undefined
-            });
-            setSessions(prev => [...prev, ...moreData.items]);
-            setHasNextPage(moreData.hasNextPage);
-            setEndCursor(moreData.endCursor);
-          } finally {
-            setIsLoadingMore(false);
-          }
-        }}
+        next={fetchMoreSessions}
         hasMore={hasNextPage}
         loader={
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>

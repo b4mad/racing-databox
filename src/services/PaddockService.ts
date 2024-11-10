@@ -193,6 +193,7 @@ export class PaddockService {
         const { data } = await this.executeQuery(gql`
             query GetSessions($first: Int!, $after: Cursor, $driverId: BigInt, $carId: BigInt, $trackId: BigInt) {
                 allTelemetrySessions(
+                    orderBy: END_DESC
                     first: $first
                     after: $after
                     condition: { driverId: $driverId, carId: $carId, trackId: $trackId }

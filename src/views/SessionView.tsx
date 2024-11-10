@@ -2,16 +2,16 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
 import { NumberParam, useQueryParam } from 'use-query-params'
 import { Container, Box, Stack, CircularProgress } from '@mui/material'
+import { useSession } from '../hooks/useSession'
 import { SessionControls } from '../components/SessionControls'
 import { TelemetryVisualization } from '../components/TelemetryVisualization'
-import { createTelemetryService } from '../services/TelemetryService'
-import { PaddockService } from '../services/PaddockService'
-import { TelemetryPoint, SessionData, SessionInformation, PaddockLap, PaddockSession, TrackLandmarks } from '../services/types'
+import { TelemetryPoint, SessionInformation } from '../services/types'
 import { ZoomState } from '../components/types'
 
 
 export function SessionView() {
   const { sessionId } = useParams();
+  const { getSession, fetchSession } = useSession();
 
   if (!sessionId) {
     return <Navigate to="/" replace />;
@@ -19,10 +19,6 @@ export function SessionView() {
 
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [sessionData, setSessionData] = useState<SessionData | null>(null)
-  const [paddockLaps, setPaddockLaps] = useState<PaddockLap[]>([])
-  const [paddockData, setPaddockData] = useState<PaddockSession | null>(null)
-  const [landmarks, setLandmarks] = useState<TrackLandmarks | null>(null)
   const [currentLap, setCurrentLap] = useQueryParam('lap', NumberParam);
   const [currentLapData, setCurrentLapData] = useState<TelemetryPoint[]>([])
   const [navigationOpen, setNavigationOpen] = useState(false)
@@ -50,44 +46,30 @@ export function SessionView() {
   }, [currentLapData, setZoomStart, setZoomEnd]);
 
   const sessionInformation = useMemo<SessionInformation | null>(() => {
-    if (!sessionData) return null;
+    const cachedSession = getSession(sessionId);
+    if (!cachedSession?.sessionData) return null;
     return {
-      laps: sessionData.laps,
-      mapDataAvailable: sessionData.mapDataAvailable,
-      lapDetails: paddockLaps
+      laps: cachedSession.sessionData.laps,
+      mapDataAvailable: cachedSession.sessionData.mapDataAvailable,
+      lapDetails: cachedSession.paddockData.laps
     };
-  }, [sessionData, paddockLaps]);
+  }, [sessionId, getSession]);
 
   useEffect(() => {
-    const fetchSessionData = async () => {
+    const loadSession = async () => {
       try {
-        const telemetryService = createTelemetryService()
-        const paddockService = new PaddockService()
-        const [session, paddockData] = await Promise.all([
-          telemetryService.getSessionData(sessionId),
-          paddockService.getSessionData(sessionId)
-        ]);
+        setLoading(true);
+        const cachedSession = await fetchSession(sessionId);
 
-        // Select the first session from the array
-        // FIXME: if there are multiple sessions, we should allow the user to select one
-        const firstSession = paddockData[0];
-        setPaddockData(firstSession)
-        setPaddockLaps(firstSession.laps)
-        setSessionData(session)
-
-        // Fetch landmarks for the track
-        if (firstSession.track.id) {
-          const trackLandmarks = await paddockService.getLandmarks(firstSession.track.id)
-          setLandmarks(trackLandmarks)
-        }
-
-        if (session.laps.length > 0) {
+        if (cachedSession.sessionData.laps.length > 0) {
           // If no lap is set in URL, use first lap
-          const targetLap = currentLap || session.laps[0];
-          const selectedLap = session.laps.includes(targetLap) ? targetLap : session.laps[0];
+          const targetLap = currentLap || cachedSession.sessionData.laps[0];
+          const selectedLap = cachedSession.sessionData.laps.includes(targetLap)
+            ? targetLap
+            : cachedSession.sessionData.laps[0];
 
           setCurrentLap(selectedLap);
-          const lapData = session.telemetryByLap.get(selectedLap);
+          const lapData = cachedSession.sessionData.telemetryByLap.get(selectedLap);
 
           if (lapData) {
             setCurrentLapData(lapData);
@@ -99,25 +81,27 @@ export function SessionView() {
           }
         }
 
+        setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load session data')
+        setError(err instanceof Error ? err.message : 'Failed to load session data');
         if (process.env.NODE_ENV === 'development') {
           throw err;
         }
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchSessionData()
-  }, [sessionId])
+    loadSession();
+  }, [sessionId, fetchSession, currentLap, zoomStart, zoomEnd]);
 
   const handleLapSelect = (lap: number) => {
-    setCurrentLap(lap)
-    if (sessionData) {
-      const lapData = sessionData.telemetryByLap.get(lap)
+    setCurrentLap(lap);
+    const cachedSession = getSession(sessionId);
+    if (cachedSession?.sessionData) {
+      const lapData = cachedSession.sessionData.telemetryByLap.get(lap);
       if (lapData) {
-        setCurrentLapData(lapData)
+        setCurrentLapData(lapData);
       }
     }
   }
@@ -154,7 +138,7 @@ export function SessionView() {
             sessionInformation={sessionInformation}
             onLapSelect={handleLapSelect}
             currentLap={currentLap ?? 0}
-            landmarks={landmarks}
+            landmarks={getSession(sessionId)?.landmarks}
             currentLapData={currentLapData}
             setZoomRange={setZoomRange}
           />
@@ -162,8 +146,8 @@ export function SessionView() {
         <Box sx={{ height: "90vh" }}>
           <TelemetryVisualization
             currentLapData={currentLapData}
-            mapDataAvailable={sessionData?.mapDataAvailable ?? false}
-            session={paddockData ?? null}
+            mapDataAvailable={getSession(sessionId)?.sessionData.mapDataAvailable ?? false}
+            session={getSession(sessionId)?.paddockData ?? null}
             zoomState={zoomState}
             setZoomRange={setZoomRange}
           />

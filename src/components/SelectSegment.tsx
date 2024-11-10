@@ -4,7 +4,7 @@ import { TrackLandmarks } from '../services/types';
 interface SelectSegmentProps {
   open: boolean;
   onClose: () => void;
-  landmarks: TrackLandmarks | null;
+  landmarks: TrackLandmarks | null | undefined;
   setZoomRange: (startMeters: number, endMeters: number) => void;
 }
 

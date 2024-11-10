@@ -13,7 +13,7 @@ interface SessionControlsProps {
   sessionInformation: SessionInformation | null
   onLapSelect: (lap: number) => void
   currentLap: number
-  landmarks: TrackLandmarks | null
+  landmarks: TrackLandmarks | null | undefined
   currentLapData: TelemetryPoint[]
   setZoomRange: (startMeters: number, endMeters: number) => void
 }
