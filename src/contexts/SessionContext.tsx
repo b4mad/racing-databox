@@ -25,7 +25,6 @@ interface SessionContextType {
   // Individual session operations
   getSession: (sessionId: string) => PaddockSession | undefined;
   fetchSession: (sessionId: string) => Promise<PaddockSession>;
-  fetchLapTelemetry: (_sessionId: string, lapId: number) => Promise<TelemetryPoint[]>;
 }
 
 export const SessionContext = createContext<SessionContextType | undefined>(undefined);
@@ -113,10 +112,6 @@ export function SessionProvider({ children }: SessionProviderProps) {
     return sessions.find(session => session.sessionId === sessionId);
   }, [sessions]);
 
-  const fetchLapTelemetry = useCallback(async (_sessionId: string, lapId: number) => {
-    const telemetryService = createTelemetryService();
-    return telemetryService.getLapData(lapId).then(data => data.points);
-  }, []);
 
   const fetchSession = useCallback(async (sessionId: string): Promise<PaddockSession> => {
     // First try to find the session in our list
@@ -168,7 +163,6 @@ export function SessionProvider({ children }: SessionProviderProps) {
         setSelectedTrack,
         getSession,
         fetchSession,
-        fetchLapTelemetry,
       }}
     >
       {children}

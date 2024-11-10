@@ -12,7 +12,7 @@ import { ZoomState } from '../components/types'
 
 export function SessionView() {
   const { sessionId } = useParams();
-  const { getSession, fetchSession, fetchLapTelemetry } = useSession();
+  const { getSession, fetchSession } = useSession();
 
   if (!sessionId) {
     return <Navigate to="/" replace />;
@@ -57,7 +57,7 @@ export function SessionView() {
   }, [sessionId, getSession]);
 
   // Load telemetry data when lap changes
-  const { getTelemetry, setTelemetry } = useTelemetry();
+  const { getTelemetryForLap, telemetryCache } = useTelemetry();
 
   useEffect(() => {
     if (currentLap) {
@@ -65,19 +65,16 @@ export function SessionView() {
       if (session) {
         const lap = session.laps.find(l => l.number === currentLap);
         if (lap) {
-          const cachedTelemetry = getTelemetry(lap.id);
-          if (cachedTelemetry) {
-            setCurrentLapData(cachedTelemetry);
-          } else {
-            fetchLapTelemetry(sessionId, lap.id).then(telemetry => {
-              setTelemetry(lap.id, telemetry);
-              setCurrentLapData(telemetry);
+          getTelemetryForLap(sessionId, lap.id)
+            .then(entry => setCurrentLapData(entry.points))
+            .catch(error => {
+              console.error('Failed to load telemetry:', error);
+              setError('Failed to load telemetry data');
             });
-          }
         }
       }
     }
-  }, [sessionId, currentLap, fetchLapTelemetry, getSession, getTelemetry, setTelemetry]);
+  }, [sessionId, currentLap, getSession, getTelemetryForLap]);
 
   useEffect(() => {
     const loadSession = async () => {
@@ -97,11 +94,11 @@ export function SessionView() {
           if (!selectedLapId) {
             throw new Error(`Could not find lap with number ${selectedLap}`);
           }
-          const telemetry = await fetchLapTelemetry(sessionId, selectedLapId);
-          setCurrentLapData(telemetry);
+          const telemetry = await getTelemetryForLap(sessionId, selectedLapId);
+          setCurrentLapData(telemetry.points);
 
-          if (telemetry.length > 0) {
-            const maxDistance = telemetry[telemetry.length - 1].distance;
+          if (telemetry.points.length > 0) {
+            const maxDistance = telemetry.points[telemetry.points.length - 1].distance;
 
             // New lap selected - initialize zoom range
             setZoomStart(zoomStart || 0);
@@ -132,15 +129,12 @@ export function SessionView() {
       return;
     }
 
-    const cachedTelemetry = getTelemetry(selectedLap.id);
-    if (cachedTelemetry) {
-      setCurrentLapData(cachedTelemetry);
-    } else {
-      fetchLapTelemetry(sessionId, selectedLap.id).then(telemetry => {
-        setTelemetry(selectedLap.id, telemetry);
-        setCurrentLapData(telemetry);
+    getTelemetryForLap(sessionId, selectedLap.id)
+      .then(entry => setCurrentLapData(entry.points))
+      .catch(error => {
+        console.error('Failed to load telemetry:', error);
+        setError('Failed to load telemetry data');
       });
-    }
   }
 
   if (loading) {
@@ -183,7 +177,7 @@ export function SessionView() {
         <Box sx={{ height: "90vh" }}>
           <TelemetryVisualization
             currentLapData={currentLapData}
-            mapDataAvailable={currentLapData.some(point => point.position !== undefined)}
+            mapDataAvailable={telemetryCache[currentLap]?.mapDataAvailable ?? false}
             session={getSession(sessionId) || null}
             zoomState={zoomState}
             setZoomRange={setZoomRange}
