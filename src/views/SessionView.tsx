@@ -58,16 +58,20 @@ export function SessionView() {
   // Load telemetry data when lap changes
   useEffect(() => {
     if (currentLap) {
-      fetchLapTelemetry(sessionId, currentLap).then((telemetry: TelemetryPoint[]) => {
-        const session = getSession(sessionId);
-        if (session) {
-          const lap = session.laps.find(l => l.number === currentLap);
-          if (lap) {
-            lap.telemetry = telemetry;
+      const session = getSession(sessionId);
+      if (session) {
+        const lap = session.laps.find(l => l.number === currentLap);
+        if (lap) {
+          if (lap.telemetry) {
+            setCurrentLapData(lap.telemetry);
+          } else {
+            fetchLapTelemetry(sessionId, lap.id).then((telemetry: TelemetryPoint[]) => {
+              lap.telemetry = telemetry;
+              setCurrentLapData(telemetry);
+            });
           }
         }
-        setCurrentLapData(telemetry);
-      });
+      }
     }
   }, [sessionId, currentLap, fetchLapTelemetry, getSession]);
 
@@ -117,14 +121,20 @@ export function SessionView() {
 
   const handleLapSelect = (lap: number) => {
     setCurrentLap(lap);
-    const lapId = getSession(sessionId)?.laps.find(l => l.number === lap)?.id;
-    if (!lapId) {
+    const session = getSession(sessionId);
+    const selectedLap = session?.laps.find(l => l.number === lap);
+    if (!selectedLap) {
       console.error(`Could not find lap with number ${lap}`);
       return;
     }
-    fetchLapTelemetry(sessionId, lapId).then(telemetry => {
-      setCurrentLapData(telemetry);
-    });
+    if (selectedLap.telemetry) {
+      setCurrentLapData(selectedLap.telemetry);
+    } else {
+      fetchLapTelemetry(sessionId, selectedLap.id).then(telemetry => {
+        selectedLap.telemetry = telemetry;
+        setCurrentLapData(telemetry);
+      });
+    }
   }
 
   if (loading) {
