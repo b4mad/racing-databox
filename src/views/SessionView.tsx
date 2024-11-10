@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useTelemetry } from '../hooks/useTelemetry'
 import { useParams, Navigate } from 'react-router-dom'
 import { NumberParam, useQueryParam } from 'use-query-params'
 import { Container, Box, Stack, CircularProgress } from '@mui/material'
@@ -56,24 +57,27 @@ export function SessionView() {
   }, [sessionId, getSession]);
 
   // Load telemetry data when lap changes
+  const { getTelemetry, setTelemetry } = useTelemetry();
+
   useEffect(() => {
     if (currentLap) {
       const session = getSession(sessionId);
       if (session) {
         const lap = session.laps.find(l => l.number === currentLap);
         if (lap) {
-          if (lap.telemetry) {
-            setCurrentLapData(lap.telemetry);
+          const cachedTelemetry = getTelemetry(lap.id);
+          if (cachedTelemetry) {
+            setCurrentLapData(cachedTelemetry);
           } else {
-            fetchLapTelemetry(sessionId, lap.id).then((telemetry: TelemetryPoint[]) => {
-              lap.telemetry = telemetry;
+            fetchLapTelemetry(sessionId, lap.id).then(telemetry => {
+              setTelemetry(lap.id, telemetry);
               setCurrentLapData(telemetry);
             });
           }
         }
       }
     }
-  }, [sessionId, currentLap, fetchLapTelemetry, getSession]);
+  }, [sessionId, currentLap, fetchLapTelemetry, getSession, getTelemetry, setTelemetry]);
 
   useEffect(() => {
     const loadSession = async () => {
@@ -87,7 +91,7 @@ export function SessionView() {
           const selectedLap = session.laps.find(l => l.number === targetLap)?.number || session.laps[0].number;
 
           setCurrentLap(selectedLap);
-          
+
           // Fetch telemetry for the selected lap
           const selectedLapId = session.laps.find(l => l.number === selectedLap)?.id;
           if (!selectedLapId) {
@@ -95,10 +99,10 @@ export function SessionView() {
           }
           const telemetry = await fetchLapTelemetry(sessionId, selectedLapId);
           setCurrentLapData(telemetry);
-          
+
           if (telemetry.length > 0) {
             const maxDistance = telemetry[telemetry.length - 1].distance;
-            
+
             // New lap selected - initialize zoom range
             setZoomStart(zoomStart || 0);
             setZoomEnd(zoomEnd || maxDistance);
@@ -127,11 +131,13 @@ export function SessionView() {
       console.error(`Could not find lap with number ${lap}`);
       return;
     }
-    if (selectedLap.telemetry) {
-      setCurrentLapData(selectedLap.telemetry);
+
+    const cachedTelemetry = getTelemetry(selectedLap.id);
+    if (cachedTelemetry) {
+      setCurrentLapData(cachedTelemetry);
     } else {
       fetchLapTelemetry(sessionId, selectedLap.id).then(telemetry => {
-        selectedLap.telemetry = telemetry;
+        setTelemetry(selectedLap.id, telemetry);
         setCurrentLapData(telemetry);
       });
     }
