@@ -1,9 +1,9 @@
 After reviewing the codebase, here are several potential issues and non-idiomatic React patterns:
 
- 1 Inconsistent State Management:
+ <!-- 1 Inconsistent State Management:
 
  • The app mixes different state management approaches: Context API, URL state, and local component state
- • Consider consolidating state management using a more consistent pattern, possibly with React Query for server state and Context/URL state for UI state
+ • Consider consolidating state management using a more consistent pattern, possibly with React Query for server state and Context/URL state for UI state -->
 
  2 Prop Drilling in TelemetryVisualization:
 
