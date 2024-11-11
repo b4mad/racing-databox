@@ -83,7 +83,7 @@ export function SessionsView() {
   }
 
   return (
-    <Container>
+    <Container id="scrollableDiv" style={{ height: '100vh', overflow: 'auto' }}>
       <SessionsViewNav
         cars={cars}
         selectedCar={urlSelectedCar}
@@ -109,17 +109,19 @@ export function SessionsView() {
             No more sessions to load
           </Box>
         }
+        scrollableTarget="scrollableDiv"
+        scrollThreshold={0.8}
       >
         <Stack sx={{ py: 2 }}>
-          {sessions
-            .filter(session =>
-              (!selectedCar || session.car.id === selectedCar) &&
-              (!selectedDriver || session.driver.id === selectedDriver) &&
-              (!selectedTrack || session.track.id === selectedTrack)
-            )
-            .map(session => (
+          {sessions.length === 0 ? (
+            <Box sx={{ textAlign: 'center', py: 2, color: 'text.secondary' }}>
+              No sessions found
+            </Box>
+          ) : (
+            sessions.map(session => (
               <SessionListItem key={session.id} session={session} />
-            ))}
+            ))
+          )}
         </Stack>
       </InfiniteScroll>
     </Container>

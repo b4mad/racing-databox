@@ -61,7 +61,8 @@ export function SessionProvider({ children }: SessionProviderProps) {
           paddockService.getAllDrivers(10),
           paddockService.getAllTracks(10)
         ]);
-        setSessions(sessionsData.items);
+        const filteredSessions = sessionsData.items.filter(session => session.laps.length > 0);
+        setSessions(filteredSessions);
         setHasNextPage(sessionsData.hasNextPage);
         setEndCursor(sessionsData.endCursor);
         setCars(carsData);
@@ -96,7 +97,8 @@ export function SessionProvider({ children }: SessionProviderProps) {
         carId: selectedCar ?? undefined,
         trackId: selectedTrack ?? undefined
       });
-      setSessions(prev => [...prev, ...moreData.items]);
+      const filteredMoreSessions = moreData.items.filter(session => session.laps.length > 0);
+      setSessions(prev => [...prev, ...filteredMoreSessions]);
       setHasNextPage(moreData.hasNextPage);
       setEndCursor(moreData.endCursor);
     } catch (err) {
