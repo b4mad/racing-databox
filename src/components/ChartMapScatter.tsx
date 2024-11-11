@@ -9,6 +9,7 @@ import {
   ChartOptions
 } from 'chart.js';
 import { TelemetryPoint } from '../services/types';
+import { ZoomState } from './types';
 
 // Register Chart.js components
 ChartJS.register(
@@ -24,7 +25,7 @@ interface ChartMapScatterProps {
   zoomState?: ZoomState;
 }
 
-export function ChartMapScatter({ data, zoomState }: ChartMapScatterProps) {
+export function ChartMapScatter({ data }: ChartMapScatterProps) {
   const decimateData = (data: TelemetryPoint[], maxPoints: number) => {
     if (data.length <= maxPoints) return data;
     const step = Math.ceil(data.length / maxPoints);
@@ -41,11 +42,15 @@ export function ChartMapScatter({ data, zoomState }: ChartMapScatterProps) {
   const chartData = {
     datasets: [{
       label: 'Track Position',
-      data: decimatedData.map(point => ({
-        x: point.position.x,
-        y: point.position.z,
-        ...point
-      })),
+      data: decimatedData
+        .filter((point): point is TelemetryPoint & { position: NonNullable<TelemetryPoint['position']> } => 
+          point.position !== undefined
+        )
+        .map(point => ({
+          x: point.position.x,
+          y: point.position.z,
+          ...point
+        })),
       borderColor: decimatedData.map(point => getSpeedColor(point.speed)),
       backgroundColor: 'rgba(0,0,0,0)',
       borderWidth: 1,

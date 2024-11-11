@@ -10,7 +10,6 @@ interface DataKeyConfig {
 
 interface BaseGraphProps {
   currentLapData: TelemetryPoint[];
-  syncId?: string;
   zoomState: ZoomState;
   showBrush?: boolean;
   onZoomChange?: (startMeters: number, endMeters: number) => void;
@@ -56,7 +55,7 @@ export function GearGraph(props: BaseGraphProps) {
   return <LineGraph {...props} data={props.currentLapData} {...GRAPH_CONFIGS.gear} />;
 }
 
-export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, syncId, zoomState, onZoomChange }: LineGraphProps) {
+export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, zoomState, onZoomChange }: LineGraphProps) {
   return (
     <ChartLineGraph
       data={data}
@@ -64,7 +63,6 @@ export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, 
       unit={unit}
       stepLine={stepLine}
       title={title}
-      syncId={syncId}
       zoomState={zoomState}
       onZoomChange={onZoomChange}
     />

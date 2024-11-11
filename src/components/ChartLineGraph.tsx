@@ -38,7 +38,6 @@ interface ChartLineGraphProps {
   unit?: string;
   stepLine?: boolean;
   title?: string;
-  syncId?: string;
   zoomState: ZoomState;
   onZoomChange?: (start: number, end: number) => void;
 }

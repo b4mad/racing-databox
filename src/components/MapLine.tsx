@@ -25,11 +25,10 @@ ChartJS.register(
 
 interface MapLineProps {
   data: TelemetryPoint[];
-  syncId?: string;
   zoomState: ZoomState;
 }
 
-export function MapLine({ data, syncId, zoomState }: MapLineProps) {
+export function MapLine({ data, zoomState }: MapLineProps) {
   // Calculate visible map area based on zoomed data points
   const mapBounds = useMemo(() => {
     if (data.length === 0) return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
@@ -115,7 +114,7 @@ export function MapLine({ data, syncId, zoomState }: MapLineProps) {
     },
     hover: {
       intersect: false,
-      mode: 'nearest'
+      mode: 'nearest' as const
     },
     plugins: {
       tooltip: {

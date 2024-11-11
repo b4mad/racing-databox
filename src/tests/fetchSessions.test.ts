@@ -1,4 +1,5 @@
 import { PaddockService } from '../services/PaddockService';
+import { PaddockSession, PaddockLap } from '../services/types';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -26,14 +27,14 @@ describe('fetchSessions', () => {
     });
 
     it('should fetch sessions for driver ID 10', async function() {
-        const sessions = await paddockService.getSessions(10, 10);
+        const sessions = await paddockService.getSessions(10, undefined, { driverId: 10 });
         currentResponse = sessions;
 
         // Verify we got some sessions back
-        expect(sessions.length).toBeGreaterThan(0);
+        expect(sessions.items.length).toBeGreaterThan(0);
 
         // Check the structure of each session
-        sessions.forEach(session => {
+        sessions.items.forEach((session: PaddockSession) => {
             expect(session).toHaveProperty('sessionId');
             expect(session).toHaveProperty('driver');
             expect(session.driver.id).toBe(10);
@@ -47,10 +48,10 @@ describe('fetchSessions', () => {
         const sessions = await paddockService.getSessions(10);
         currentResponse = sessions;
 
-        expect(sessions.length).toBeLessThanOrEqual(10);
-        expect(sessions.length).toBeGreaterThan(0);
+        expect(sessions.items.length).toBeLessThanOrEqual(10);
+        expect(sessions.items.length).toBeGreaterThan(0);
 
-        sessions.forEach(session => {
+        sessions.items.forEach((session: PaddockSession) => {
             expect(session).toHaveProperty('sessionId');
             expect(session).toHaveProperty('driver');
             expect(session).toHaveProperty('car');
@@ -59,11 +60,11 @@ describe('fetchSessions', () => {
     }, 10000);
 
     it('should include valid lap data in sessions', async function() {
-        const sessions = await paddockService.getSessions(5, 10);
+        const sessions = await paddockService.getSessions(5, '10');
         currentResponse = sessions;
 
-        sessions.forEach(session => {
-            session.laps.forEach(lap => {
+        sessions.items.forEach((session: PaddockSession) => {
+            session.laps.forEach((lap: PaddockLap) => {
                 expect(lap).toHaveProperty('number');
                 expect(lap).toHaveProperty('time');
                 expect(lap).toHaveProperty('valid');

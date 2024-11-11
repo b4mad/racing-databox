@@ -1,7 +1,6 @@
 import { createContext, useCallback, useState, ReactNode } from 'react';
 import { PaddockService } from '../services/PaddockService';
-import { createTelemetryService } from '../services/TelemetryService';
-import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, TelemetryPoint } from '../services/types';
+import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack } from '../services/types';
 
 interface SessionContextType {
   // List view state

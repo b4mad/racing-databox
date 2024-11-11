@@ -30,7 +30,7 @@ export function TelemetryVisualization({
         <Grid size={6}>
           <Stack spacing={2} sx={{ height: "100%" }}>
             <Box sx={{ height: "50%" }}>
-              <MapLine data={currentLapData} syncId="telemetry" zoomState={zoomState} />
+              <MapLine data={currentLapData} zoomState={zoomState} />
             </Box>
             {session && (
               <Box sx={{ height: "auto" }}>
@@ -45,13 +45,13 @@ export function TelemetryVisualization({
           {currentLapData.length > 0 && (
             <>
               <Box sx={{ height: "200px" }}>
-                <SpeedGraph currentLapData={currentLapData} syncId="telemetry" zoomState={zoomState} onZoomChange={setZoomRange} />
+                <SpeedGraph currentLapData={currentLapData} zoomState={zoomState} onZoomChange={setZoomRange} />
               </Box>
               <Box sx={{ height: "200px" }}>
-                <PedalsGraph currentLapData={currentLapData} syncId="telemetry" zoomState={zoomState} onZoomChange={setZoomRange} />
+                <PedalsGraph currentLapData={currentLapData} zoomState={zoomState} onZoomChange={setZoomRange} />
               </Box>
               <Box sx={{ height: "200px" }}>
-                <GearGraph currentLapData={currentLapData} syncId="telemetry" showBrush={true} zoomState={zoomState} onZoomChange={setZoomRange} />
+                <GearGraph currentLapData={currentLapData} showBrush={true} zoomState={zoomState} onZoomChange={setZoomRange} />
               </Box>
             </>
           )}

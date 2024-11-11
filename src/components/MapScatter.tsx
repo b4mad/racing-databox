@@ -7,6 +7,6 @@ interface MapProps {
   zoomState?: ZoomState;
 }
 
-export function MapScatter({ data, zoomState }: MapProps) {
-  return <ChartMapScatter data={data} zoomState={zoomState} />;
+export function MapScatter({ data }: MapProps) {
+  return <ChartMapScatter data={data} />;
 }
