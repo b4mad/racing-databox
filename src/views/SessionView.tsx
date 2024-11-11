@@ -187,6 +187,7 @@ export function SessionView() {
             session={getSession(sessionId) || null}
             zoomState={zoomState}
             setZoomRange={setZoomRange}
+            lapsData={lapsData}
           />
         </Box>
       </Stack>
