@@ -46,6 +46,11 @@ export function SessionListItem({ session }: SessionListItemProps) {
           <Box>
             <Typography>Last driven: {/* TODO: Format timestamp */}</Typography>
             <Typography>Total time: {/* TODO: Format duration */}</Typography>
+            {process.env.NODE_ENV === 'development' && (
+              <Typography variant="caption" color="text.secondary">
+                ID: {session.id}
+              </Typography>
+            )}
           </Box>
 
           <IconButton

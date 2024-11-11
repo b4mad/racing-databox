@@ -53,6 +53,16 @@ export function SessionsView() {
     fetchSessions(true)
   }, [])
 
+  // Check if we need to load more content when initial content doesn't fill the viewport
+  useEffect(() => {
+    if (!loading && sessions.length > 0 && hasNextPage) {
+      const scrollableDiv = document.getElementById('scrollableDiv');
+      if (scrollableDiv && scrollableDiv.scrollHeight <= scrollableDiv.clientHeight) {
+        fetchMoreSessions();
+      }
+    }
+  }, [loading, sessions, hasNextPage]);
+
   // Refresh sessions when selected filters change
   useEffect(() => {
     if ((selectedDriver !== undefined && selectedDriver !== null) ||
