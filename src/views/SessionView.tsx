@@ -122,7 +122,7 @@ export function SessionView() {
     };
 
     loadSession();
-  }, [sessionId, fetchSession, currentLap, zoomStart, zoomEnd]);
+  }, [sessionId, fetchSession, currentLap]);
 
   const handleLapSelect = (lap: number) => {
     setCurrentLap(lap);
