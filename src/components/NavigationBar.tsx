@@ -2,6 +2,7 @@ import { Box, IconButton, Fade } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useState } from 'react';
+import { ThemeToggle } from './ThemeToggle';
 
 export const NavigationBar = () => {
   const navigate = useNavigate();
@@ -30,19 +31,22 @@ export const NavigationBar = () => {
       }}
     >
       <Fade in={isVisible}>
-        <IconButton
-          onClick={() => navigate('/sessions')}
-          sx={{
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            transition: 'background-color 0.2s ease-in-out',
-            '&:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            },
-            color: 'white',
-          }}
-        >
-          <ArrowBackIcon />
-        </IconButton>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton
+            onClick={() => navigate('/sessions')}
+            sx={{
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              transition: 'background-color 0.2s ease-in-out',
+              '&:hover': {
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              },
+              color: 'white',
+            }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          <ThemeToggle />
+        </Box>
       </Fade>
     </Box>
   );
