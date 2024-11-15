@@ -1,6 +1,7 @@
 import './App.css'
-import { Box } from '@mui/material'
+import { Box, CssBaseline } from '@mui/material'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { ThemeProvider } from './contexts/ThemeContext'
 import { NavigationBar } from './components/NavigationBar'
 import { SessionView } from './views/SessionView'
 import { SessionsView } from './views/SessionsView'
@@ -35,7 +36,9 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <QueryProvider>
+      <ThemeProvider>
+        <CssBaseline />
+        <QueryProvider>
         <QueryParamProvider>
           <UIStateProvider>
             <SessionProvider>
@@ -46,6 +49,7 @@ function App() {
           </UIStateProvider>
         </QueryParamProvider>
       </QueryProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
