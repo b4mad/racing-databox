@@ -1,10 +1,8 @@
-import { Box, Typography, Grid } from '@mui/material';
+import { Box, Typography, Grid, IconButton } from '@mui/material';
 import { formatTime } from '../utils/timeFormat';
 import { PaddockLap } from '../services/types';
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import SettingsIcon from '@mui/icons-material/Settings';
-import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Link } from 'react-router-dom';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
@@ -73,14 +71,16 @@ export function Lap({ lap, selected = false }: LapProps) {
           </Box>
         </Grid>
 
-        {/* Actions */}
+        {/* View Action */}
         <Grid item xs={1}>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <CompareArrowsIcon />
-            <ChatBubbleOutlineIcon />
-            <SettingsIcon />
-            <GpsFixedIcon />
-          </Box>
+          <IconButton
+            component={Link}
+            to={`/session/${lap.session?.sessionId}?lap=${lap.id}`}
+            color="primary"
+            aria-label="view lap"
+          >
+            <VisibilityIcon />
+          </IconButton>
         </Grid>
       </Grid>
     </Box>

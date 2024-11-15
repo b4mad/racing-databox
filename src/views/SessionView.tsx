@@ -20,8 +20,8 @@ export function SessionView() {
 
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [currentLap, setCurrentLap] = useQueryParam('lap', NumberParam);
-  const [lapsData, setLapsData] = useState<{ [lapNumber: number]: TelemetryCacheEntry }>({})
+  const [currentLapId, setCurrentLapId] = useQueryParam('lap', NumberParam);
+  const [lapsData, setLapsData] = useState<{ [lapId: number]: TelemetryCacheEntry }>({})
   const [navigationOpen, setNavigationOpen] = useState(false)
   const [paddockOpen, setPaddockOpen] = useState(false)
   const [zoomStart, setZoomStart] = useQueryParam('zoomStart', NumberParam);
@@ -35,7 +35,7 @@ export function SessionView() {
   }
 
   const setZoomRange = useCallback((startMeters: number, endMeters: number) => {
-    const currentLapEntry = lapsData[currentLap ?? 0];
+    const currentLapEntry = lapsData[currentLapId ?? 0];
     if (!currentLapEntry?.points.length) return;
     const maxDistance = currentLapEntry.points[currentLapEntry.points.length - 1].distance;
 
@@ -45,7 +45,7 @@ export function SessionView() {
 
     setZoomStart(start);
     setZoomEnd(end);
-  }, [lapsData, currentLap, setZoomStart, setZoomEnd]);
+  }, [lapsData, currentLapId, setZoomStart, setZoomEnd]);
 
   const sessionInformation = useMemo<SessionInformation | undefined>(() => {
     const session = getSession(sessionId);
@@ -61,15 +61,15 @@ export function SessionView() {
   const { getTelemetryForLap } = useTelemetry();
 
   useEffect(() => {
-    if (currentLap) {
+    if (currentLapId) {
       const session = getSession(sessionId);
       if (session) {
-        const lap = session.laps.find(l => l.number === currentLap);
+        const lap = session.laps.find(l => l.id === currentLapId);
         if (lap) {
-          getTelemetryForLap(sessionId, lap.id)
+          getTelemetryForLap(sessionId, currentLapId)
             .then(entry => setLapsData(prev => ({
               ...prev,
-              [currentLap]: entry
+              [currentLapId]: entry
             })))
             .catch(error => {
               console.error('Failed to load telemetry:', error);
@@ -78,7 +78,7 @@ export function SessionView() {
         }
       }
     }
-  }, [sessionId, currentLap, getSession, getTelemetryForLap]);
+  }, [sessionId, currentLapId, getSession, getTelemetryForLap]);
 
   useEffect(() => {
     const loadSession = async () => {
@@ -88,18 +88,12 @@ export function SessionView() {
 
         if (session.laps.length > 0) {
           // If no lap is set in URL, use first lap
-          const targetLap = currentLap || session.laps[0].number;
-          const selectedLap = session.laps.find(l => l.number === targetLap)?.number || session.laps[0].number;
-
-          setCurrentLap(selectedLap);
+          const targetLapId = currentLapId || session.laps[0].id;
+          setCurrentLapId(targetLapId);
 
           // Fetch telemetry for the selected lap
-          const selectedLapId = session.laps.find(l => l.number === selectedLap)?.id;
-          if (!selectedLapId) {
-            throw new Error(`Could not find lap with number ${selectedLap}`);
-          }
-          const telemetry = await getTelemetryForLap(sessionId, selectedLapId);
-          setLapsData({ [selectedLap]: telemetry });
+          const telemetry = await getTelemetryForLap(sessionId, targetLapId);
+          setLapsData({ [targetLapId]: telemetry });
 
           if (telemetry.points.length > 0) {
             const maxDistance = telemetry.points[telemetry.points.length - 1].distance;
@@ -122,21 +116,14 @@ export function SessionView() {
     };
 
     loadSession();
-  }, [sessionId, fetchSession, currentLap]);
+  }, [sessionId, fetchSession, currentLapId]);
 
-  const handleLapSelect = (lap: number) => {
-    setCurrentLap(lap);
-    const session = getSession(sessionId);
-    const selectedLap = session?.laps.find(l => l.number === lap);
-    if (!selectedLap) {
-      console.error(`Could not find lap with number ${lap}`);
-      return;
-    }
-
-    getTelemetryForLap(sessionId, selectedLap.id)
+  const handleLapSelect = (lapId: number) => {
+    setCurrentLapId(lapId);
+    getTelemetryForLap(sessionId, lapId)
       .then(entry => setLapsData(prev => ({
         ...prev,
-        [lap]: entry
+        [lapId]: entry
       })))
       .catch(error => {
         console.error('Failed to load telemetry:', error);
@@ -175,15 +162,15 @@ export function SessionView() {
             setNavigationOpen={setNavigationOpen}
             sessionInformation={sessionInformation}
             onLapSelect={handleLapSelect}
-            currentLap={currentLap ?? 0}
+            currentLap={currentLapId ?? 0}
             landmarks={undefined} // TODO: Implement landmarks fetching
-            currentLapData={lapsData[currentLap ?? 0]?.points ?? []}
+            currentLapData={lapsData[currentLapId ?? 0]?.points ?? []}
             setZoomRange={setZoomRange}
           />
         </Box>
         <Box sx={{ height: "90vh" }}>
           <TelemetryVisualization
-            currentLapData={lapsData[currentLap ?? 0]?.points ?? []}
+            currentLapData={lapsData[currentLapId ?? 0]?.points ?? []}
             session={getSession(sessionId) || null}
             zoomState={zoomState}
             setZoomRange={setZoomRange}
