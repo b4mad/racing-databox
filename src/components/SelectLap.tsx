@@ -1,18 +1,14 @@
-import { Modal, Box, Typography, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
-
-const formatTime = (seconds: number): string => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = (seconds % 60).toFixed(3);
-  return `${minutes}:${remainingSeconds.padStart(6, '0')}`;
-};
-import { SessionInformation } from '../services/types';
+import { Modal, Box, Typography, List } from '@mui/material';
+import { SessionInformation, PaddockLap } from '../services/types';
+import { Lap } from './Lap';
 
 const style = {
   position: 'absolute' as 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: '80%',
+  maxWidth: 1200,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -47,25 +43,17 @@ export const SelectLap = ({
           Select Lap
         </Typography>
         <List sx={{ maxHeight: '60vh', overflow: 'auto' }}>
-          {sessionInformation.laps.map((lap) => (
-            <ListItem key={lap} disablePadding>
-              <ListItemButton
-                onClick={() => {
-                  onLapSelect(lap);
-                  onClose();
-                }}
-                selected={lap === currentLap}
-              >
-                <ListItemText
-                  primary={`Lap ${lap}`}
-                  secondary={(() => {
-                    const lapDetail = sessionInformation.lapDetails.find(detail => detail.number === lap);
-                    if (!lapDetail) return 'No data';
-                    return `${formatTime(lapDetail.time)} ${lapDetail.valid ? '✓' : '✗'}`;
-                  })()}
-                />
-              </ListItemButton>
-            </ListItem>
+          {sessionInformation.lapDetails.map((lap: PaddockLap) => (
+            <Box
+              key={lap.id}
+              onClick={() => {
+                onLapSelect(lap.id);
+                onClose();
+              }}
+              sx={{ cursor: 'pointer' }}
+            >
+              <Lap lap={lap} selected={lap.id === currentLap} />
+            </Box>
           ))}
         </List>
       </Box>
