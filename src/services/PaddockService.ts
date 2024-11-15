@@ -235,6 +235,8 @@ export class PaddockService {
                             telemetryLapsBySessionId {
                                 nodes {
                                     id
+                                    completed
+                                    officialTime
                                     length
                                     number
                                     time

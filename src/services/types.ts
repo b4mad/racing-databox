@@ -54,6 +54,8 @@ export interface PaddockLap {
     time: number;
     valid: boolean;
     length?: number;
+    completed: boolean;
+    officialTime: number;
     session?: PaddockSession;
     telemetry?: TelemetryPoint[];
 }
