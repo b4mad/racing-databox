@@ -53,7 +53,10 @@ export function SessionView() {
     return {
       laps: session.laps.map(lap => lap.number),
       mapDataAvailable: session.laps.some(lap => lap.telemetry?.some(point => point.position)),
-      lapDetails: session.laps
+      lapDetails: session.laps.map(lap => ({
+        ...lap,
+        session: session
+      }))
     };
   }, [sessionId, getSession]);
 
