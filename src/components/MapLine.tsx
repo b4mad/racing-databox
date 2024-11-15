@@ -1,4 +1,5 @@
 import { Line } from 'react-chartjs-2';
+import { useTheme } from '@mui/material/styles';
 import { TelemetryPoint } from '../services/types';
 import { ZoomState } from './types';
 import { useMemo } from 'react';
@@ -29,6 +30,7 @@ interface MapLineProps {
 }
 
 export function MapLine({ data, zoomState }: MapLineProps) {
+  const theme = useTheme();
   // Calculate visible map area based on zoomed data points
   const mapBounds = useMemo(() => {
     if (data.length === 0) return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
@@ -71,8 +73,8 @@ export function MapLine({ data, zoomState }: MapLineProps) {
         data: data
           .filter(point => point.position?.y !== undefined)
           .map(point => point.position!.y),
-        borderColor: '#000000',
-        backgroundColor: '#550000',
+        borderColor: theme.palette.chart?.text,
+        backgroundColor: theme.palette.primary.main,
         pointRadius: 0,
         pointHoverRadius: 2,
         tension: 0.4
@@ -88,7 +90,14 @@ export function MapLine({ data, zoomState }: MapLineProps) {
         type: 'linear' as const,
         title: {
           display: true,
-          text: 'X Position (m)'
+          text: 'X Position (m)',
+          color: theme.palette.chart?.text
+        },
+        grid: {
+          color: theme.palette.chart?.grid
+        },
+        ticks: {
+          color: theme.palette.chart?.text
         },
         min: mapBounds.minX,
         max: mapBounds.maxX
@@ -97,7 +106,14 @@ export function MapLine({ data, zoomState }: MapLineProps) {
         type: 'linear' as const,
         title: {
           display: true,
-          text: 'Y Position (m)'
+          text: 'Y Position (m)',
+          color: theme.palette.chart?.text
+        },
+        grid: {
+          color: theme.palette.chart?.grid
+        },
+        ticks: {
+          color: theme.palette.chart?.text
         },
         min: mapBounds.minY,
         max: mapBounds.maxY

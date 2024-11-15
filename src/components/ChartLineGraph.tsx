@@ -1,4 +1,5 @@
 import { Line } from 'react-chartjs-2';
+import { useTheme } from '@mui/material/styles';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -42,7 +43,7 @@ interface ChartLineGraphProps {
   onZoomChange?: (start: number, end: number) => void;
 }
 
-export function ChartLineGraph({
+export function ChartLineGraph({ 
   data,
   dataKeys,
   unit = '',
@@ -51,6 +52,7 @@ export function ChartLineGraph({
   zoomState,
   onZoomChange
 }: ChartLineGraphProps) {
+  const theme = useTheme();
   const chartData = {
     labels: data.map(point => point.distance),
     datasets: dataKeys.map(config => ({
@@ -74,7 +76,14 @@ export function ChartLineGraph({
         type: 'linear',
         title: {
           display: true,
-          text: 'Distance (m)'
+          text: 'Distance (m)',
+          color: theme.palette.chart?.text
+        },
+        grid: {
+          color: theme.palette.chart?.grid
+        },
+        ticks: {
+          color: theme.palette.chart?.text
         },
         min: typeof zoomState.left === 'number' ? zoomState.left : parseFloat(zoomState.left),
         max: typeof zoomState.right === 'number' ? zoomState.right : parseFloat(zoomState.right)
@@ -82,7 +91,14 @@ export function ChartLineGraph({
       y: {
         title: {
           display: true,
-          text: unit
+          text: unit,
+          color: theme.palette.chart?.text
+        },
+        grid: {
+          color: theme.palette.chart?.grid
+        },
+        ticks: {
+          color: theme.palette.chart?.text
         },
         min: 0,
         max: dataKeys[0].key === 'speed' ? 250 : undefined

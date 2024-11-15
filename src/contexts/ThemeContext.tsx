@@ -1,4 +1,5 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { useSystemTheme } from '../hooks/useSystemTheme';
 import { PaletteMode, ThemeProvider as MUIThemeProvider } from '@mui/material';
 import { getTheme } from '../theme';
 
@@ -15,7 +16,12 @@ const ThemeContext = createContext<ThemeContextType>({
 export const useTheme = () => useContext(ThemeContext);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setMode] = useState<PaletteMode>('light');
+  const systemTheme = useSystemTheme();
+  const [mode, setMode] = useState<PaletteMode>(systemTheme);
+
+  useEffect(() => {
+    setMode(systemTheme);
+  }, [systemTheme]);
 
   const colorMode = useMemo(
     () => ({
