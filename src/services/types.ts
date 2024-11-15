@@ -31,7 +31,6 @@ export interface RawTelemetryData {
 }
 
 export interface SessionInformation {
-    laps: number[];
     mapDataAvailable: boolean;
     lapDetails: PaddockLap[];
 }

@@ -51,7 +51,6 @@ export function SessionView() {
     const session = getSession(sessionId);
     if (!session?.laps) return undefined;
     return {
-      laps: session.laps.map(lap => lap.number),
       mapDataAvailable: session.laps.some(lap => lap.telemetry?.some(point => point.position)),
       lapDetails: session.laps.map(lap => ({
         ...lap,
@@ -123,15 +122,18 @@ export function SessionView() {
 
   const handleLapSelect = (lapId: number) => {
     setCurrentLapId(lapId);
-    getTelemetryForLap(sessionId, lapId)
-      .then(entry => setLapsData(prev => ({
-        ...prev,
-        [lapId]: entry
-      })))
-      .catch(error => {
-        console.error('Failed to load telemetry:', error);
-        setError('Failed to load telemetry data');
-      });
+    // Load telemetry data for the selected lap if not already loaded
+    if (!lapsData[lapId]) {
+      getTelemetryForLap(sessionId, lapId)
+        .then(entry => setLapsData(prev => ({
+          ...prev,
+          [lapId]: entry
+        })))
+        .catch(error => {
+          console.error('Failed to load telemetry:', error);
+          setError('Failed to load telemetry data');
+        });
+    }
   }
 
   if (loading) {

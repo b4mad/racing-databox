@@ -40,7 +40,7 @@ export const SelectLap = ({
     >
       <Box sx={style}>
         <Typography id="select-lap-modal" variant="h6" component="h2">
-          Select Lap
+          Select Lap to Compare
         </Typography>
         <List sx={{ maxHeight: '60vh', overflow: 'auto' }}>
           {sessionInformation.lapDetails.map((lap: PaddockLap) => (
