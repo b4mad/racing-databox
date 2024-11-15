@@ -1,6 +1,7 @@
 import { Box, Paper, Typography, IconButton, Collapse } from '@mui/material';
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { useState } from 'react';
+import { Lap } from './Lap';
 import { PaddockSession } from '../services/types';
 import { useNavigate } from 'react-router-dom';
 
@@ -67,7 +68,9 @@ export function SessionListItem({ session }: SessionListItemProps) {
 
       <Collapse in={expanded}>
         <Box sx={{ mt: 2 }}>
-          {/* TODO: Add event details table */}
+          {session.laps.map((lap) => (
+            <Lap key={lap.id} lap={lap} />
+          ))}
         </Box>
       </Collapse>
     </Paper>

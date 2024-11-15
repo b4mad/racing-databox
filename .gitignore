@@ -27,3 +27,4 @@ dist-ssr
 .env
 .env*
 aider/ignore
+node_modules
