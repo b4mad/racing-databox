@@ -1,13 +1,9 @@
-import path from 'path';
-import webpack from 'webpack';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import { fileURLToPath } from 'url';
-import bodyParser from 'body-parser';
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const bodyParser = require('body-parser');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export default {
+module.exports = {
   entry: './src/main.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
