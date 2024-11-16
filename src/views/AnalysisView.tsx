@@ -1,7 +1,7 @@
 /**
- * SessionView Component
+ * AnalysisView Component
  *
- * Main view component for displaying telemetry session data. This component handles:
+ * Main view component for analyzing telemetry session data. This component handles:
  * - Loading and managing session data
  * - Managing telemetry data for multiple laps
  * - Zoom state for visualization
@@ -21,7 +21,7 @@ import { AnalysisData, TelemetryCacheEntry } from '../services/types'
 import { ZoomState } from '../components/types'
 
 
-export function SessionView() {
+export function AnalysisView() {
   const { sessionId } = useParams();
   const { getSession, fetchSession } = useSession();
 

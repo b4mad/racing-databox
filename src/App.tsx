@@ -3,7 +3,7 @@ import { Box, CssBaseline } from '@mui/material'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { NavigationBar } from './components/NavigationBar'
-import { SessionView } from './views/SessionView'
+import { AnalysisView } from './views/AnalysisView'
 import { SessionsView } from './views/SessionsView'
 import { QueryParamProvider } from './providers/QueryParamProvider'
 import { QueryProvider } from './providers/QueryProvider'
@@ -18,13 +18,13 @@ function AppContent() {
   return (
     <>
       {isSessionView && <NavigationBar />}
-      <Box sx={{ 
+      <Box sx={{
         height: '100vh',
         width: '100vw',
         overflow: isSessionView ? 'hidden' : 'auto'
       }}>
         <Routes>
-          <Route path="/session/:sessionId" element={<SessionView />} />
+          <Route path="/session/:sessionId" element={<AnalysisView />} />
           <Route path="/sessions" element={<SessionsView />} />
           <Route path="/" element={<Navigate to="/sessions" replace />} />
         </Routes>
