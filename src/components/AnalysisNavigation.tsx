@@ -3,6 +3,8 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
+import { useState } from 'react';
+import { LapsModal } from './LapsModal';
 
 interface AnalysisNavigationProps {
   onLapSelect: (lap: number) => void;
@@ -10,6 +12,7 @@ interface AnalysisNavigationProps {
 
 export function AnalysisNavigation({ onLapSelect }: AnalysisNavigationProps) {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1 }}>
@@ -29,9 +32,16 @@ export function AnalysisNavigation({ onLapSelect }: AnalysisNavigationProps) {
       <IconButton
         aria-label="modify laps"
         size="large"
+        onClick={() => setIsModalOpen(true)}
       >
         <TimelineIcon />
       </IconButton>
+
+      <LapsModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        laps={[]} // We'll populate this later when we add the laps search
+      />
     </Box>
   );
 }
