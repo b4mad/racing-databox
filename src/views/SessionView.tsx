@@ -1,3 +1,14 @@
+/**
+ * SessionView Component
+ *
+ * Main view component for displaying telemetry session data. This component handles:
+ * - Loading and managing session data
+ * - Managing telemetry data for multiple laps
+ * - Zoom state for visualization
+ * - URL query parameter synchronization
+ * - Navigation and paddock UI states
+ */
+
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useTelemetry } from '../hooks/useTelemetry'
 import { useParams, Navigate } from 'react-router-dom'
@@ -27,23 +38,33 @@ export function SessionView() {
   const [zoomStart, setZoomStart] = useQueryParam('zoomStart', NumberParam);
   const [zoomEnd, setZoomEnd] = useQueryParam('zoomEnd', NumberParam);
 
+  // Configure zoom state for the visualization
+  // top and bottom are auto-scaled by Chart.js based on data
   const zoomState: ZoomState = {
-    left: zoomStart || 0,
-    right: zoomEnd || 0,
-    top: 0,   // Will be auto-scaled by Chart.js
-    bottom: 0 // Will be auto-scaled by Chart.js
+    left: zoomStart || 0,      // Start of visible range in meters
+    right: zoomEnd || 0,       // End of visible range in meters
+    top: 0,                    // Will be auto-scaled by Chart.js
+    bottom: 0                  // Will be auto-scaled by Chart.js
   }
 
+  /**
+   * Updates the zoom range for the telemetry visualization
+   * Ensures the range stays within valid bounds (0 to max lap distance)
+   * Updates URL parameters to persist zoom state
+   */
   const setZoomRange = useCallback((startMeters: number, endMeters: number) => {
     const firstLapId = lapIds?.[0] ?? 0;
     const firstLapEntry = lapsData[typeof firstLapId === 'number' ? firstLapId : 0];
     if (!firstLapEntry?.points.length) return;
+
+    // Get the total distance of the lap for bounds checking
     const maxDistance = firstLapEntry.points[firstLapEntry.points.length - 1].distance;
 
-    // Clamp values to valid range
+    // Clamp values to valid range (0 to maxDistance)
     const start = Math.max(0, Math.min(startMeters, maxDistance));
     const end = Math.max(0, Math.min(endMeters, maxDistance));
 
+    // Update URL parameters with new zoom range
     setZoomStart(start);
     setZoomEnd(end);
   }, [lapsData, lapIds, setZoomStart, setZoomEnd]);
@@ -60,14 +81,18 @@ export function SessionView() {
   // Load telemetry data when lap changes
   const { getTelemetryForLap } = useTelemetry();
 
+  // Load telemetry data whenever selected laps change
   useEffect(() => {
     if (lapIds?.length) {
       const session = getSession(sessionId);
       if (session) {
+        // Load telemetry data for each selected lap that hasn't been loaded yet
         lapIds.forEach(lapId => {
           if (typeof lapId === 'number' && !lapsData[lapId]) {
             const lap = session.laps.find(l => l.id === lapId);
             if (!lap) return;
+
+            // Fetch telemetry data and update state
             getTelemetryForLap(sessionId, lapId)
               .then(entry => setLapsData(prev => ({
                 ...prev,
@@ -131,13 +156,21 @@ export function SessionView() {
     loadSession();
   }, [sessionId]);
 
+  /**
+   * Handles lap selection/deselection in the UI
+   * Maintains the selected laps in URL parameters
+   * Ensures at least one lap is always selected
+   */
   const handleLapSelect = (lapId: number) => {
     const currentLapIds = lapIds?.filter((id): id is number => typeof id === 'number') ?? [];
+
+    // Toggle lap selection
     const newLapIds = currentLapIds.includes(lapId)
       ? currentLapIds.filter(id => id !== lapId)  // Remove if already selected
-      : [...currentLapIds, lapId];        // Add if not selected
+      : [...currentLapIds, lapId];                // Add if not selected
 
-    setLapIds(newLapIds.length ? newLapIds : [lapId]); // Ensure at least one lap is selected
+    // Update URL parameters, ensuring at least one lap remains selected
+    setLapIds(newLapIds.length ? newLapIds : [lapId]);
   }
 
   if (loading) {
