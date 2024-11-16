@@ -30,9 +30,8 @@ export interface RawTelemetryData {
     data: number[][];
 }
 
-export interface SessionInformation {
-    mapDataAvailable: boolean;
-    lapDetails: PaddockLap[];
+export interface AnalysisData {
+    laps: PaddockLap[];
 }
 
 

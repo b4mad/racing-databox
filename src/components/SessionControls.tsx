@@ -95,13 +95,13 @@ export function SessionControls({
         }}
       />
 
-      <SelectLap
+      {/* <SelectLap
         open={navigationOpen}
         onClose={() => setNavigationOpen(false)}
         sessionInformation={sessionInformation}
         onLapSelect={onLapSelect}
         currentLap={currentLap ?? 0}
-      />
+      /> */}
     </Stack>
   )
 }

@@ -6,7 +6,7 @@ import { Container, Box, Stack, CircularProgress } from '@mui/material'
 import { useSession } from '../hooks/useSession'
 import { SessionControls } from '../components/SessionControls'
 import { TelemetryVisualization } from '../components/TelemetryVisualization'
-import { SessionInformation, TelemetryCacheEntry } from '../services/types'
+import { AnalysisData, TelemetryCacheEntry } from '../services/types'
 import { ZoomState } from '../components/types'
 
 
@@ -47,17 +47,14 @@ export function SessionView() {
     setZoomEnd(end);
   }, [lapsData, currentLapId, setZoomStart, setZoomEnd]);
 
-  const sessionInformation = useMemo<SessionInformation | undefined>(() => {
+  const analysisData = useMemo<AnalysisData | undefined>(() => {
     const session = getSession(sessionId);
     if (!session?.laps) return undefined;
+
     return {
-      mapDataAvailable: session.laps.some(lap => lap.telemetry?.some(point => point.position)),
-      lapDetails: session.laps.map(lap => ({
-        ...lap,
-        session: session
-      }))
+        laps: session.laps
     };
-  }, [sessionId, getSession]);
+  }, [sessionId]);
 
   // Load telemetry data when lap changes
   const { getTelemetryForLap } = useTelemetry();
@@ -165,7 +162,7 @@ export function SessionView() {
             setPaddockOpen={setPaddockOpen}
             navigationOpen={navigationOpen}
             setNavigationOpen={setNavigationOpen}
-            sessionInformation={sessionInformation}
+            sessionInformation={analysisData}
             onLapSelect={handleLapSelect}
             currentLap={currentLapId ?? 0}
             landmarks={undefined} // TODO: Implement landmarks fetching
