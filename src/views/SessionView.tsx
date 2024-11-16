@@ -119,27 +119,9 @@ export function SessionView() {
           const initialLapIds = lapIds?.length ? lapIds : [session.laps[0].id];
           setLapIds(initialLapIds);
 
-          // Fetch telemetry for all selected laps
-          const telemetryPromises = initialLapIds
-            .filter((lapId): lapId is number => typeof lapId === 'number')
-            .map(lapId =>
-              getTelemetryForLap(sessionId, lapId)
-                .then(telemetry => ({ lapId, telemetry }))
-            );
-
-          const results = await Promise.all(telemetryPromises);
-          const newLapsData = Object.fromEntries(
-            results.map(({ lapId, telemetry }) => [lapId, telemetry])
-          );
-          setLapsData(newLapsData);
-
-          // Use the first lap's telemetry for initial zoom range
-          const firstTelemetry = results[0]?.telemetry;
-          if (firstTelemetry?.points.length > 0) {
-            const maxDistance = firstTelemetry.points[firstTelemetry.points.length - 1].distance;
-            setZoomStart(zoomStart || 0);
-            setZoomEnd(zoomEnd || maxDistance);
-          }
+          // Set initial zoom range to full lap distance (will be updated when telemetry loads)
+          setZoomStart(zoomStart || 0);
+          setZoomEnd(zoomEnd || 0);
         }
 
         setError(null);
