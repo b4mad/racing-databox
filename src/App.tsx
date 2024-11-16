@@ -2,7 +2,6 @@ import './App.css'
 import { Box, CssBaseline } from '@mui/material'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { ThemeProvider } from './contexts/ThemeContext'
-import { NavigationBar } from './components/NavigationBar'
 import { AnalysisView } from './views/AnalysisView'
 import { SessionsView } from './views/SessionsView'
 import { QueryParamProvider } from './providers/QueryParamProvider'
@@ -17,7 +16,6 @@ function AppContent() {
 
   return (
     <>
-      {isSessionView && <NavigationBar />}
       <Box sx={{
         height: '100vh',
         width: '100vw',
