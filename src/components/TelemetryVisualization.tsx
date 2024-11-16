@@ -3,13 +3,13 @@ import Grid from '@mui/material/Grid2'
 import { MapLine } from './MapLine'
 import { SpeedGraph, PedalsGraph, GearGraph } from './LineGraph'
 import { SessionInfoBox } from './SessionInfoBox'
-import { TelemetryPoint, PaddockSession, TelemetryCacheEntry } from '../services/types'
+import { TelemetryPoint, TelemetryCacheEntry, AnalysisData } from '../services/types'
 import { ZoomState } from './types'
 
 interface TelemetryVisualizationProps {
   currentLapData: TelemetryPoint[]
   compareLapData?: TelemetryPoint[]
-  session: PaddockSession | null
+  analysisData: AnalysisData | undefined
   zoomState: ZoomState
   setZoomRange: (startMeters: number, endMeters: number) => void
   lapsData: { [lapNumber: number]: TelemetryCacheEntry }
@@ -17,7 +17,7 @@ interface TelemetryVisualizationProps {
 
 export function TelemetryVisualization({
   currentLapData,
-  session = null,
+  analysisData,
   zoomState,
   setZoomRange,
   lapsData
@@ -32,9 +32,9 @@ export function TelemetryVisualization({
             <Box sx={{ height: "50%" }}>
               <MapLine data={currentLapData} zoomState={zoomState} />
             </Box>
-            {session && (
+            {analysisData && (
               <Box sx={{ height: "auto" }}>
-                <SessionInfoBox session={session} />
+                <SessionInfoBox analysisData={analysisData} />
               </Box>
             )}
           </Stack>
