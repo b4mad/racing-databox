@@ -94,10 +94,19 @@ export function SessionView() {
 
             // Fetch telemetry data and update state
             getTelemetryForLap(sessionId, lapId)
-              .then(entry => setLapsData(prev => ({
-                ...prev,
-                [lapId]: entry
-              })))
+              .then(entry => {
+                setLapsData(prev => ({
+                  ...prev,
+                  [lapId]: entry
+                }));
+                
+                // Set initial zoom range to full lap distance when first lap's telemetry loads
+                if (!zoomStart && !zoomEnd && entry.points.length > 0) {
+                  const maxDistance = entry.points[entry.points.length - 1].distance;
+                  setZoomStart(0);
+                  setZoomEnd(maxDistance);
+                }
+              })
               .catch(error => {
                 console.error('Failed to load telemetry:', error);
                 setError('Failed to load telemetry data');
@@ -119,9 +128,6 @@ export function SessionView() {
           const initialLapIds = lapIds?.length ? lapIds : [session.laps[0].id];
           setLapIds(initialLapIds);
 
-          // Set initial zoom range to full lap distance (will be updated when telemetry loads)
-          setZoomStart(zoomStart || 0);
-          setZoomEnd(zoomEnd || 0);
         }
 
         setError(null);
