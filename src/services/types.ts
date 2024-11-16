@@ -32,6 +32,7 @@ export interface RawTelemetryData {
 
 export interface AnalysisData {
     laps: PaddockLap[];
+    session: PaddockSession;
     car: PaddockCar;
     track: PaddockTrack;
     game: PaddockGame;

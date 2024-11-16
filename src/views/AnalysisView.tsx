@@ -77,6 +77,7 @@ export function AnalysisView() {
 
     return {
         laps: filteredLaps,
+        session: session,
         car: session.car,
         track: session.track,
         game: session.game
