@@ -82,6 +82,11 @@ export function SessionView() {
   const { getTelemetryForLap } = useTelemetry();
 
   // Load telemetry data whenever selected laps change
+  /**
+   * Loads the session data when the component mounts or sessionId changes
+   * Sets initial lap selection if none exists in URL
+   * Handles loading state and error handling
+   */
   useEffect(() => {
     if (lapIds?.length) {
       const session = getSession(sessionId);
@@ -99,7 +104,7 @@ export function SessionView() {
                   ...prev,
                   [lapId]: entry
                 }));
-                
+
                 // Set initial zoom range to full lap distance when first lap's telemetry loads
                 if (!zoomStart && !zoomEnd && entry.points.length > 0) {
                   const maxDistance = entry.points[entry.points.length - 1].distance;
@@ -117,6 +122,20 @@ export function SessionView() {
     }
   }, [sessionId, lapIds]);
 
+
+  /**
+   * Asynchronously loads the session data based on the provided sessionId.
+   *
+   * This function sets the loading state to true while fetching the session data.
+   * If the session contains laps and no lap is set in the URL, it uses the first lap's ID.
+   * It also handles any errors that occur during the fetch operation, setting an error message
+   * if an error is caught. In development mode, it rethrows the error for debugging purposes.
+   * Finally, it sets the loading state to false once the operation is complete.
+   *
+   * @async
+   * @function loadSession
+   * @throws Will throw an error in development mode if fetching the session data fails.
+   */
   useEffect(() => {
     const loadSession = async () => {
       try {
