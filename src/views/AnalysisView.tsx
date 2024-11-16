@@ -215,7 +215,6 @@ export function AnalysisView() {
         </Box>
         <Box sx={{ height: "90vh" }}>
           <TelemetryVisualization
-            currentLapData={lapsData[lapIds?.[0] ?? 0]?.points ?? []}
             analysisData={analysisData}
             zoomState={zoomState}
             setZoomRange={setZoomRange}

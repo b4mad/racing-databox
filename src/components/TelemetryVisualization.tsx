@@ -3,12 +3,10 @@ import Grid from '@mui/material/Grid2'
 import { MapLine } from './MapLine'
 import { SpeedGraph, PedalsGraph, GearGraph } from './LineGraph'
 import { SessionInfoBox } from './SessionInfoBox'
-import { TelemetryPoint, TelemetryCacheEntry, AnalysisData } from '../services/types'
+import { TelemetryCacheEntry, AnalysisData } from '../services/types'
 import { ZoomState } from './types'
 
 interface TelemetryVisualizationProps {
-  currentLapData: TelemetryPoint[]
-  compareLapData?: TelemetryPoint[]
   analysisData: AnalysisData | undefined
   zoomState: ZoomState
   setZoomRange: (startMeters: number, endMeters: number) => void
@@ -16,12 +14,13 @@ interface TelemetryVisualizationProps {
 }
 
 export function TelemetryVisualization({
-  currentLapData,
   analysisData,
   zoomState,
   setZoomRange,
   lapsData
 }: TelemetryVisualizationProps) {
+  const firstLapId = analysisData?.laps[0]?.id;
+  const currentLapData = firstLapId ? lapsData[firstLapId]?.points ?? [] : [];
   const firstLapNumber = Object.keys(lapsData)[0];
   const mapDataAvailable = firstLapNumber ? lapsData[parseInt(firstLapNumber)].mapDataAvailable : false;
   return (
