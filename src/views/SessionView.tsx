@@ -15,7 +15,7 @@ import { useParams, Navigate } from 'react-router-dom'
 import { NumberParam, DelimitedNumericArrayParam, useQueryParam } from 'use-query-params'
 import { Container, Box, Stack, CircularProgress } from '@mui/material'
 import { useSession } from '../hooks/useSession'
-import { SessionControls } from '../components/SessionControls'
+import { AnalysisNavigation } from '../components/AnalysisNavigation'
 import { TelemetryVisualization } from '../components/TelemetryVisualization'
 import { AnalysisData, TelemetryCacheEntry } from '../services/types'
 import { ZoomState } from '../components/types'
@@ -33,8 +33,6 @@ export function SessionView() {
   const [loading, setLoading] = useState(true)
   const [lapIds, setLapIds] = useQueryParam('laps', DelimitedNumericArrayParam);
   const [lapsData, setLapsData] = useState<{ [lapId: number]: TelemetryCacheEntry }>({})
-  const [navigationOpen, setNavigationOpen] = useState(false)
-  const [paddockOpen, setPaddockOpen] = useState(false)
   const [zoomStart, setZoomStart] = useQueryParam('zoomStart', NumberParam);
   const [zoomEnd, setZoomEnd] = useQueryParam('zoomEnd', NumberParam);
 
@@ -204,17 +202,8 @@ export function SessionView() {
     <Container>
       <Stack sx={{ height: "100vh", borderRadius: 1 }}>
         <Box sx={{ height: "10vh" }}>
-          <SessionControls
-            paddockOpen={paddockOpen}
-            setPaddockOpen={setPaddockOpen}
-            navigationOpen={navigationOpen}
-            setNavigationOpen={setNavigationOpen}
-            sessionInformation={analysisData}
+          <AnalysisNavigation
             onLapSelect={handleLapSelect}
-            currentLap={Number(lapIds?.[0]) || 0}
-            landmarks={undefined} // TODO: Implement landmarks fetching
-            currentLapData={lapsData[Number(lapIds?.[0]) || 0]?.points ?? []}
-            setZoomRange={setZoomRange}
           />
         </Box>
         <Box sx={{ height: "90vh" }}>

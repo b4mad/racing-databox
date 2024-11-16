@@ -86,22 +86,13 @@ export function SessionControls({
         setZoomRange={setZoomRange}
       />
 
-      <SelectGame
-        open={paddockOpen}
-        onClose={() => setPaddockOpen(false)}
-        onGameSelect={(game) => {
-          console.log('Selected game:', game);
-          // TODO: Implement game selection logic
-        }}
-      />
-
-      {/* <SelectLap
+      <SelectLap
         open={navigationOpen}
         onClose={() => setNavigationOpen(false)}
         sessionInformation={sessionInformation}
         onLapSelect={onLapSelect}
         currentLap={currentLap ?? 0}
-      /> */}
+      />
     </Stack>
   )
 }
