@@ -71,13 +71,17 @@ export function AnalysisView() {
     const session = getSession(sessionId);
     if (!session?.laps) return undefined;
 
+    const filteredLaps = session.laps.filter(lap =>
+      lapIds?.includes(lap.id)
+    );
+
     return {
-        laps: session.laps,
+        laps: filteredLaps,
         car: session.car,
         track: session.track,
         game: session.game
     };
-  }, [sessionId]);
+  }, [sessionId, lapIds]);
 
   // Load telemetry data when lap changes
   const { getTelemetryForLap } = useTelemetry();
@@ -147,7 +151,6 @@ export function AnalysisView() {
           // If no lap is set in URL, use first lap
           const initialLapIds = lapIds?.length ? lapIds : [session.laps[0].id];
           setLapIds(initialLapIds);
-
         }
 
         setError(null);
