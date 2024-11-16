@@ -72,7 +72,10 @@ export function AnalysisView() {
     if (!session?.laps) return undefined;
 
     return {
-        laps: session.laps
+        laps: session.laps,
+        car: session.car,
+        track: session.track,
+        game: session.game
     };
   }, [sessionId]);
 
