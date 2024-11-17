@@ -45,6 +45,7 @@ export function AnalysisNavigation({ onLapSelect, analysisData }: AnalysisNaviga
           open={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           analysisData={analysisData}
+          onLapSelect={onLapSelect}
         />
       )}
     </Box>

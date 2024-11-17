@@ -19,6 +19,7 @@ import { AnalysisNavigation } from '../components/AnalysisNavigation'
 import { TelemetryVisualization } from '../components/TelemetryVisualization'
 import { AnalysisData, TelemetryCacheEntry } from '../services/types'
 import { ZoomState } from '../components/types'
+import { logger } from '../utils/logger'
 
 
 export function AnalysisView() {
@@ -176,13 +177,11 @@ export function AnalysisView() {
   const handleLapSelect = (lapId: number) => {
     const currentLapIds = lapIds?.filter((id): id is number => typeof id === 'number') ?? [];
 
-    // Toggle lap selection
-    const newLapIds = currentLapIds.includes(lapId)
-      ? currentLapIds.filter(id => id !== lapId)  // Remove if already selected
-      : [...currentLapIds, lapId];                // Add if not selected
-
-    // Update URL parameters, ensuring at least one lap remains selected
-    setLapIds(newLapIds.length ? newLapIds : [lapId]);
+    // Only add if not already present
+    if (!currentLapIds.includes(lapId)) {
+      setLapIds([...currentLapIds, lapId]);
+      logger.analysis(`Lap ${lapId} selected`);
+    }
   }
 
   if (loading) {

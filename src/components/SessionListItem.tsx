@@ -7,10 +7,12 @@ import { useNavigate } from 'react-router-dom';
 
 interface SessionListItemProps {
   session: PaddockSession;
+  onLapSelect?: (lapId: number) => void;
+  defaultExpanded?: boolean;
 }
 
-export function SessionListItem({ session }: SessionListItemProps) {
-  const [expanded, setExpanded] = useState(false);
+export function SessionListItem({ session, onLapSelect, defaultExpanded = false }: SessionListItemProps) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
   const navigate = useNavigate();
 
   const handleExpandClick = (e: React.MouseEvent) => {
@@ -69,7 +71,11 @@ export function SessionListItem({ session }: SessionListItemProps) {
       <Collapse in={expanded}>
         <Box sx={{ mt: 2 }}>
           {session.laps.map((lap) => (
-            <Lap key={lap.id} lap={lap} />
+            <Lap
+              key={lap.id}
+              lap={lap}
+              onLapSelect={onLapSelect}
+            />
           ))}
         </Box>
       </Collapse>

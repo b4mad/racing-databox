@@ -2,6 +2,7 @@ import { Box, Typography, Grid, IconButton } from '@mui/material';
 import { formatTime } from '../utils/timeFormat';
 import { PaddockLap } from '../services/types';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import AddIcon from '@mui/icons-material/Add';
 import { Link } from 'react-router-dom';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -9,9 +10,10 @@ import CancelIcon from '@mui/icons-material/Cancel';
 interface LapProps {
   lap: PaddockLap;
   selected?: boolean;
+  onLapSelect?: (lapId: number) => void;
 }
 
-export function Lap({ lap, selected = false }: LapProps) {
+export function Lap({ lap, selected = false, onLapSelect }: LapProps) {
   const validityColor = lap.valid ? '#4CAF50' : '#FF9800';
 
   return (
@@ -73,14 +75,24 @@ export function Lap({ lap, selected = false }: LapProps) {
 
         {/* View Action */}
         <Grid item xs={1}>
-          <IconButton
-            component={Link}
-            to={`/session/${lap.session?.sessionId}?lap=${lap.id}`}
-            color="primary"
-            aria-label="view lap"
-          >
-            <VisibilityIcon />
-          </IconButton>
+          {onLapSelect ? (
+            <IconButton
+              onClick={() => onLapSelect(lap.id)}
+              color="primary"
+              aria-label="add lap"
+            >
+              <AddIcon />
+            </IconButton>
+          ) : (
+            <IconButton
+              component={Link}
+              to={`/session/${lap.session?.sessionId}?lap=${lap.id}`}
+              color="primary"
+              aria-label="view lap"
+            >
+              <VisibilityIcon />
+            </IconButton>
+          )}
         </Grid>
       </Grid>
     </Box>

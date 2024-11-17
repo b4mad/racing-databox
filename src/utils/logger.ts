@@ -7,7 +7,8 @@ import debug from 'debug';
 export const logger = {
     paddock: debug('paddock:service'),
     api: debug('paddock:api'),
-    telemetry: debug('paddock:telemetry')
+    telemetry: debug('paddock:telemetry'),
+    analysis: debug('paddock:analysis')
 };
 
 // Enable logging in development
