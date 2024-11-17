@@ -1,6 +1,6 @@
 import { Line } from 'react-chartjs-2';
 import { useTheme } from '@mui/material/styles';
-import { TelemetryPoint } from '../services/types';
+import { TelemetryPoint, TelemetryCacheEntry } from '../services/types';
 import { ZoomState } from './types';
 import { useMemo } from 'react';
 import {
@@ -25,24 +25,25 @@ ChartJS.register(
 );
 
 interface MapLineProps {
-  data: TelemetryPoint[];
+  lapsData: { [lapNumber: number]: TelemetryCacheEntry };
   zoomState: ZoomState;
 }
 
-export function MapLine({ data, zoomState }: MapLineProps) {
+export function MapLine({ lapsData, zoomState }: MapLineProps) {
   const theme = useTheme();
   // Calculate visible map area based on zoomed data points
   const mapBounds = useMemo(() => {
-    if (data.length === 0) return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
+    const allLapsPoints = Object.values(lapsData).flatMap(lap => lap.points);
+    if (allLapsPoints.length === 0) return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
 
     const minDistance = Number(zoomState.left) || 0;
-    const maxDistance = Number(zoomState.right) || data[data.length - 1].distance;
+    const maxDistance = Number(zoomState.right) || allLapsPoints[allLapsPoints.length - 1].distance;
 
     // Find points within the zoomed distance range
-    const visiblePoints = data.filter(point =>
+    const visiblePoints = allLapsPoints.filter(point =>
       point.distance >= minDistance &&
       point.distance <= maxDistance &&
-      point.position !== undefined // Add type guard for position
+      point.position !== undefined
     );
 
     if (visiblePoints.length === 0) return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
@@ -61,25 +62,29 @@ export function MapLine({ data, zoomState }: MapLineProps) {
       minY: minY - margin,
       maxY: maxY + margin
     };
-  }, [data, zoomState.left, zoomState.right]);
+  }, [lapsData, zoomState.left, zoomState.right]);
+
+  const getLapColor = (lapIndex: number, baseColor: string) => {
+    const opacity = 1 - (lapIndex * 0.3);
+    return baseColor.replace(')', `, ${opacity})`).replace('rgb', 'rgba');
+  };
 
   const chartData = {
-    labels: data
-      .filter(point => point.position?.x !== undefined)
-      .map(point => point.position!.x),
-    datasets: [
-      {
-        label: 'Track Path',
-        data: data
-          .filter(point => point.position?.y !== undefined)
-          .map(point => point.position!.y),
-        borderColor: theme.palette.chart?.text,
-        backgroundColor: theme.palette.primary.main,
-        pointRadius: 0,
-        pointHoverRadius: 2,
-        tension: 0.4
-      }
-    ]
+    datasets: Object.entries(lapsData).map(([lapNumber, lapData]) => ({
+      label: `Lap ${lapNumber}`,
+      data: lapData.points
+        .filter((point: TelemetryPoint) => point.position?.x !== undefined && point.position?.y !== undefined)
+        .map((point: TelemetryPoint) => ({
+          x: point.position!.x,
+          y: point.position!.y
+        })),
+      borderColor: getLapColor(parseInt(lapNumber), theme.palette.chart?.text || '#000'),
+      backgroundColor: getLapColor(parseInt(lapNumber), theme.palette.primary.main),
+      pointRadius: 0,
+      pointHoverRadius: 2,
+      tension: 0.4,
+      showLine: true
+    }))
   };
 
   const options = {

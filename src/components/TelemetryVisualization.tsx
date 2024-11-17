@@ -19,8 +19,6 @@ export function TelemetryVisualization({
   setZoomRange,
   lapsData
 }: TelemetryVisualizationProps) {
-  const firstLapId = analysisData?.laps[0]?.id;
-  const currentLapData = firstLapId ? lapsData[firstLapId]?.points ?? [] : [];
   const firstLapNumber = Object.keys(lapsData)[0];
   const mapDataAvailable = firstLapNumber ? lapsData[parseInt(firstLapNumber)].mapDataAvailable : false;
   return (
@@ -29,7 +27,7 @@ export function TelemetryVisualization({
         <Stack spacing={2} sx={{ height: "100%" }}>
           {mapDataAvailable && (
             <Box sx={{ height: "50%" }}>
-              <MapLine data={currentLapData} zoomState={zoomState} />
+              <MapLine lapsData={lapsData} zoomState={zoomState} />
             </Box>
           )}
           <Box sx={{ height: "auto" }}>
@@ -39,16 +37,16 @@ export function TelemetryVisualization({
       </Grid>
       <Grid size={6}>
         <Stack>
-          {currentLapData.length > 0 && (
+          {Object.keys(lapsData).length > 0 && (
             <>
               <Box sx={{ height: "200px" }}>
-                <SpeedGraph currentLapData={currentLapData} zoomState={zoomState} onZoomChange={setZoomRange} />
+                <SpeedGraph lapsData={lapsData} zoomState={zoomState} onZoomChange={setZoomRange} />
               </Box>
               <Box sx={{ height: "200px" }}>
-                <PedalsGraph currentLapData={currentLapData} zoomState={zoomState} onZoomChange={setZoomRange} />
+                <PedalsGraph lapsData={lapsData} zoomState={zoomState} onZoomChange={setZoomRange} />
               </Box>
               <Box sx={{ height: "200px" }}>
-                <GearGraph currentLapData={currentLapData} showBrush={true} zoomState={zoomState} onZoomChange={setZoomRange} />
+                <GearGraph lapsData={lapsData} showBrush={true} zoomState={zoomState} onZoomChange={setZoomRange} />
               </Box>
             </>
           )}

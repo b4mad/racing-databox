@@ -1,4 +1,4 @@
-import { TelemetryPoint } from '../services/types';
+import { TelemetryPoint, TelemetryCacheEntry } from '../services/types';
 import { ZoomState } from './types';
 import { ChartLineGraph } from './ChartLineGraph';
 
@@ -9,14 +9,13 @@ interface DataKeyConfig {
 }
 
 interface BaseGraphProps {
-  currentLapData: TelemetryPoint[];
+  lapsData: { [lapNumber: number]: TelemetryCacheEntry };
   zoomState: ZoomState;
   showBrush?: boolean;
   onZoomChange?: (startMeters: number, endMeters: number) => void;
 }
 
 interface LineGraphProps extends BaseGraphProps {
-  data: TelemetryPoint[];
   dataKeys: DataKeyConfig[];
   unit?: string;
   stepLine?: boolean;
@@ -44,21 +43,21 @@ const GRAPH_CONFIGS = {
 };
 
 export function SpeedGraph(props: BaseGraphProps) {
-  return <LineGraph {...props} data={props.currentLapData} {...GRAPH_CONFIGS.speed} />;
+  return <LineGraph {...props} {...GRAPH_CONFIGS.speed} />;
 }
 
 export function PedalsGraph(props: BaseGraphProps) {
-  return <LineGraph {...props} data={props.currentLapData} {...GRAPH_CONFIGS.pedals} />;
+  return <LineGraph {...props} {...GRAPH_CONFIGS.pedals} />;
 }
 
 export function GearGraph(props: BaseGraphProps) {
-  return <LineGraph {...props} data={props.currentLapData} {...GRAPH_CONFIGS.gear} />;
+  return <LineGraph {...props} {...GRAPH_CONFIGS.gear} />;
 }
 
-export function LineGraph({ data, dataKeys, unit = '', stepLine = false, title, zoomState, onZoomChange }: LineGraphProps) {
+export function LineGraph({ lapsData, dataKeys, unit = '', stepLine = false, title, zoomState, onZoomChange }: LineGraphProps) {
   return (
     <ChartLineGraph
-      data={data}
+      lapsData={lapsData}
       dataKeys={dataKeys}
       unit={unit}
       stepLine={stepLine}

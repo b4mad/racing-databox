@@ -221,12 +221,14 @@ export function AnalysisView() {
           />
         </Box>
         <Box sx={{ height: "90vh" }}>
+          { analysisData && (
           <TelemetryVisualization
             analysisData={analysisData}
             zoomState={zoomState}
             setZoomRange={setZoomRange}
             lapsData={lapsData}
           />
+           )}
         </Box>
       </Stack>
     </Container>

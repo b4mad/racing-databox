@@ -12,7 +12,7 @@ import {
   ChartOptions
 } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
-import { TelemetryPoint } from '../services/types';
+import { TelemetryPoint, TelemetryCacheEntry } from '../services/types';
 import { ZoomState } from './types';
 
 // Register Chart.js components
@@ -34,7 +34,7 @@ interface DataKeyConfig {
 }
 
 interface ChartLineGraphProps {
-  data: TelemetryPoint[];
+  lapsData: { [lapNumber: number]: TelemetryCacheEntry };
   dataKeys: DataKeyConfig[];
   unit?: string;
   stepLine?: boolean;
@@ -43,8 +43,8 @@ interface ChartLineGraphProps {
   onZoomChange?: (start: number, end: number) => void;
 }
 
-export function ChartLineGraph({ 
-  data,
+export function ChartLineGraph({
+  lapsData,
   dataKeys,
   unit = '',
   stepLine = false,
@@ -53,18 +53,27 @@ export function ChartLineGraph({
   onZoomChange
 }: ChartLineGraphProps) {
   const theme = useTheme();
+  const getLapColor = (lapIndex: number, baseColor: string) => {
+    const opacity = 1 - (lapIndex * 0.3);
+    return baseColor.replace(')', `, ${opacity})`).replace('rgb', 'rgba');
+  };
+
   const chartData = {
-    labels: data.map(point => point.distance),
-    datasets: dataKeys.map(config => ({
-      label: config.name,
-      data: data.map(point => point[config.key] as number),
-      borderColor: config.color,
-      backgroundColor: config.color,
-      borderWidth: 1.5,
-      pointRadius: 0,
-      tension: stepLine ? 0 : 0.4,
-      stepped: stepLine ? true : undefined
-    }))
+    datasets: Object.entries(lapsData).flatMap(([lapNumber, lapData]) =>
+      dataKeys.map((config) => ({
+        label: `${config.name} - Lap ${lapNumber}`,
+        data: lapData.points.map(point => ({
+          x: point.distance,
+          y: point[config.key] as number
+        })),
+        borderColor: getLapColor(parseInt(lapNumber), config.color),
+        backgroundColor: getLapColor(parseInt(lapNumber), config.color),
+        borderWidth: 1.5,
+        pointRadius: 0,
+        tension: stepLine ? 0 : 0.4,
+        stepped: stepLine ? true : undefined
+      }))
+    )
   };
 
   const options: ChartOptions<'line'> = {
