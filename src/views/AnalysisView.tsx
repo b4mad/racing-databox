@@ -96,44 +96,57 @@ export function AnalysisView() {
    * Handles loading state and error handling
    */
   useEffect(() => {
-    if (lapIds?.length) {
+    async function loadTelemetryData() {
+      if (!lapIds?.length) return;
+
+      if (!sessionId) return;
       const session = getSession(sessionId);
-      if (session) {
-        // Load telemetry data for each selected lap that hasn't been loaded yet
-        lapIds.forEach(lapId => {
-          if (typeof lapId === 'number' && !lapsData[lapId]) {
-            const lap = session.laps.find(l => l.id === lapId);
-            if (!lap) return;
+      if (!session) return;
 
-            // Fetch telemetry data and update state
-            getTelemetryForLap(sessionId, lapId)
-              .then(entry => {
-                // Find index of this lap in the lapIds array for color assignment
-                const lapIndex = lapIds.indexOf(lapId);
-                setLapsData(prev => ({
-                  ...prev,
-                  [lapId]: {
-                    ...entry,
-                    color: getLapColor(lapIndex)
-                  }
-                }));
-                logger.analysis(`Loaded telemetry for lap ${lapId}`);
+      try {
+        const telemetryUpdates: { [key: number]: TelemetryCacheEntry } = {};
+        const promises = lapIds.map(async (lapId) => {
+          if (typeof lapId !== 'number' || lapsData[lapId]) return null;
 
-                // Set initial zoom range to full lap distance when first lap's telemetry loads
-                if (!zoomStart && !zoomEnd && entry.points.length > 0) {
-                  const maxDistance = entry.points[entry.points.length - 1].distance;
-                  setZoomStart(0);
-                  setZoomEnd(maxDistance);
-                }
-              })
-              .catch(error => {
-                console.error('Failed to load telemetry:', error);
-                setError('Failed to load telemetry data');
-              });
-          }
+          const lap = session.laps.find(l => l.id === lapId);
+          if (!lap) return null;
+
+          const entry = await getTelemetryForLap(sessionId, lapId);
+          const lapIndex = lapIds.indexOf(lapId);
+
+          telemetryUpdates[lapId] = {
+            ...entry,
+            color: getLapColor(lapIndex)
+          };
+
+          logger.analysis(`Loaded telemetry for lap ${lapId}`);
+          return entry;
         });
+
+        const results = (await Promise.all(promises)).filter((r): r is TelemetryCacheEntry => r !== null);
+
+        // Only update state if we have new data
+        if (Object.keys(telemetryUpdates).length > 0) {
+          setLapsData(prev => ({
+            ...prev,
+            ...telemetryUpdates
+          }));
+
+          // Set initial zoom range using the first loaded lap
+          const firstEntry = results[0];
+          if (!zoomStart && !zoomEnd && firstEntry && firstEntry.points.length > 0) {
+            const maxDistance = firstEntry.points[firstEntry.points.length - 1].distance;
+            setZoomStart(0);
+            setZoomEnd(maxDistance);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load telemetry:', error);
+        setError('Failed to load telemetry data');
       }
     }
+
+    loadTelemetryData();
   }, [lapIds]);
 
 

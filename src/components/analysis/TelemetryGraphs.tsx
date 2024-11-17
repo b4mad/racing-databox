@@ -2,6 +2,7 @@ import { Box } from '@mui/material';
 import { SpeedGraph, PedalsGraph, GearGraph } from '../LineGraph';
 import { TelemetryCacheEntry } from '../../services/types';
 import { ZoomState } from '../types';
+import { logger } from '../../utils/logger'
 
 interface TelemetryGraphsProps {
   lapsData: { [lapNumber: number]: TelemetryCacheEntry };
@@ -10,6 +11,8 @@ interface TelemetryGraphsProps {
 }
 
 export function TelemetryGraphs({ lapsData, zoomState, setZoomRange }: TelemetryGraphsProps) {
+  // log the number of graphs
+  logger.analysis('TelemetryGraphs', lapsData);
   if (Object.keys(lapsData).length === 0) {
     return null;
   }
