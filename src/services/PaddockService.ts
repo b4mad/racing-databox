@@ -264,7 +264,8 @@ export class PaddockService {
         const { hasNextPage, endCursor } = pageInfo;
         const sessions = edges?.map((edge: any): PaddockSession => {
             const node = edge.node;
-            return {
+            // Create the session object first
+            const session: PaddockSession = {
                 id: node.id,
                 sessionId: node.sessionId,
                 car: {
@@ -287,16 +288,22 @@ export class PaddockService {
                     id: Number(node.telemetryTrackByTrackId?.id),
                     name: node.telemetryTrackByTrackId?.name
                 },
-                laps: node.telemetryLapsBySessionId.nodes.map((lap: any) => ({
-                    id: Number(lap.id),
-                    number: lap.number,
-                    time: lap.time,
-                    valid: lap.valid,
-                    length: lap.length,
-                    start: lap.start,
-                    end: lap.end
-                }))
+                laps: [] // Initialize empty array, will be filled below
             };
+
+            // Now set the laps with reference back to the parent session
+            session.laps = node.telemetryLapsBySessionId.nodes.map((lap: any) => ({
+                id: Number(lap.id),
+                number: lap.number,
+                time: lap.time,
+                valid: lap.valid,
+                length: lap.length,
+                start: lap.start,
+                end: lap.end,
+                session: session // Reference to the parent session
+            }));
+
+            return session;
         });
         // logger.paddock('Fetched %d sessions', sessions.length);
         // logger.paddock('Total session count: %d', totalCount);
