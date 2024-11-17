@@ -211,6 +211,7 @@ export function AnalysisView() {
         <Box sx={{ height: "10vh" }}>
           <AnalysisNavigation
             onLapSelect={handleLapSelect}
+            analysisData={analysisData}
           />
         </Box>
         <Box sx={{ height: "90vh" }}>

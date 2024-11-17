@@ -1,14 +1,15 @@
 import { Modal, Box, Typography } from '@mui/material';
-import { PaddockLap } from '../services/types';
 import { Lap } from './Lap';
+import { SessionListItem } from './SessionListItem';
+import { AnalysisData } from '../services/types';
 
 interface LapsModalProps {
   open: boolean;
   onClose: () => void;
-  laps: PaddockLap[];
+  analysisData: AnalysisData;
 }
 
-export function LapsModal({ open, onClose, laps }: LapsModalProps) {
+export function LapsModal({ open, onClose, analysisData }: LapsModalProps) {
   return (
     <Modal
       open={open}
@@ -28,9 +29,11 @@ export function LapsModal({ open, onClose, laps }: LapsModalProps) {
         overflow: 'auto',
       }}>
         <Typography id="laps-modal-title" variant="h6" component="h2" gutterBottom>
-          Available Laps
+          Session Details
         </Typography>
-        {laps.map((lap) => (
+        <SessionListItem session={analysisData.session} />
+        <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>Available Laps</Typography>
+        {analysisData.laps.map((lap) => (
           <Lap key={lap.id} lap={lap} />
         ))}
       </Box>

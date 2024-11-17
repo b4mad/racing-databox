@@ -6,11 +6,14 @@ import { ThemeToggle } from './ThemeToggle';
 import { useState } from 'react';
 import { LapsModal } from './LapsModal';
 
+import { AnalysisData } from '../services/types';
+
 interface AnalysisNavigationProps {
   onLapSelect: (lap: number) => void;
+  analysisData?: AnalysisData;
 }
 
-export function AnalysisNavigation({ onLapSelect }: AnalysisNavigationProps) {
+export function AnalysisNavigation({ onLapSelect, analysisData }: AnalysisNavigationProps) {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -37,11 +40,13 @@ export function AnalysisNavigation({ onLapSelect }: AnalysisNavigationProps) {
         <TimelineIcon />
       </IconButton>
 
-      <LapsModal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        laps={[]} // We'll populate this later when we add the laps search
-      />
+      {analysisData && (
+        <LapsModal
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          analysisData={analysisData}
+        />
+      )}
     </Box>
   );
 }
