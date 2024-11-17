@@ -1,7 +1,7 @@
 import { Modal, Box, Typography } from '@mui/material';
-import { Lap } from './Lap';
-import { SessionListItem } from './SessionListItem';
-import { AnalysisData } from '../services/types';
+import { Lap } from '../Lap';
+import { SessionListItem } from '../SessionListItem';
+import { AnalysisData } from '../../services/types';
 
 interface LapsModalProps {
   open: boolean;
