@@ -18,6 +18,7 @@ import { Box, CircularProgress, Container } from '@mui/material'
 import { AnalysisLayout } from '../components/analysis/AnalysisLayout'
 import { useSession } from '../hooks/useSession'
 import { AnalysisData, TelemetryCacheEntry } from '../services/types'
+import { ZoomState } from '../components/types'
 import { logger } from '../utils/logger'
 
 
@@ -38,6 +39,12 @@ export function AnalysisView() {
 
   // Configure zoom state for the visualization
   // top and bottom are auto-scaled by Chart.js based on data
+  const zoomState: ZoomState = {
+    left: zoomStart || 0,      // Start of visible range in meters
+    right: zoomEnd || 0,       // End of visible range in meters
+    top: 0,                    // Will be auto-scaled by Chart.js
+    bottom: 0                  // Will be auto-scaled by Chart.js
+  }
 
   /**
    * Updates the zoom range for the telemetry visualization
@@ -214,14 +221,7 @@ export function AnalysisView() {
       analysisData={analysisData}
       lapsData={lapsData}
       onLapSelect={handleLapSelect}
-      zoomState={{
-        start: zoomStart ?? 0,
-        end: zoomEnd ?? 100,
-        left: 0,
-        right: 100,
-        top: 100,
-        bottom: 0
-      }}
+      zoomState={zoomState}
       setZoomRange={setZoomRange}
     />
   );

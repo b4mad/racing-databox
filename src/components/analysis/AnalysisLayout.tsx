@@ -67,10 +67,10 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
         </Drawer>
 
         {/* Main Content Area */}
-        <Box sx={{ 
-          flex: 1, 
-          display: 'flex', 
-          flexDirection: 'column', 
+        <Box sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
           overflow: 'hidden',
           ml: drawerOpen ? 0 : -37.5 // compensate for drawer width when closed
         }}>
@@ -114,7 +114,7 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
 
       {/* Bottom Panel - Full Width */}
       <Box sx={{ height: '50px', borderTop: 1, borderColor: 'divider', p: 1 }}>
-        <SectorVisualization 
+        <SectorVisualization
           currentLapData={Object.keys(lapsData).length > 0 ? lapsData[parseInt(Object.keys(lapsData)[0])].points : []}
           setZoomRange={setZoomRange}
         />
