@@ -77,7 +77,10 @@ export function Lap({ lap, selected = false, onLapSelect }: LapProps) {
         <Grid item xs={1}>
           {onLapSelect ? (
             <IconButton
-              onClick={() => onLapSelect(lap.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onLapSelect(lap.id);
+              }}
               color="primary"
               aria-label="add lap"
             >

@@ -31,7 +31,7 @@ export function LapsModal({ open, onClose, analysisData, onLapSelect }: LapsModa
       }}>
         <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>Available Laps</Typography>
         {analysisData.laps.map((lap) => (
-          <Lap key={lap.id} lap={lap} />
+          <Lap key={lap.id} lap={lap} onLapSelect={onLapSelect} />
         ))}
         <Typography id="laps-modal-title" variant="h6" component="h2" gutterBottom>
           Session Details

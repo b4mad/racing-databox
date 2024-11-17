@@ -66,9 +66,10 @@ export function AnalysisView() {
     // Update URL parameters with new zoom range
     setZoomStart(start);
     setZoomEnd(end);
-  }, [lapsData, lapIds, setZoomStart, setZoomEnd]);
+  }, [lapsData, lapIds]);
 
   const analysisData = useMemo<AnalysisData | undefined>(() => {
+    logger.analysis(`Loading analysis data for session ${sessionId}`);
     const session = getSession(sessionId);
     if (!session?.laps) return undefined;
 
@@ -127,7 +128,7 @@ export function AnalysisView() {
         });
       }
     }
-  }, [sessionId, lapIds]);
+  }, [lapIds]);
 
 
   /**
@@ -153,6 +154,7 @@ export function AnalysisView() {
           // If no lap is set in URL, use first lap
           const initialLapIds = lapIds?.length ? lapIds : [session.laps[0].id];
           setLapIds(initialLapIds);
+          logger.analysis('Initial lapIds:', initialLapIds);
         }
 
         setError(null);
@@ -175,12 +177,19 @@ export function AnalysisView() {
    * Ensures at least one lap is always selected
    */
   const handleLapSelect = (lapId: number) => {
+    // Get current lap IDs, ensuring we have an array
     const currentLapIds = lapIds?.filter((id): id is number => typeof id === 'number') ?? [];
+    logger.analysis('Current lapIds:', currentLapIds);
 
     // Only add if not already present
     if (!currentLapIds.includes(lapId)) {
-      setLapIds([...currentLapIds, lapId]);
       logger.analysis(`Lap ${lapId} selected`);
+      // Preserve existing zoom parameters while updating lapIds
+      setLapIds([...currentLapIds, lapId], {
+        // This tells use-query-params to merge with existing params instead of replacing
+        merge: true
+      });
+      logger.analysis('New lapIds:', [...currentLapIds, lapId]);
     }
   }
 
