@@ -7,7 +7,7 @@ import { TelemetryCacheEntry, AnalysisData } from '../services/types'
 import { ZoomState } from './types'
 
 interface TelemetryVisualizationProps {
-  analysisData: AnalysisData | undefined
+  analysisData: AnalysisData
   zoomState: ZoomState
   setZoomRange: (startMeters: number, endMeters: number) => void
   lapsData: { [lapNumber: number]: TelemetryCacheEntry }
@@ -25,20 +25,18 @@ export function TelemetryVisualization({
   const mapDataAvailable = firstLapNumber ? lapsData[parseInt(firstLapNumber)].mapDataAvailable : false;
   return (
     <Grid container spacing={2} sx={{ height: "100%" }}>
-      {mapDataAvailable && (
-        <Grid size={6}>
-          <Stack spacing={2} sx={{ height: "100%" }}>
+      <Grid size={6}>
+        <Stack spacing={2} sx={{ height: "100%" }}>
+          {mapDataAvailable && (
             <Box sx={{ height: "50%" }}>
               <MapLine data={currentLapData} zoomState={zoomState} />
             </Box>
-            {analysisData && (
-              <Box sx={{ height: "auto" }}>
-                <SessionInfoBox analysisData={analysisData} />
-              </Box>
-            )}
-          </Stack>
-        </Grid>
-      )}
+          )}
+          <Box sx={{ height: "auto" }}>
+            <SessionInfoBox analysisData={analysisData} />
+          </Box>
+        </Stack>
+      </Grid>
       <Grid size={mapDataAvailable ? 6 : 12}>
         <Stack>
           {currentLapData.length > 0 && (

@@ -112,6 +112,7 @@ export function AnalysisView() {
                   ...prev,
                   [lapId]: entry
                 }));
+                logger.analysis(`Loaded telemetry for lap ${lapId}`);
 
                 // Set initial zoom range to full lap distance when first lap's telemetry loads
                 if (!zoomStart && !zoomEnd && entry.points.length > 0) {
@@ -185,10 +186,7 @@ export function AnalysisView() {
     if (!currentLapIds.includes(lapId)) {
       logger.analysis(`Lap ${lapId} selected`);
       // Preserve existing zoom parameters while updating lapIds
-      setLapIds([...currentLapIds, lapId], {
-        // This tells use-query-params to merge with existing params instead of replacing
-        merge: true
-      });
+      setLapIds([...currentLapIds, lapId]);
       logger.analysis('New lapIds:', [...currentLapIds, lapId]);
     }
   }
