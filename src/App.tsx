@@ -34,20 +34,20 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <ThemeProvider>
-        <CssBaseline />
-        <QueryProvider>
+      <QueryProvider>
         <QueryParamProvider>
-          <UIStateProvider>
+          <ThemeProvider>
+            <CssBaseline />
+            <UIStateProvider>
             <SessionProvider>
               <TelemetryProvider>
                 <AppContent />
               </TelemetryProvider>
             </SessionProvider>
-          </UIStateProvider>
+            </UIStateProvider>
+          </ThemeProvider>
         </QueryParamProvider>
       </QueryProvider>
-      </ThemeProvider>
     </BrowserRouter>
   );
 }
