@@ -12,6 +12,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useTelemetry } from '../hooks/useTelemetry'
 import { useParams, Navigate } from 'react-router-dom'
+import { getLapColor } from '../utils/colors'
 import { NumberParam, DelimitedNumericArrayParam, useQueryParam } from 'use-query-params'
 import { Container, Box, Stack, CircularProgress } from '@mui/material'
 import { useSession } from '../hooks/useSession'
@@ -108,9 +109,14 @@ export function AnalysisView() {
             // Fetch telemetry data and update state
             getTelemetryForLap(sessionId, lapId)
               .then(entry => {
+                // Find index of this lap in the lapIds array for color assignment
+                const lapIndex = lapIds.indexOf(lapId);
                 setLapsData(prev => ({
                   ...prev,
-                  [lapId]: entry
+                  [lapId]: {
+                    ...entry,
+                    color: getLapColor(lapIndex)
+                  }
                 }));
                 logger.analysis(`Loaded telemetry for lap ${lapId}`);
 

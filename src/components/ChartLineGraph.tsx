@@ -53,17 +53,6 @@ export function ChartLineGraph({
   onZoomChange
 }: ChartLineGraphProps) {
   const theme = useTheme();
-  // Helper function to generate colors for each lap with decreasing opacity
-  // baseColor: The original RGB color (e.g. "rgb(33, 150, 243)")
-  // lapIndex: The lap number (0-based) used to calculate opacity
-  // Returns: An RGBA color string with reduced opacity for older laps
-  // Example: For lapIndex 0, opacity = 1.0 (full opacity)
-  //         For lapIndex 1, opacity = 0.7 (30% more transparent)
-  //         For lapIndex 2, opacity = 0.4 (60% more transparent)
-  const getLapColor = (lapIndex: number, baseColor: string) => {
-    const opacity = 1 - (lapIndex * 0.3); // Reduce opacity by 30% for each older lap
-    return baseColor.replace(')', `, ${opacity})`).replace('rgb', 'rgba'); // Convert RGB to RGBA
-  };
 
   const chartData = {
     datasets: Object.entries(lapsData).flatMap(([lapNumber, lapData]) =>
@@ -73,8 +62,8 @@ export function ChartLineGraph({
           x: point.distance,
           y: point[config.key] as number
         })),
-        borderColor: getLapColor(parseInt(lapNumber), config.color),
-        backgroundColor: getLapColor(parseInt(lapNumber), config.color),
+        borderColor: lapData.color,
+        backgroundColor: lapData.color,
         borderWidth: 1.5,
         pointRadius: 0,
         tension: stepLine ? 0 : 0.4,

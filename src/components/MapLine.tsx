@@ -64,10 +64,6 @@ export function MapLine({ lapsData, zoomState }: MapLineProps) {
     };
   }, [lapsData, zoomState.left, zoomState.right]);
 
-  const getLapColor = (lapIndex: number, baseColor: string) => {
-    const opacity = 1 - (lapIndex * 0.3);
-    return baseColor.replace(')', `, ${opacity})`).replace('rgb', 'rgba');
-  };
 
   const chartData = {
     datasets: Object.entries(lapsData).map(([lapNumber, lapData]) => ({
@@ -78,8 +74,8 @@ export function MapLine({ lapsData, zoomState }: MapLineProps) {
           x: point.position!.x,
           y: point.position!.y
         })),
-      borderColor: getLapColor(parseInt(lapNumber), theme.palette.chart?.text || '#000'),
-      backgroundColor: getLapColor(parseInt(lapNumber), theme.palette.primary.main),
+      borderColor: lapData.color,
+      backgroundColor: lapData.color,
       pointRadius: 0,
       pointHoverRadius: 2,
       tension: 0.4,
