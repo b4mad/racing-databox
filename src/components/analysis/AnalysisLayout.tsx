@@ -1,4 +1,5 @@
-import { Box } from '@mui/material';
+import { Box, Drawer } from '@mui/material';
+import { useState } from 'react';
 import { AnalysisToolbar } from './AnalysisToolbar';
 import { LapSelectionPanel } from './LapSelectionPanel';
 import { GapsAnalysisTable } from './GapsAnalysisTable';
@@ -18,6 +19,7 @@ interface AnalysisLayoutProps {
 }
 
 export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState, setZoomRange }: AnalysisLayoutProps) {
+  const [drawerOpen, setDrawerOpen] = useState(true);
   const mapDataAvailable = Object.keys(lapsData).length > 0 &&
     lapsData[parseInt(Object.keys(lapsData)[0])].mapDataAvailable;
 
@@ -28,23 +30,50 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
         <AnalysisToolbar
           analysisData={analysisData}
           onLapSelect={onLapSelect}
+          drawerOpen={drawerOpen}
+          setDrawerOpen={setDrawerOpen}
         />
       </Box>
 
       {/* Main Content */}
       <Box sx={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        {/* Left Panel */}
-        <Box sx={{ width: '300px', borderRight: 1, borderColor: 'divider', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ flex: '0 0 auto' }}>
-            <LapSelectionPanel analysisData={analysisData} />
+
+        {/* Left Panel Drawer */}
+        <Drawer
+          variant="persistent"
+          anchor="left"
+          open={drawerOpen}
+          sx={{
+            width: 300,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: 300,
+              position: 'relative',
+              height: '100%',
+              border: 'none',
+              borderRight: 1,
+              borderColor: 'divider'
+            },
+          }}
+        >
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Box sx={{ flex: '0 0 auto' }}>
+              <LapSelectionPanel analysisData={analysisData} />
+            </Box>
+            <Box sx={{ flex: 1, mt: 2 }}>
+              <GapsAnalysisTable />
+            </Box>
           </Box>
-          <Box sx={{ flex: 1, mt: 2 }}>
-            <GapsAnalysisTable />
-          </Box>
-        </Box>
+        </Drawer>
 
         {/* Main Content Area */}
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <Box sx={{ 
+          flex: 1, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          overflow: 'hidden',
+          ml: drawerOpen ? 0 : -37.5 // compensate for drawer width when closed
+        }}>
           {/* Delta Time Graph at Top */}
           <Box sx={{ height: '200px', p: 1, borderBottom: 1, borderColor: 'divider' }}>
             <DeltaTimeGraph />
