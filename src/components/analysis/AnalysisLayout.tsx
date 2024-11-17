@@ -114,7 +114,10 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
 
       {/* Bottom Panel - Full Width */}
       <Box sx={{ height: '50px', borderTop: 1, borderColor: 'divider', p: 1 }}>
-        <SectorVisualization />
+        <SectorVisualization 
+          currentLapData={Object.keys(lapsData).length > 0 ? lapsData[parseInt(Object.keys(lapsData)[0])].points : []}
+          setZoomRange={setZoomRange}
+        />
       </Box>
     </Box>
   );
