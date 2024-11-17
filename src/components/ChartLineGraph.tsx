@@ -157,7 +157,7 @@ export function ChartLineGraph({
         intersect: false
       },
       legend: {
-        position: 'bottom'
+        display: false
       }
     }
   };
