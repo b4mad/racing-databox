@@ -37,7 +37,7 @@ export function TelemetryVisualization({
           </Box>
         </Stack>
       </Grid>
-      <Grid size={mapDataAvailable ? 6 : 12}>
+      <Grid size={6}>
         <Stack>
           {currentLapData.length > 0 && (
             <>
