@@ -1,8 +1,4 @@
-import { Box, List, ListItem, ListItemText, Typography, IconButton, Tooltip } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import TimerIcon from '@mui/icons-material/Timer';
-import StraightIcon from '@mui/icons-material/Straight';
+import { Box, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { PaddockLap } from '../../services/types';
 
 interface LapSelectionListProps {
@@ -19,69 +15,66 @@ export function LapSelectionList({ laps, selectedLaps, onLapSelect }: LapSelecti
     return `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
   };
 
+  // Get the fastest lap time to calculate deltas
+  const fastestLapTime = Math.min(...laps.map(lap => lap.time));
+
   return (
     <List dense sx={{ width: '100%', bgcolor: 'background.paper' }}>
-      {laps.map((lap) => (
-        <ListItem
-          key={lap.id}
-          sx={{
-            borderRadius: 1,
-            mb: 0.5,
-            bgcolor: selectedLaps.includes(lap.id) ? 'action.selected' : 'transparent',
-            '&:hover': {
-              bgcolor: 'action.hover',
-            },
-          }}
-          secondaryAction={
-            <IconButton
-              edge="end"
-              onClick={() => onLapSelect(lap.id)}
-              size="small"
-              color={selectedLaps.includes(lap.id) ? 'primary' : 'default'}
-            >
-              {lap.valid ? (
-                <Tooltip title="Valid Lap">
-                  <CheckCircleIcon color="success" />
-                </Tooltip>
-              ) : (
-                <Tooltip title="Invalid Lap">
-                  <CancelIcon color="error" />
-                </Tooltip>
-              )}
-            </IconButton>
-          }
-        >
-          <ListItemText
-            primary={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2" component="span">
-                  Lap {lap.number}
-                </Typography>
-              </Box>
-            }
-            secondary={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <TimerIcon fontSize="small" />
+      {laps.map((lap, index) => {
+        const deltaTime = lap.time - fastestLapTime;
+        const deltaString = deltaTime === 0 ? '' : ` (${deltaTime > 0 ? '+' : ''}${deltaTime.toFixed(3)}s)`;
+        
+        return (
+          <ListItem
+            key={lap.id}
+            sx={{
+              borderLeft: '4px solid',
+              borderLeftColor: selectedLaps.includes(lap.id) ? 'primary.main' : 'transparent',
+              borderRadius: 1,
+              mb: 0.5,
+              bgcolor: selectedLaps.includes(lap.id) ? 'action.selected' : 'transparent',
+              '&:hover': {
+                bgcolor: 'action.hover',
+              },
+              cursor: 'pointer',
+            }}
+            onClick={() => onLapSelect(lap.id)}
+          >
+            <ListItemText
+              primary={
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Typography 
+                    variant="body2" 
+                    component="span" 
+                    sx={{ 
+                      minWidth: '20px',
+                      mr: 1,
+                      color: 'text.secondary'
+                    }}
+                  >
+                    {index + 1}
+                  </Typography>
                   <Typography variant="body2" component="span">
                     {formatTime(lap.time)}
+                    <Typography 
+                      component="span" 
+                      variant="body2" 
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      {deltaString}
+                    </Typography>
                   </Typography>
                 </Box>
-                {lap.length && (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <StraightIcon fontSize="small" />
-                    <Typography variant="body2" component="span">
-                      {Math.round(lap.length)}m
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
-            }
-            onClick={() => onLapSelect(lap.id)}
-            sx={{ cursor: 'pointer' }}
-          />
-        </ListItem>
-      ))}
+              }
+              secondary={
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  {lap.driver?.name || 'Unknown Driver'}
+                </Typography>
+              }
+            />
+          </ListItem>
+        );
+      })}
     </List>
   );
 }
