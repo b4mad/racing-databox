@@ -78,7 +78,7 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
                 {drawerOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
               </IconButton>
             </Box>
-            
+
             {drawerOpen ? (
               <>
                 <Box sx={{ flex: '0 0 auto' }}>
@@ -100,9 +100,11 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
                     />
                   )}
                 </Box>
-                <Box sx={{ flex: 1, mt: 2 }}>
-                  <GapsAnalysisTable />
-                </Box>
+                {Object.keys(lapsData).length > 1 && (
+                  <Box sx={{ flex: 1, mt: 2 }}>
+                    <GapsAnalysisTable />
+                  </Box>
+                )}
               </>
             ) : (
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pt: 2, gap: 1 }}>
