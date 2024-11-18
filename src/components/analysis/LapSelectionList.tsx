@@ -1,4 +1,6 @@
 import { Box, List, ListItem, ListItemText, Typography } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { PaddockLap, TelemetryCacheEntry } from '../../services/types';
 import { logger } from '../../utils/logger';
 
@@ -50,16 +52,23 @@ export function LapSelectionList({ laps, selectedLaps, onLapSelect, lapsData }: 
               primary={
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography
-                      variant="body2"
-                      component="span"
-                      sx={{
-                        minWidth: '20px',
-                        color: 'text.secondary'
-                      }}
-                    >
-                      {index + 1}
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography
+                        variant="body2"
+                        component="span"
+                        sx={{
+                          minWidth: '20px',
+                          color: 'text.secondary'
+                        }}
+                      >
+                        {index + 1}
+                      </Typography>
+                      {lap.valid ? (
+                        <CheckCircleIcon sx={{ color: 'success.main', fontSize: 16 }} />
+                      ) : (
+                        <CancelIcon sx={{ color: 'error.main', fontSize: 16 }} />
+                      )}
+                    </Box>
                   </Box>
                   <Typography variant="body2" component="span">
                     {formatTime(lap.time)}
