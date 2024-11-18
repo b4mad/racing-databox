@@ -5,7 +5,7 @@ import { logger } from '../utils/logger';
 
 interface TelemetryContextType {
   telemetryCache: TelemetryCache;
-  getTelemetryForLap: (sessionId: string, lapId: number) => Promise<TelemetryCacheEntry>;
+  getTelemetryForLap: (lapId: number) => Promise<TelemetryCacheEntry>;
   clearTelemetry: (lapId: number) => void;
   clearAllTelemetry: () => void;
 }
@@ -15,7 +15,7 @@ const TelemetryContext = createContext<TelemetryContextType | undefined>(undefin
 export function TelemetryProvider({ children }: { children: ReactNode }) {
   const [telemetryCache, setTelemetryCache] = useState<TelemetryCache>({});
 
-  const getTelemetryForLap = useCallback(async (_sessionId: string, lapId: number) => {
+  const getTelemetryForLap = useCallback(async (lapId: number) => {
     // Check cache first
     if (telemetryCache[lapId]) {
       return telemetryCache[lapId];

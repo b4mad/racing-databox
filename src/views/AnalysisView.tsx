@@ -52,7 +52,6 @@ export function AnalysisView() {
 
 
   useTelemetryLoader({
-    sessionId,
     lapIds,
     lapsData,
     setLapsData
