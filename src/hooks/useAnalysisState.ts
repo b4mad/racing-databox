@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { DelimitedNumericArrayParam, useQueryParam } from 'use-query-params';
 import { AnalysisData, TelemetryCacheEntry } from '../services/types';
 import { useZoomState } from './useZoomState';
