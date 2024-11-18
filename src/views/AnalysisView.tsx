@@ -9,19 +9,18 @@
  * - Navigation and paddock UI states
  */
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { AnalysisData, TelemetryCacheEntry } from '../services/types'
 import { ErrorDisplay } from '../components/ErrorDisplay'
 import { useErrorHandler } from '../hooks/useErrorHandler'
 import { useTelemetry } from '../hooks/useTelemetry'
 import { useParams, Navigate } from 'react-router-dom'
 import { getLapColor } from '../utils/colors'
-import { DelimitedNumericArrayParam, useQueryParam } from 'use-query-params'
-import { useZoomState } from '../hooks/useZoomState'
 import { Box, CircularProgress, Container } from '@mui/material'
 import { AnalysisLayout } from '../components/analysis/AnalysisLayout'
 import { useSession } from '../hooks/useSession'
-import { AnalysisData, TelemetryCacheEntry } from '../services/types'
 import { logger } from '../utils/logger'
+import { useAnalysisState } from '../hooks/useAnalysisState'
 
 
 export function AnalysisView() {
@@ -33,15 +32,19 @@ export function AnalysisView() {
   }
 
   const { error, errorState, handleError, clearError } = useErrorHandler('analysis');
-  const [loading, setLoading] = useState(true)
-  const [lapIds, setLapIds] = useQueryParam('laps', DelimitedNumericArrayParam);
-  const [lapsData, setLapsData] = useState<{ [lapId: number]: TelemetryCacheEntry }>({})
-  const { zoomState, setZoomRange } = useZoomState({
+  const {
+    loading,
+    analysisData,
     lapsData,
-    firstLapId: lapIds?.[0]
-  });
-
-  const [analysisData, setAnalysisData] = useState<AnalysisData>();
+    lapIds,
+    setLapIds,
+    setLoading,
+    setAnalysisData,
+    setLapsData,
+    handleLapSelect,
+    zoomState,
+    setZoomRange
+  } = useAnalysisState();
 
   useEffect(() => {
     if (!sessionId) return;
@@ -125,10 +128,10 @@ export function AnalysisView() {
 
         // Only update state if we have new data
         if (Object.keys(telemetryUpdates).length > 0) {
-          setLapsData(prev => ({
-            ...prev,
+          setLapsData({
+            ...lapsData,
             ...telemetryUpdates
-          }));
+          });
 
         }
       } catch (error) {
@@ -190,24 +193,6 @@ export function AnalysisView() {
     loadSession();
   }, [sessionId]);
 
-  /**
-   * Handles lap selection/deselection in the UI
-   * Maintains the selected laps in URL parameters
-   * Ensures at least one lap is always selected
-   */
-  const handleLapSelect = (lapId: number) => {
-    // Get current lap IDs, ensuring we have an array
-    const currentLapIds = lapIds?.filter((id): id is number => typeof id === 'number') ?? [];
-    logger.analysis('Current lapIds:', currentLapIds);
-
-    // Only add if not already present
-    if (!currentLapIds.includes(lapId)) {
-      logger.analysis(`Lap ${lapId} selected`);
-      // Preserve existing zoom parameters while updating lapIds
-      setLapIds([...currentLapIds, lapId]);
-      logger.analysis('New lapIds:', [...currentLapIds, lapId]);
-    }
-  }
 
   if (loading) {
     return (
