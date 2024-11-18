@@ -1,4 +1,4 @@
-import { Box, IconButton } from '@mui/material';
+import { Box, IconButton, Typography, Stack } from '@mui/material';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -21,7 +21,8 @@ export function AnalysisToolbar({ onLapSelect, analysisData, drawerOpen, setDraw
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1, justifyContent: 'space-between' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
       <IconButton
         onClick={() => setDrawerOpen(!drawerOpen)}
         sx={{
@@ -62,6 +63,30 @@ export function AnalysisToolbar({ onLapSelect, analysisData, drawerOpen, setDraw
           analysisData={analysisData}
           onLapSelect={onLapSelect}
         />
+      )}
+      </Box>
+      
+      {analysisData && (
+        <Stack direction="row" spacing={2} sx={{ 
+          display: { xs: 'none', sm: 'flex' },
+          alignItems: 'center',
+          pr: 2,
+          color: 'white',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          borderRadius: 1,
+          px: 2,
+          py: 0.5
+        }}>
+          <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
+            {analysisData.track.name || 'Unknown Track'}
+          </Typography>
+          <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
+            {analysisData.car.name || 'Unknown Car'}
+          </Typography>
+          <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
+            {analysisData.driver.name || 'Unknown Driver'}
+          </Typography>
+        </Stack>
       )}
     </Box>
   );
