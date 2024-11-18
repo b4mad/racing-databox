@@ -24,7 +24,7 @@ import { logger } from '../utils/logger'
 
 export function AnalysisView() {
   const { sessionId } = useParams();
-  const { getSession, fetchSession } = useSession();
+  const { getSession, fetchSession, getLandmarks } = useSession();
 
   if (!sessionId) {
     return <Navigate to="/" replace />;
@@ -71,18 +71,24 @@ export function AnalysisView() {
   const analysisData = useMemo<AnalysisData | undefined>(() => {
     logger.analysis(`Loading analysis data for session ${sessionId}`);
     const session = getSession(sessionId);
+
     if (!session?.laps) return undefined;
+
+    const landmarks = getLandmarks(session.track.id);
 
     const filteredLaps = session.laps.filter(lap =>
       lapIds?.includes(lap.id)
     );
+
 
     return {
         laps: filteredLaps,
         session: session,
         car: session.car,
         track: session.track,
-        game: session.game
+        game: session.game,
+        landmarks: landmarks,
+        driver: session.driver
     };
   }, [sessionId, lapIds]);
 

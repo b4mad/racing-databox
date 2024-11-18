@@ -36,6 +36,8 @@ export interface AnalysisData {
     car: PaddockCar;
     track: PaddockTrack;
     game: PaddockGame;
+    landmarks?: TrackLandmarks;
+    driver: PaddockDriver;
 }
 
 

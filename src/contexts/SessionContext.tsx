@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState, ReactNode } from 'react';
 import { PaddockService } from '../services/PaddockService';
-import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack } from '../services/types';
+import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, TrackLandmarks } from '../services/types';
 
 interface SessionContextType {
   // List view state
@@ -8,6 +8,8 @@ interface SessionContextType {
   cars: PaddockCar[];
   drivers: PaddockDriver[];
   tracks: PaddockTrack[];
+  fetchLandmarks: (trackId: number) => Promise<TrackLandmarks>;
+  getLandmarks: (trackId: number) => TrackLandmarks | undefined;
   loading: boolean;
   error: string | null;
   hasNextPage: boolean;
@@ -44,6 +46,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
   const [selectedCar, setSelectedCar] = useState<number | null>();
   const [selectedDriver, setSelectedDriver] = useState<number | null>();
   const [selectedTrack, setSelectedTrack] = useState<number | null>();
+  const [landmarksCache, setLandmarksCache] = useState<{ [trackId: number]: TrackLandmarks }>({});
 
 
   const fetchSessions = useCallback(async (isInitialLoad = false) => {
@@ -114,6 +117,36 @@ export function SessionProvider({ children }: SessionProviderProps) {
   }, [sessions]);
 
 
+  const getLandmarks = useCallback((trackId: number): TrackLandmarks | undefined => {
+    return landmarksCache[trackId];
+  }, [landmarksCache]);
+
+  const fetchLandmarks = useCallback(async (trackId: number): Promise<TrackLandmarks> => {
+    try {
+      // Return cached landmarks if available
+      if (landmarksCache[trackId]) {
+        return landmarksCache[trackId];
+      }
+
+      const paddockService = new PaddockService();
+      const landmarks = await paddockService.getLandmarks(trackId);
+
+      // Cache the results
+      setLandmarksCache(prev => ({
+        ...prev,
+        [trackId]: landmarks
+      }));
+
+      return landmarks;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load landmarks');
+      if (process.env.NODE_ENV === 'development') {
+        throw err;
+      }
+      throw err;
+    }
+  }, [landmarksCache]);
+
   const fetchSession = useCallback(async (sessionId: string): Promise<PaddockSession> => {
     // First try to find the session in our list
     let session = getSession(sessionId);
@@ -164,6 +197,8 @@ export function SessionProvider({ children }: SessionProviderProps) {
         setSelectedTrack,
         getSession,
         fetchSession,
+        fetchLandmarks,
+        getLandmarks,
       }}
     >
       {children}
