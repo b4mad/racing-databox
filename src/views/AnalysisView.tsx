@@ -9,16 +9,16 @@
  * - Navigation and paddock UI states
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useTelemetry } from '../hooks/useTelemetry'
 import { useParams, Navigate } from 'react-router-dom'
 import { getLapColor } from '../utils/colors'
-import { NumberParam, DelimitedNumericArrayParam, useQueryParam } from 'use-query-params'
+import { DelimitedNumericArrayParam, useQueryParam } from 'use-query-params'
+import { useZoomState } from '../hooks/useZoomState'
 import { Box, CircularProgress, Container } from '@mui/material'
 import { AnalysisLayout } from '../components/analysis/AnalysisLayout'
 import { useSession } from '../hooks/useSession'
 import { AnalysisData, TelemetryCacheEntry } from '../services/types'
-import { ZoomState } from '../components/types'
 import { logger } from '../utils/logger'
 
 
@@ -34,39 +34,10 @@ export function AnalysisView() {
   const [loading, setLoading] = useState(true)
   const [lapIds, setLapIds] = useQueryParam('laps', DelimitedNumericArrayParam);
   const [lapsData, setLapsData] = useState<{ [lapId: number]: TelemetryCacheEntry }>({})
-  const [zoomStart, setZoomStart] = useQueryParam('zoomStart', NumberParam);
-  const [zoomEnd, setZoomEnd] = useQueryParam('zoomEnd', NumberParam);
-
-  // Configure zoom state for the visualization
-  // top and bottom are auto-scaled by Chart.js based on data
-  const zoomState: ZoomState = {
-    left: zoomStart || 0,      // Start of visible range in meters
-    right: zoomEnd || 0,       // End of visible range in meters
-    top: 0,                    // Will be auto-scaled by Chart.js
-    bottom: 0                  // Will be auto-scaled by Chart.js
-  }
-
-  /**
-   * Updates the zoom range for the telemetry visualization
-   * Ensures the range stays within valid bounds (0 to max lap distance)
-   * Updates URL parameters to persist zoom state
-   */
-  const setZoomRange = useCallback((startMeters: number, endMeters: number) => {
-    const firstLapId = lapIds?.[0] ?? 0;
-    const firstLapEntry = lapsData[typeof firstLapId === 'number' ? firstLapId : 0];
-    if (!firstLapEntry?.points.length) return;
-
-    // Get the total distance of the lap for bounds checking
-    const maxDistance = firstLapEntry.points[firstLapEntry.points.length - 1].distance;
-
-    // Clamp values to valid range (0 to maxDistance)
-    const start = Math.max(0, Math.min(startMeters, maxDistance));
-    const end = Math.max(0, Math.min(endMeters, maxDistance));
-
-    // Update URL parameters with new zoom range
-    setZoomStart(start);
-    setZoomEnd(end);
-  }, [lapsData, lapIds]);
+  const { zoomState, setZoomRange } = useZoomState({
+    lapsData,
+    firstLapId: lapIds?.[0]
+  });
 
   const [analysisData, setAnalysisData] = useState<AnalysisData>();
 
@@ -148,7 +119,7 @@ export function AnalysisView() {
           return entry;
         });
 
-        const results = (await Promise.all(promises)).filter((r): r is TelemetryCacheEntry => r !== null);
+        (await Promise.all(promises)).filter((r): r is TelemetryCacheEntry => r !== null);
 
         // Only update state if we have new data
         if (Object.keys(telemetryUpdates).length > 0) {
@@ -157,16 +128,8 @@ export function AnalysisView() {
             ...telemetryUpdates
           }));
 
-          // Set initial zoom range using the first loaded lap
-          const firstEntry = results[0];
-          if (!zoomStart && !zoomEnd && firstEntry && firstEntry.points.length > 0) {
-            const maxDistance = firstEntry.points[firstEntry.points.length - 1].distance;
-            setZoomStart(0);
-            setZoomEnd(maxDistance);
-          }
         }
       } catch (error) {
-        console.error('Failed to load telemetry:', error);
         setError('Failed to load telemetry data');
       }
     }

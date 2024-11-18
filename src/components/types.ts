@@ -1,6 +1,6 @@
 export interface ZoomState {
-  left: number;
-  right: number;
+  left: number | undefined | null;
+  right: number | undefined | null;
   top: number;
   bottom: number;
 }
