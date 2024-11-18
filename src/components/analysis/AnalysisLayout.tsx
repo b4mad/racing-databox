@@ -1,4 +1,5 @@
-import { Box, Drawer } from '@mui/material';
+import { Box, Drawer, IconButton } from '@mui/material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { useState } from 'react';
 import { AnalysisToolbar } from './AnalysisToolbar';
 import { LapSelectionPanel } from './LapSelectionPanel';
@@ -30,8 +31,6 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
         <AnalysisToolbar
           analysisData={analysisData}
           onLapSelect={onLapSelect}
-          drawerOpen={drawerOpen}
-          setDrawerOpen={setDrawerOpen}
         />
       </Box>
 
@@ -57,6 +56,21 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
           }}
         >
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+              <IconButton
+                onClick={() => setDrawerOpen(false)}
+                size="small"
+                sx={{
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                  },
+                  color: 'white',
+                }}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+            </Box>
             <Box sx={{ flex: '0 0 auto' }}>
               <LapSelectionPanel analysisData={analysisData} />
             </Box>
