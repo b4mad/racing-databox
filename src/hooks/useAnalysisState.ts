@@ -8,7 +8,7 @@ interface AnalysisState {
   loading: boolean;
   analysisData?: AnalysisData;
   lapsData: { [lapId: number]: TelemetryCacheEntry };
-  lapIds: number[] | undefined;
+  lapIds: (number | null)[] | null | undefined;
 }
 
 interface AnalysisStateActions {
@@ -47,16 +47,11 @@ export function useAnalysisState() {
     }
   };
 
-  // Convert null to undefined and ensure all elements are numbers
-  const normalizedLapIds = lapIds?.filter((id): id is number =>
-    typeof id === 'number'
-  );
-
   const state: AnalysisState = {
     loading,
     analysisData,
     lapsData,
-    lapIds: normalizedLapIds
+    lapIds
   };
 
   const actions: AnalysisStateActions = {

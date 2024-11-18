@@ -5,7 +5,7 @@ import { AnalysisData } from '../services/types';
 
 interface UseSessionLoaderParams {
   sessionId: string;
-  lapIds?: number[];
+  lapIds?: (number | null)[] | null | undefined;
   setLoading: (loading: boolean) => void;
   setAnalysisData: (data: AnalysisData) => void;
   setLapIds: (ids: number[] | undefined) => void;
@@ -58,9 +58,9 @@ export function useSessionLoader({
 
     loadSession();
     return () => { mounted = false; };
-  }, [sessionId]); // Only depend on sessionId for initial load
+  }, [sessionId]);
 
-  // Effect 2: Update analysis data when lapIds change
+  // Effect 2: Update analysis data when session or lapIds change
   useEffect(() => {
     if (!sessionId || !lapIds?.length) return;
 
@@ -70,7 +70,7 @@ export function useSessionLoader({
     const landmarks = getLandmarks(session.track.id);
     if (!landmarks) return;
 
-    const filteredLaps = session.laps.filter(lap => 
+    const filteredLaps = session.laps.filter(lap =>
       lapIds.includes(lap.id)
     );
     if (!filteredLaps.length) return;
@@ -84,5 +84,5 @@ export function useSessionLoader({
       landmarks,
       driver: session.driver
     });
-  }, [lapIds, sessionId]); // Only depend on lapIds and sessionId for updates
+  }, [sessionId, lapIds]);
 }

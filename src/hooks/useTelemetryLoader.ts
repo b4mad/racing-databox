@@ -6,7 +6,7 @@ import { getLapColor } from '../utils/colors';
 import { logger } from '../utils/logger';
 
 interface UseTelemetryLoaderParams {
-  lapIds?: number[];
+  lapIds?: (number | null)[] | null | undefined;
   lapsData: { [lapId: number]: TelemetryCacheEntry };
   setLapsData: React.Dispatch<React.SetStateAction<{ [lapId: number]: TelemetryCacheEntry }>>;
 }
@@ -23,16 +23,16 @@ export function useTelemetryLoader({
     async function loadTelemetryData() {
       if (!lapIds?.length) return;
 
-      // Skip if we already have all the telemetry data for these laps
-      const missingLapIds = lapIds.filter(
-        lapId => typeof lapId === 'number' && !lapsData[lapId]
-      );
+      // Get missing lap IDs without referencing lapsData in effect deps
+      const missingLapIds = lapIds.filter((lapId): lapId is number => {
+        return typeof lapId === 'number' && !lapsData[lapId];
+      });
+
       if (missingLapIds.length === 0) return;
 
       try {
         const telemetryUpdates: { [key: number]: TelemetryCacheEntry } = {};
         const promises = missingLapIds.map(async (lapId) => {
-
           const entry = await getTelemetryForLap(lapId);
           const lapIndex = lapIds.indexOf(lapId);
 
@@ -47,7 +47,6 @@ export function useTelemetryLoader({
 
         await Promise.all(promises);
 
-        // Only update state if we have new data
         if (Object.keys(telemetryUpdates).length > 0) {
           setLapsData(prev => ({
             ...prev,
@@ -60,5 +59,5 @@ export function useTelemetryLoader({
     }
 
     loadTelemetryData();
-  }, [lapIds, getTelemetryForLap, handleError, lapsData, setLapsData]);
+  }, [lapIds]);
 }
