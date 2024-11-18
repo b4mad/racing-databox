@@ -82,25 +82,25 @@ export function ChartLineGraph({
         title: {
           display: true,
           text: 'Distance (m)',
-          color: theme.palette.chart?.text
+          color: theme.palette.chart?.text || theme.palette.text.primary
         },
         grid: {
-          color: theme.palette.chart?.grid
+          color: theme.palette.chart?.grid || theme.palette.divider
         },
         ticks: {
           color: theme.palette.chart?.text
         },
-        min: typeof zoomState.left === 'number' ? zoomState.left : parseFloat(zoomState.left),
-        max: typeof zoomState.right === 'number' ? zoomState.right : parseFloat(zoomState.right)
+        min: typeof zoomState.left === 'number' ? zoomState.left : parseFloat(zoomState.left || '0'),
+        max: typeof zoomState.right === 'number' ? zoomState.right : parseFloat(zoomState.right || '0')
       },
       y: {
         title: {
           display: true,
           text: unit,
-          color: theme.palette.chart?.text
+          color: theme.palette.chart?.text || theme.palette.text.primary
         },
         grid: {
-          color: theme.palette.chart?.grid
+          color: theme.palette.chart?.grid || theme.palette.divider
         },
         ticks: {
           color: theme.palette.chart?.text

@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useSession } from './useSession';
 import { useErrorHandler } from './useErrorHandler';
-import { logger } from '../utils/logger';
 import { AnalysisData } from '../services/types';
 
 interface UseSessionLoaderParams {
@@ -20,84 +19,70 @@ export function useSessionLoader({
   setLapIds
 }: UseSessionLoaderParams) {
   const { getSession, fetchSession, getLandmarks, fetchLandmarks } = useSession();
-  const { handleError, clearError } = useErrorHandler('session-loader');
+  const { handleError, clearError } = useErrorHandler('paddock');
 
-  // Effect for loading session and landmarks
+  // Effect 1: Initial session and landmarks loading
   useEffect(() => {
+    if (!sessionId) return;
+    let mounted = true;
+
     const loadSession = async () => {
       try {
         setLoading(true);
         const session = await fetchSession(sessionId);
+        if (!mounted) return;
 
-        // Fetch landmarks for the track right after getting session
         const landmarks = await fetchLandmarks(session.track.id);
+        if (!mounted) return;
 
         if (!landmarks) {
           throw new Error('Failed to load landmarks');
-        } else {
-          logger.analysis('Loaded landmarks:', landmarks);
         }
 
-        if (session.laps.length > 0) {
-          // If no lap is set in URL, use first lap
-          const initialLapIds = lapIds?.length ? lapIds : [session.laps[0].id];
-          setLapIds(initialLapIds);
-          logger.analysis('Initial lapIds:', initialLapIds);
+        // Set initial lap only if we have laps and none are currently selected
+        if (session.laps.length > 0 && !lapIds?.length) {
+          setLapIds([session.laps[0].id]);
         }
 
         clearError();
       } catch (err) {
-        handleError(err, 'Failed to load session data');
-        if (process.env.NODE_ENV === 'development') {
-          throw err;
+        if (mounted) {
+          handleError(err, 'Failed to load session data');
         }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     loadSession();
-  }, [sessionId]);
+    return () => { mounted = false; };
+  }, [sessionId]); // Only depend on sessionId for initial load
 
-  // Effect for building analysis data
+  // Effect 2: Update analysis data when lapIds change
   useEffect(() => {
-    if (!sessionId) return;
+    if (!sessionId || !lapIds?.length) return;
 
-    // Get the session
     const session = getSession(sessionId);
-    if (!session?.laps) {
-      logger.analysis('Session or laps not yet loaded');
-      return;
-    }
+    if (!session?.laps) return;
 
-    // Get the landmarks
     const landmarks = getLandmarks(session.track.id);
-    if (!landmarks) {
-      logger.analysis('Landmarks not yet loaded');
-      return;
-    }
+    if (!landmarks) return;
 
-    // Only proceed if we have both lapIds and filtered laps
-    const filteredLaps = session.laps.filter(lap =>
-      lapIds?.includes(lap.id)
+    const filteredLaps = session.laps.filter(lap => 
+      lapIds.includes(lap.id)
     );
-    if (!filteredLaps.length) {
-      logger.analysis('No matching laps found');
-      return;
-    }
+    if (!filteredLaps.length) return;
 
-    // Now we can safely build the analysis data
-    const data: AnalysisData = {
+    setAnalysisData({
       laps: filteredLaps,
-      session: session,
+      session,
       car: session.car,
       track: session.track,
       game: session.game,
-      landmarks: landmarks,
+      landmarks,
       driver: session.driver
-    };
-
-    logger.analysis('Analysis data built successfully:', data);
-    setAnalysisData(data);
-  }, [sessionId, lapIds, getSession, getLandmarks]);
+    });
+  }, [lapIds, sessionId]); // Only depend on lapIds and sessionId for updates
 }

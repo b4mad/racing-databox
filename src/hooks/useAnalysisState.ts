@@ -48,7 +48,7 @@ export function useAnalysisState() {
   };
 
   // Convert null to undefined and ensure all elements are numbers
-  const normalizedLapIds = lapIds?.filter((id): id is number => 
+  const normalizedLapIds = lapIds?.filter((id): id is number =>
     typeof id === 'number'
   );
 
