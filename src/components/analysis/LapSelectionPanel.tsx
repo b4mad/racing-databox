@@ -1,74 +1,38 @@
-import { Box, Typography, List, ListItem, ListItemButton, ListItemText, Checkbox } from '@mui/material';
-import { useQueryParam, DelimitedNumericArrayParam } from 'use-query-params';
+import { Box } from '@mui/material';
 import { AnalysisData } from '../../services/types';
+import { LapSelectionList } from './LapSelectionList';
+import { useSearchParams } from 'react-router-dom';
 
 interface LapSelectionPanelProps {
   analysisData?: AnalysisData;
 }
 
 export function LapSelectionPanel({ analysisData }: LapSelectionPanelProps) {
-  const [selectedLaps, setSelectedLaps] = useQueryParam('laps', DelimitedNumericArrayParam);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedLaps = searchParams.getAll('lap').map(Number);
 
-  if (!analysisData) {
+  const handleLapSelect = (lapId: number) => {
+    const newSelectedLaps = selectedLaps.includes(lapId)
+      ? selectedLaps.filter(id => id !== lapId)
+      : [...selectedLaps, lapId];
+
+    const params = new URLSearchParams(searchParams);
+    params.delete('lap');
+    newSelectedLaps.forEach(id => params.append('lap', id.toString()));
+    setSearchParams(params);
+  };
+
+  if (!analysisData?.laps) {
     return null;
   }
 
-  const handleLapToggle = (lapId: number) => {
-    const currentSelected = selectedLaps || [];
-    const newSelected = currentSelected.includes(lapId)
-      ? currentSelected.filter(id => id !== lapId)
-      : [...currentSelected, lapId];
-
-    // Ensure at least one lap remains selected
-    if (newSelected.length > 0) {
-      setSelectedLaps(newSelected);
-    }
-  };
-
   return (
     <Box sx={{ p: 1 }}>
-      <Typography variant="h6" gutterBottom>
-        Laps:
-      </Typography>
-      <List dense>
-        {analysisData.laps.map((lap) => {
-          const labelId = `lap-${lap.id}`;
-          const isSelected = selectedLaps?.includes(lap.id) || false;
-          const lapTimeStr = lap.time
-            ? `${(lap.time / 1000).toFixed(3)}s`
-            : 'No time';
-
-          return (
-            <ListItem
-              key={lap.id}
-              disablePadding
-              secondaryAction={
-                <Checkbox
-                  edge="end"
-                  checked={isSelected}
-                  onChange={() => handleLapToggle(lap.id)}
-                  inputProps={{ 'aria-labelledby': labelId }}
-                />
-              }
-            >
-              <ListItemButton onClick={() => handleLapToggle(lap.id)} dense>
-                <ListItemText
-                  id={labelId}
-                  primary={
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Typography component="span">{lap.number}</Typography>
-                      <Typography component="span">
-                        {lapTimeStr}
-                      </Typography>
-                    </Box>
-                  }
-                  secondary={lap.session?.driver?.name || 'Unknown Driver'}
-                />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-      </List>
+      <LapSelectionList
+        laps={analysisData.laps}
+        selectedLaps={selectedLaps}
+        onLapSelect={handleLapSelect}
+      />
     </Box>
   );
 }

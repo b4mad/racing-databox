@@ -1,4 +1,4 @@
-import { Box, Drawer, IconButton } from '@mui/material';
+import { Box, Drawer, IconButton, Typography } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -37,6 +37,14 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
           analysisData={analysisData}
         />
       </Box>
+      {analysisData && (
+        <LapsModal
+          open={isLapsModalOpen}
+          onClose={() => setIsLapsModalOpen(false)}
+          analysisData={analysisData}
+          onLapSelect={onLapSelect}
+        />
+      )}
 
       {/* Main Content */}
       <Box sx={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
@@ -82,23 +90,17 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
             {drawerOpen ? (
               <>
                 <Box sx={{ flex: '0 0 auto' }}>
-                  <IconButton
-                    aria-label="modify laps"
-                    size="large"
-                    onClick={() => setIsLapsModalOpen(true)}
-                    sx={{ mb: 1 }}
-                  >
-                    <TimelineIcon />
-                  </IconButton>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 1 }}>
+                    <Typography variant="subtitle1">Available Laps</Typography>
+                    <IconButton
+                      aria-label="modify laps"
+                      size="small"
+                      onClick={() => setIsLapsModalOpen(true)}
+                    >
+                      <TimelineIcon />
+                    </IconButton>
+                  </Box>
                   <LapSelectionPanel analysisData={analysisData} />
-                  {analysisData && (
-                    <LapsModal
-                      open={isLapsModalOpen}
-                      onClose={() => setIsLapsModalOpen(false)}
-                      analysisData={analysisData}
-                      onLapSelect={onLapSelect}
-                    />
-                  )}
                 </Box>
                 {Object.keys(lapsData).length > 1 && (
                   <Box sx={{ flex: 1, mt: 2 }}>
@@ -115,6 +117,7 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
                     '&:hover': { backgroundColor: 'action.hover' },
                   }}
                   title="Lap Selection"
+                  onClick={() => setIsLapsModalOpen(true)}
                 >
                   <TimelineIcon />
                 </IconButton>
