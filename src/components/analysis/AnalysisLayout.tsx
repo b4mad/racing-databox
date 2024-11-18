@@ -4,6 +4,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import CompareIcon from '@mui/icons-material/Compare';
 import { useState } from 'react';
+import { LapsModal } from './LapsModal';
 import { AnalysisToolbar } from './AnalysisToolbar';
 import { LapSelectionPanel } from './LapSelectionPanel';
 import { GapsAnalysisTable } from './GapsAnalysisTable';
@@ -24,6 +25,7 @@ interface AnalysisLayoutProps {
 
 export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState, setZoomRange }: AnalysisLayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(true);
+  const [isLapsModalOpen, setIsLapsModalOpen] = useState(false);
   const mapDataAvailable = Object.keys(lapsData).length > 0 &&
     lapsData[parseInt(Object.keys(lapsData)[0])].mapDataAvailable;
 
@@ -33,7 +35,6 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
       <Box sx={{ p: 1, borderBottom: 1, borderColor: 'divider' }}>
         <AnalysisToolbar
           analysisData={analysisData}
-          onLapSelect={onLapSelect}
         />
       </Box>
 
@@ -81,7 +82,23 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
             {drawerOpen ? (
               <>
                 <Box sx={{ flex: '0 0 auto' }}>
+                  <IconButton
+                    aria-label="modify laps"
+                    size="large"
+                    onClick={() => setIsLapsModalOpen(true)}
+                    sx={{ mb: 1 }}
+                  >
+                    <TimelineIcon />
+                  </IconButton>
                   <LapSelectionPanel analysisData={analysisData} />
+                  {analysisData && (
+                    <LapsModal
+                      open={isLapsModalOpen}
+                      onClose={() => setIsLapsModalOpen(false)}
+                      analysisData={analysisData}
+                      onLapSelect={onLapSelect}
+                    />
+                  )}
                 </Box>
                 <Box sx={{ flex: 1, mt: 2 }}>
                   <GapsAnalysisTable />
