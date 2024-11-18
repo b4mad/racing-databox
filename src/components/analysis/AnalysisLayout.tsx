@@ -100,7 +100,10 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
                       <TimelineIcon />
                     </IconButton>
                   </Box>
-                  <LapSelectionPanel analysisData={analysisData} />
+                  <LapSelectionPanel 
+                    analysisData={analysisData}
+                    lapsData={lapsData}
+                  />
                 </Box>
                 {Object.keys(lapsData).length > 1 && (
                   <Box sx={{ flex: 1, mt: 2 }}>

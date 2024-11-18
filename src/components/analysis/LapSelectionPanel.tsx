@@ -1,15 +1,16 @@
 import { Box } from '@mui/material';
-import { AnalysisData } from '../../services/types';
+import { AnalysisData, TelemetryCacheEntry } from '../../services/types';
 import { LapSelectionList } from './LapSelectionList';
 import { useSearchParams } from 'react-router-dom';
 
 interface LapSelectionPanelProps {
   analysisData?: AnalysisData;
+  lapsData: { [lapId: number]: TelemetryCacheEntry };
 }
 
-export function LapSelectionPanel({ analysisData }: LapSelectionPanelProps) {
+export function LapSelectionPanel({ analysisData, lapsData }: LapSelectionPanelProps) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const selectedLaps = searchParams.getAll('lap').map(Number);
+  const selectedLaps = searchParams.get('laps')?.split(',').map(Number) || [];
 
   const handleLapSelect = (lapId: number) => {
     const newSelectedLaps = selectedLaps.includes(lapId)
@@ -17,8 +18,7 @@ export function LapSelectionPanel({ analysisData }: LapSelectionPanelProps) {
       : [...selectedLaps, lapId];
 
     const params = new URLSearchParams(searchParams);
-    params.delete('lap');
-    newSelectedLaps.forEach(id => params.append('lap', id.toString()));
+    params.set('laps', newSelectedLaps.join(','));
     setSearchParams(params);
   };
 
@@ -32,6 +32,7 @@ export function LapSelectionPanel({ analysisData }: LapSelectionPanelProps) {
         laps={analysisData.laps}
         selectedLaps={selectedLaps}
         onLapSelect={handleLapSelect}
+        lapsData={lapsData}
       />
     </Box>
   );

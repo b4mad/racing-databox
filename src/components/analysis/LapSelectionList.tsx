@@ -1,13 +1,15 @@
 import { Box, List, ListItem, ListItemText, Typography } from '@mui/material';
-import { PaddockLap } from '../../services/types';
+import { PaddockLap, TelemetryCacheEntry } from '../../services/types';
+import { logger } from '../../utils/logger';
 
 interface LapSelectionListProps {
   laps: PaddockLap[];
   selectedLaps: number[];
   onLapSelect: (lapId: number) => void;
+  lapsData: { [lapId: number]: TelemetryCacheEntry };
 }
 
-export function LapSelectionList({ laps, selectedLaps, onLapSelect }: LapSelectionListProps) {
+export function LapSelectionList({ laps, selectedLaps, onLapSelect, lapsData }: LapSelectionListProps) {
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
@@ -21,15 +23,18 @@ export function LapSelectionList({ laps, selectedLaps, onLapSelect }: LapSelecti
   return (
     <List dense sx={{ width: '100%', bgcolor: 'background.paper' }}>
       {laps.map((lap, index) => {
+        logger.analysis('LapSelectionList', lapsData[lap.id]?.color);
         const deltaTime = lap.time - fastestLapTime;
         const deltaString = deltaTime === 0 ? '' : ` (${deltaTime > 0 ? '+' : ''}${deltaTime.toFixed(3)}s)`;
-        
+
         return (
           <ListItem
             key={lap.id}
             sx={{
               borderLeft: '4px solid',
-              borderLeftColor: selectedLaps.includes(lap.id) ? 'primary.main' : 'transparent',
+              borderLeftColor: selectedLaps.includes(lap.id)
+                ? (lapsData[lap.id]?.color || 'primary.main')
+                : 'transparent',
               borderRadius: 1,
               mb: 0.5,
               bgcolor: selectedLaps.includes(lap.id) ? 'action.selected' : 'transparent',
@@ -43,22 +48,33 @@ export function LapSelectionList({ laps, selectedLaps, onLapSelect }: LapSelecti
             <ListItemText
               primary={
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Typography 
-                    variant="body2" 
-                    component="span" 
-                    sx={{ 
-                      minWidth: '20px',
-                      mr: 1,
-                      color: 'text.secondary'
-                    }}
-                  >
-                    {index + 1}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box
+                      sx={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: '50%',
+                        backgroundColor: selectedLaps.includes(lap.id)
+                          ? (lapsData[lap.id]?.color || 'primary.main')
+                          : 'action.disabled',
+                      }}
+                    />
+                    <Typography
+                      variant="body2"
+                      component="span"
+                      sx={{
+                        minWidth: '20px',
+                        color: 'text.secondary'
+                      }}
+                    >
+                      {index + 1}
+                    </Typography>
+                  </Box>
                   <Typography variant="body2" component="span">
                     {formatTime(lap.time)}
-                    <Typography 
-                      component="span" 
-                      variant="body2" 
+                    <Typography
+                      component="span"
+                      variant="body2"
                       sx={{ color: 'text.secondary' }}
                     >
                       {deltaString}
@@ -68,7 +84,7 @@ export function LapSelectionList({ laps, selectedLaps, onLapSelect }: LapSelecti
               }
               secondary={
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  {lap.driver?.name || 'Unknown Driver'}
+                  {lap.session?.driver?.name || 'Unknown Driver'}
                 </Typography>
               }
             />
