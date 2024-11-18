@@ -75,6 +75,13 @@ export function SessionsView() {
     }
   }, [selectedDriver, selectedCar, selectedTrack])
 
+  // Handle session errors
+  useEffect(() => {
+    if (sessionError) {
+      handleError(sessionError, 'Failed to load sessions');
+    }
+  }, [sessionError, handleError]);
+
   if (loading) {
     return (
       <Container>
@@ -84,13 +91,6 @@ export function SessionsView() {
       </Container>
     );
   }
-
-  // Handle session errors
-  useEffect(() => {
-    if (sessionError) {
-      handleError(sessionError, 'Failed to load sessions');
-    }
-  }, [sessionError, handleError]);
 
   if (errorState?.permanent) {
     return (
