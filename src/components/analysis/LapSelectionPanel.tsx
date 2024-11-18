@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+import { useState, useEffect } from 'react';
 import { AnalysisData, TelemetryCacheEntry } from '../../services/types';
 import { LapSelectionList } from './LapSelectionList';
 import { useSearchParams } from 'react-router-dom';
@@ -9,17 +10,22 @@ interface LapSelectionPanelProps {
 }
 
 export function LapSelectionPanel({ analysisData, lapsData }: LapSelectionPanelProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const selectedLaps = searchParams.get('laps')?.split(',').map(Number) || [];
+  const [searchParams] = useSearchParams();
+  const [selectedLaps, setSelectedLaps] = useState<number[]>([]);
+
+  // Initialize selected laps from URL or all laps
+  useEffect(() => {
+    const initialLaps = searchParams.get('laps')?.split(',').map(Number) ||
+      (analysisData?.laps ? analysisData.laps.map(lap => lap.id) : []);
+    setSelectedLaps(initialLaps);
+  }, [searchParams, analysisData]);
 
   const handleLapSelect = (lapId: number) => {
-    const newSelectedLaps = selectedLaps.includes(lapId)
-      ? selectedLaps.filter(id => id !== lapId)
-      : [...selectedLaps, lapId];
-
-    const params = new URLSearchParams(searchParams);
-    params.set('laps', newSelectedLaps.join(','));
-    setSearchParams(params);
+    // Always keep all laps selected
+    return;
+    if (!selectedLaps.includes(lapId)) {
+      setSelectedLaps([...selectedLaps, lapId]);
+    }
   };
 
   if (!analysisData?.laps) {

@@ -27,38 +27,29 @@ export function LapSelectionList({ laps, selectedLaps, onLapSelect, lapsData }: 
         const deltaTime = lap.time - fastestLapTime;
         const deltaString = deltaTime === 0 ? '' : ` (${deltaTime > 0 ? '+' : ''}${deltaTime.toFixed(3)}s)`;
 
+        const isSelected = true || selectedLaps.includes(lap.id);
         return (
           <ListItem
             key={lap.id}
             sx={{
               borderLeft: '4px solid',
-              borderLeftColor: selectedLaps.includes(lap.id)
+              borderLeftColor: isSelected
                 ? (lapsData[lap.id]?.color || 'primary.main')
                 : 'transparent',
               borderRadius: 1,
               mb: 0.5,
-              bgcolor: selectedLaps.includes(lap.id) ? 'action.selected' : 'transparent',
+              bgcolor: isSelected ? 'action.selected' : 'transparent',
               '&:hover': {
                 bgcolor: 'action.hover',
               },
               cursor: 'pointer',
             }}
             onClick={() => onLapSelect(lap.id)}
-          >
+        >
             <ListItemText
               primary={
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Box
-                      sx={{
-                        width: 12,
-                        height: 12,
-                        borderRadius: '50%',
-                        backgroundColor: selectedLaps.includes(lap.id)
-                          ? (lapsData[lap.id]?.color || 'primary.main')
-                          : 'action.disabled',
-                      }}
-                    />
                     <Typography
                       variant="body2"
                       component="span"
