@@ -117,6 +117,7 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
         <SectorVisualization
           currentLapData={Object.keys(lapsData).length > 0 ? lapsData[parseInt(Object.keys(lapsData)[0])].points : []}
           setZoomRange={setZoomRange}
+          analysisData={analysisData}
         />
       </Box>
     </Box>

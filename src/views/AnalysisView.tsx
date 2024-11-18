@@ -24,7 +24,7 @@ import { logger } from '../utils/logger'
 
 export function AnalysisView() {
   const { sessionId } = useParams();
-  const { getSession, fetchSession, getLandmarks } = useSession();
+  const { getSession, fetchSession, getLandmarks, fetchLandmarks } = useSession();
 
   if (!sessionId) {
     return <Navigate to="/" replace />;
@@ -75,13 +75,16 @@ export function AnalysisView() {
     if (!session?.laps) return undefined;
 
     const landmarks = getLandmarks(session.track.id);
+    if (!landmarks) {
+      throw new Error('Failed to load landmarks');
+    }
 
     const filteredLaps = session.laps.filter(lap =>
       lapIds?.includes(lap.id)
     );
 
 
-    return {
+    const analysisData: AnalysisData = {
         laps: filteredLaps,
         session: session,
         car: session.car,
@@ -90,6 +93,8 @@ export function AnalysisView() {
         landmarks: landmarks,
         driver: session.driver
     };
+    logger.analysis('Analysis data:', analysisData);
+    return analysisData;
   }, [sessionId, lapIds]);
 
   // Load telemetry data when lap changes
@@ -174,6 +179,17 @@ export function AnalysisView() {
       try {
         setLoading(true);
         const session = await fetchSession(sessionId);
+
+        // Fetch landmarks for the track right after getting session
+        const landmarks = await fetchLandmarks(session.track.id);
+
+        if (!landmarks) {
+          throw new Error('Failed to load landmarks');
+        } else {
+          logger.analysis('Loaded landmarks:', landmarks);
+          debugger;
+        }
+
 
         if (session.laps.length > 0) {
           // If no lap is set in URL, use first lap
