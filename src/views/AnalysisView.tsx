@@ -9,7 +9,7 @@
  * - Navigation and paddock UI states
  */
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTelemetry } from '../hooks/useTelemetry'
 import { useParams, Navigate } from 'react-router-dom'
 import { getLapColor } from '../utils/colors'
@@ -68,34 +68,48 @@ export function AnalysisView() {
     setZoomEnd(end);
   }, [lapsData, lapIds]);
 
-  const analysisData = useMemo<AnalysisData | undefined>(() => {
-    logger.analysis(`Loading analysis data for session ${sessionId}`);
+  const [analysisData, setAnalysisData] = useState<AnalysisData>();
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    // Get the session
     const session = getSession(sessionId);
-
-    if (!session?.laps) return undefined;
-
-    const landmarks = getLandmarks(session.track.id);
-    if (!landmarks) {
-      throw new Error('Failed to load landmarks');
+    if (!session?.laps) {
+      logger.analysis('Session or laps not yet loaded');
+      return;
     }
 
+    // Get the landmarks
+    const landmarks = getLandmarks(session.track.id);
+    if (!landmarks) {
+      logger.analysis('Landmarks not yet loaded');
+      return;
+    }
+
+    // Only proceed if we have both lapIds and filtered laps
     const filteredLaps = session.laps.filter(lap =>
       lapIds?.includes(lap.id)
     );
+    if (!filteredLaps.length) {
+      logger.analysis('No matching laps found');
+      return;
+    }
 
-
-    const analysisData: AnalysisData = {
-        laps: filteredLaps,
-        session: session,
-        car: session.car,
-        track: session.track,
-        game: session.game,
-        landmarks: landmarks,
-        driver: session.driver
+    // Now we can safely build the analysis data
+    const data: AnalysisData = {
+      laps: filteredLaps,
+      session: session,
+      car: session.car,
+      track: session.track,
+      game: session.game,
+      landmarks: landmarks,
+      driver: session.driver
     };
-    logger.analysis('Analysis data:', analysisData);
-    return analysisData;
-  }, [sessionId, lapIds]);
+
+    logger.analysis('Analysis data built successfully:', data);
+    setAnalysisData(data);
+  }, [sessionId, lapIds, getSession, getLandmarks]);
 
   // Load telemetry data when lap changes
   const { getTelemetryForLap } = useTelemetry();
@@ -187,7 +201,6 @@ export function AnalysisView() {
           throw new Error('Failed to load landmarks');
         } else {
           logger.analysis('Loaded landmarks:', landmarks);
-          debugger;
         }
 
 

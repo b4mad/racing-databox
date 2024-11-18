@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 import { TelemetryPoint, AnalysisData } from '../../services/types';
 
 interface SectorVisualizationProps {
@@ -35,52 +35,29 @@ export function SectorVisualization({ currentLapData, setZoomRange, analysisData
   return (
     <Box sx={{ p: 1 }}>
       <Stack spacing={1}>
-        <Stack direction="row" spacing={1}>
-          <Button size="small" variant="outlined" onClick={zoomOut}>Full Track</Button>
-          <Button size="small" variant="outlined" onClick={zoomToFirstThird}>First Third</Button>
-          <Button size="small" variant="outlined" onClick={zoomToMiddleThird}>Middle Third</Button>
-          <Button size="small" variant="outlined" onClick={zoomToLastThird}>Last Third</Button>
-        </Stack>
-
-        {analysisData?.landmarks && (
-          <>
-            {analysisData.landmarks.segments.length > 0 && (
-              <>
-                <Typography variant="subtitle2">Segments</Typography>
-                <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
-                  {analysisData.landmarks.segments.map((segment) => (
-                    <Button
-                      key={segment.id}
-                      size="small"
-                      variant="outlined"
-                      onClick={() => setZoomRange(segment.start, segment.end ?? segment.start + 100)}
-                    >
-                      {segment.name}
-                    </Button>
-                  ))}
-                </Stack>
-              </>
-            )}
-
-            {analysisData.landmarks.turns.length > 0 && (
-              <>
-                <Typography variant="subtitle2">Turns</Typography>
-                <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
-                  {analysisData.landmarks.turns.map((turn) => (
-                    <Button
-                      key={turn.id}
-                      size="small"
-                      variant="outlined"
-                      onClick={() => setZoomRange(turn.start, turn.end ?? turn.start + 50)}
-                    >
-                      {turn.name}
-                    </Button>
-                  ))}
-                </Stack>
-              </>
-            )}
-          </>
-        )}
+        <Box sx={{ overflow: 'auto', maxWidth: '100%' }}>
+          <Stack direction="row" spacing={1} sx={{ minWidth: 'min-content' }}>
+          <Button size="small" variant="outlined" onClick={zoomOut} sx={{ whiteSpace: 'nowrap' }}>Full Track</Button>
+          {(!analysisData?.landmarks?.segments?.length) && (
+            <>
+              <Button size="small" variant="outlined" onClick={zoomToFirstThird} sx={{ whiteSpace: 'nowrap' }}>First Third</Button>
+              <Button size="small" variant="outlined" onClick={zoomToMiddleThird} sx={{ whiteSpace: 'nowrap' }}>Middle Third</Button>
+              <Button size="small" variant="outlined" onClick={zoomToLastThird} sx={{ whiteSpace: 'nowrap' }}>Last Third</Button>
+            </>
+          )}
+          {analysisData?.landmarks?.segments?.map((segment) => (
+            <Button
+              key={segment.id}
+              size="small"
+              variant="outlined" 
+              sx={{ whiteSpace: 'nowrap' }}
+              onClick={() => setZoomRange(segment.start, segment.end ?? segment.start + 100)}
+            >
+              {segment.name}
+            </Button>
+          ))}
+          </Stack>
+        </Box>
       </Stack>
     </Box>
   );
