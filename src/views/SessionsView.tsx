@@ -1,4 +1,6 @@
 import { useEffect } from 'react'
+import { ErrorDisplay } from '../components/ErrorDisplay'
+import { useErrorHandler } from '../hooks/useErrorHandler'
 import { Container, Box, Stack, CircularProgress } from '@mui/material'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { NumberParam, useQueryParam } from 'use-query-params'
@@ -7,13 +9,14 @@ import { SessionsViewNav } from '../components/SessionsViewNav'
 import { useSession } from '../hooks/useSession'
 
 export function SessionsView() {
+  const { handleError, errorState, clearError } = useErrorHandler('api');
   const {
     sessions,
     cars,
     drivers,
     tracks,
     loading,
-    error,
+    error: sessionError,
     hasNextPage,
     fetchSessions,
     fetchMoreSessions,
@@ -82,18 +85,34 @@ export function SessionsView() {
     );
   }
 
-  if (error) {
+  // Handle session errors
+  useEffect(() => {
+    if (sessionError) {
+      handleError(sessionError, 'Failed to load sessions');
+    }
+  }, [sessionError, handleError]);
+
+  if (errorState?.permanent) {
     return (
       <Container>
-        <Box sx={{ p: 2, color: 'error.main' }}>
-          Error: {error}
-        </Box>
+        <ErrorDisplay
+          error={errorState.message}
+          severity={errorState.severity}
+          onClose={clearError}
+          permanent
+        />
       </Container>
     );
   }
 
   return (
-    <Container id="scrollableDiv" style={{ height: '100vh', overflow: 'auto' }}>
+    <>
+      <ErrorDisplay
+        error={errorState?.message || null}
+        severity={errorState?.severity}
+        onClose={clearError}
+      />
+      <Container id="scrollableDiv" style={{ height: '100vh', overflow: 'auto' }}>
       <SessionsViewNav
         cars={cars}
         selectedCar={urlSelectedCar}
@@ -134,6 +153,7 @@ export function SessionsView() {
           )}
         </Stack>
       </InfiniteScroll>
-    </Container>
+      </Container>
+    </>
   );
 }

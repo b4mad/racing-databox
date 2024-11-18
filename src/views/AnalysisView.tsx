@@ -10,6 +10,8 @@
  */
 
 import { useState, useEffect } from 'react'
+import { ErrorDisplay } from '../components/ErrorDisplay'
+import { useErrorHandler } from '../hooks/useErrorHandler'
 import { useTelemetry } from '../hooks/useTelemetry'
 import { useParams, Navigate } from 'react-router-dom'
 import { getLapColor } from '../utils/colors'
@@ -30,7 +32,7 @@ export function AnalysisView() {
     return <Navigate to="/" replace />;
   }
 
-  const [error, setError] = useState<string | null>(null)
+  const { error, errorState, handleError, clearError } = useErrorHandler('analysis');
   const [loading, setLoading] = useState(true)
   const [lapIds, setLapIds] = useQueryParam('laps', DelimitedNumericArrayParam);
   const [lapsData, setLapsData] = useState<{ [lapId: number]: TelemetryCacheEntry }>({})
@@ -130,7 +132,7 @@ export function AnalysisView() {
 
         }
       } catch (error) {
-        setError('Failed to load telemetry data');
+        handleError(error, 'Failed to load telemetry data');
       }
     }
 
@@ -174,9 +176,9 @@ export function AnalysisView() {
           logger.analysis('Initial lapIds:', initialLapIds);
         }
 
-        setError(null);
+        clearError();
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load session data');
+        handleError(err, 'Failed to load session data');
         if (process.env.NODE_ENV === 'development') {
           throw err;
         }
@@ -217,23 +219,33 @@ export function AnalysisView() {
     );
   }
 
-  if (error) {
+  if (errorState?.permanent) {
     return (
       <Container>
-        <Box sx={{ p: 2, color: 'error.main' }}>
-          Error: {error}
-        </Box>
+        <ErrorDisplay
+          error={error}
+          severity={errorState.severity}
+          onClose={clearError}
+          permanent
+        />
       </Container>
     );
   }
 
   return (
-    <AnalysisLayout
+    <>
+      <ErrorDisplay
+        error={error}
+        severity={errorState?.severity}
+        onClose={clearError}
+      />
+      <AnalysisLayout
       analysisData={analysisData}
       lapsData={lapsData}
       onLapSelect={handleLapSelect}
       zoomState={zoomState}
       setZoomRange={setZoomRange}
     />
+    </>
   );
 }
