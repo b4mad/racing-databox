@@ -1,6 +1,7 @@
 import { createContext, useState, ReactNode, useCallback } from 'react';
 import { TelemetryCache, TelemetryCacheEntry } from '../services/types';
 import { createTelemetryService } from '../services/TelemetryService';
+import { logger } from '../utils/logger';
 
 interface TelemetryContextType {
   telemetryCache: TelemetryCache;
@@ -24,6 +25,13 @@ export function TelemetryProvider({ children }: { children: ReactNode }) {
     try {
       const telemetryService = createTelemetryService();
       const telemetry = await telemetryService.getLapData(lapId);
+
+      // If telemetry is not available, log a warning
+      if (!telemetry.points.length) {
+        logger.telemetry(`No telemetry data available for lap ${lapId}`);
+      } else {
+        logger.telemetry(`Fetched telemetry for lap ${lapId}`);
+      }
 
       // Cache the result
       setTelemetryCache(prev => ({

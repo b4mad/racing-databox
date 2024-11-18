@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState, ReactNode } from 'react';
 import { PaddockService } from '../services/PaddockService';
-import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, TrackLandmarks } from '../services/types';
+import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, PaddockLap, TrackLandmarks } from '../services/types';
 
 interface SessionContextType {
   // List view state
@@ -10,6 +10,8 @@ interface SessionContextType {
   tracks: PaddockTrack[];
   fetchLandmarks: (trackId: number) => Promise<TrackLandmarks>;
   getLandmarks: (trackId: number) => TrackLandmarks | undefined;
+  getLaps: (trackId: number, carId: number) => PaddockLap[] | undefined;
+  fetchLaps: (trackId: number, carId: number) => Promise<PaddockLap[]>;
   loading: boolean;
   error: string | null;
   hasNextPage: boolean;
@@ -47,6 +49,9 @@ export function SessionProvider({ children }: SessionProviderProps) {
   const [selectedDriver, setSelectedDriver] = useState<number | null>();
   const [selectedTrack, setSelectedTrack] = useState<number | null>();
   const [landmarksCache, setLandmarksCache] = useState<{ [trackId: number]: TrackLandmarks }>({});
+  const [lapsCache, setLapsCache] = useState<{ [key: string]: PaddockLap[] }>({});
+
+  const getLapsCacheKey = useCallback((trackId: number, carId: number) => `${trackId}-${carId}`, []);
 
 
   const fetchSessions = useCallback(async (isInitialLoad = false) => {
@@ -176,6 +181,27 @@ export function SessionProvider({ children }: SessionProviderProps) {
     return session;
   }, []);
 
+  const getLaps = useCallback((trackId: number, carId: number) => {
+    return lapsCache[getLapsCacheKey(trackId, carId)];
+  }, [lapsCache, getLapsCacheKey]);
+
+  const fetchLaps = useCallback(async (trackId: number, carId: number) => {
+    const cacheKey = getLapsCacheKey(trackId, carId);
+    if (lapsCache[cacheKey]) {
+      return lapsCache[cacheKey];
+    }
+
+    const paddockService = new PaddockService();
+    const laps = await paddockService.getLaps(trackId, carId);
+
+    setLapsCache(prev => ({
+      ...prev,
+      [cacheKey]: laps
+    }));
+
+    return laps;
+  }, [lapsCache, getLapsCacheKey]);
+
   return (
     <SessionContext.Provider
       value={{
@@ -199,6 +225,8 @@ export function SessionProvider({ children }: SessionProviderProps) {
         fetchSession,
         fetchLandmarks,
         getLandmarks,
+        getLaps,
+        fetchLaps,
       }}
     >
       {children}

@@ -1,7 +1,9 @@
-import { Modal, Box, Typography } from '@mui/material';
+import { Modal, Box, Typography, CircularProgress } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { Lap } from '../Lap';
 import { SessionListItem } from '../SessionListItem';
-import { AnalysisData } from '../../services/types';
+import { AnalysisData, PaddockLap } from '../../services/types';
+import { useSession } from '../../hooks/useSession';
 
 interface LapsModalProps {
   open: boolean;
@@ -11,6 +13,33 @@ interface LapsModalProps {
 }
 
 export function LapsModal({ open, onClose, analysisData, onLapSelect }: LapsModalProps) {
+  const { fetchLaps } = useSession();
+  const [additionalLaps, setAdditionalLaps] = useState<PaddockLap[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadAdditionalLaps() {
+      if (!open) return;
+
+      try {
+        setLoading(true);
+        const laps = await fetchLaps(analysisData.track.id, analysisData.car.id);
+        // Filter out laps that are already in the session
+        const sessionLapIds = new Set(analysisData.laps.map(lap => lap.id));
+        const filteredLaps = laps.filter(lap => !sessionLapIds.has(lap.id));
+        setAdditionalLaps(filteredLaps);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load additional laps');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadAdditionalLaps();
+  }, [open, analysisData.track.id, analysisData.car.id, fetchLaps]);
+
   return (
     <Modal
       open={open}
@@ -29,10 +58,25 @@ export function LapsModal({ open, onClose, analysisData, onLapSelect }: LapsModa
         p: 4,
         overflow: 'auto',
       }}>
-        <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>Available Laps</Typography>
+        <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>Session Laps</Typography>
         {analysisData.laps.map((lap) => (
           <Lap key={lap.id} lap={lap} onLapSelect={onLapSelect} />
         ))}
+
+        <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>Other Laps with Same Car/Track</Typography>
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Typography color="error">{error}</Typography>
+        ) : additionalLaps.length === 0 ? (
+          <Typography color="text.secondary">No additional laps found</Typography>
+        ) : (
+          additionalLaps.map((lap) => (
+            <Lap key={lap.id} lap={lap} onLapSelect={onLapSelect} />
+          ))
+        )}
         <Typography id="laps-modal-title" variant="h6" component="h2" gutterBottom>
           Session Details
         </Typography>

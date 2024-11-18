@@ -100,7 +100,7 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
                       <TimelineIcon />
                     </IconButton>
                   </Box>
-                  <LapSelectionPanel 
+                  <LapSelectionPanel
                     analysisData={analysisData}
                     lapsData={lapsData}
                   />

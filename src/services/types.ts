@@ -127,7 +127,7 @@ export interface PaddockGame {
 export interface TelemetryCacheEntry {
     points: TelemetryPoint[];
     mapDataAvailable: boolean;
-    color: string;
+    color?: string;
 }
 
 export interface TelemetryCache {
