@@ -10,7 +10,8 @@
  */
 
 import { useEffect } from 'react'
-import { AnalysisData, TelemetryCacheEntry } from '../services/types'
+import { TelemetryCacheEntry } from '../services/types'
+import { useSessionLoader } from '../hooks/useSessionLoader'
 import { ErrorDisplay } from '../components/ErrorDisplay'
 import { useErrorHandler } from '../hooks/useErrorHandler'
 import { useTelemetry } from '../hooks/useTelemetry'
@@ -25,13 +26,12 @@ import { useAnalysisState } from '../hooks/useAnalysisState'
 
 export function AnalysisView() {
   const { sessionId } = useParams();
-  const { getSession, fetchSession, getLandmarks, fetchLandmarks } = useSession();
+  const { getSession } = useSession();
 
   if (!sessionId) {
     return <Navigate to="/" replace />;
   }
 
-  const { error, errorState, handleError, clearError } = useErrorHandler('analysis');
   const {
     loading,
     analysisData,
@@ -46,46 +46,16 @@ export function AnalysisView() {
     setZoomRange
   } = useAnalysisState();
 
-  useEffect(() => {
-    if (!sessionId) return;
+  const { error, errorState, handleError, clearError } = useErrorHandler('analysis');
 
-    // Get the session
-    const session = getSession(sessionId);
-    if (!session?.laps) {
-      logger.analysis('Session or laps not yet loaded');
-      return;
-    }
+  useSessionLoader({
+    sessionId,
+    lapIds,
+    setLoading,
+    setAnalysisData,
+    setLapIds
+  });
 
-    // Get the landmarks
-    const landmarks = getLandmarks(session.track.id);
-    if (!landmarks) {
-      logger.analysis('Landmarks not yet loaded');
-      return;
-    }
-
-    // Only proceed if we have both lapIds and filtered laps
-    const filteredLaps = session.laps.filter(lap =>
-      lapIds?.includes(lap.id)
-    );
-    if (!filteredLaps.length) {
-      logger.analysis('No matching laps found');
-      return;
-    }
-
-    // Now we can safely build the analysis data
-    const data: AnalysisData = {
-      laps: filteredLaps,
-      session: session,
-      car: session.car,
-      track: session.track,
-      game: session.game,
-      landmarks: landmarks,
-      driver: session.driver
-    };
-
-    logger.analysis('Analysis data built successfully:', data);
-    setAnalysisData(data);
-  }, [sessionId, lapIds, getSession, getLandmarks]);
 
   // Load telemetry data when lap changes
   const { getTelemetryForLap } = useTelemetry();
@@ -98,17 +68,20 @@ export function AnalysisView() {
    */
   useEffect(() => {
     async function loadTelemetryData() {
-      if (!lapIds?.length) return;
+      if (!lapIds?.length || !sessionId) return;
 
-      if (!sessionId) return;
       const session = getSession(sessionId);
       if (!session) return;
 
+      // Skip if we already have all the telemetry data for these laps
+      const missingLapIds = lapIds.filter(
+        lapId => typeof lapId === 'number' && !lapsData[lapId]
+      );
+      if (missingLapIds.length === 0) return;
+
       try {
         const telemetryUpdates: { [key: number]: TelemetryCacheEntry } = {};
-        const promises = lapIds.map(async (lapId) => {
-          if (typeof lapId !== 'number' || lapsData[lapId]) return null;
-
+        const promises = missingLapIds.map(async (lapId) => {
           const lap = session.laps.find(l => l.id === lapId);
           if (!lap) return null;
 
@@ -124,15 +97,14 @@ export function AnalysisView() {
           return entry;
         });
 
-        (await Promise.all(promises)).filter((r): r is TelemetryCacheEntry => r !== null);
+        await Promise.all(promises);
 
         // Only update state if we have new data
         if (Object.keys(telemetryUpdates).length > 0) {
-          setLapsData({
-            ...lapsData,
+          setLapsData(prev => ({
+            ...prev,
             ...telemetryUpdates
-          });
-
+          }));
         }
       } catch (error) {
         handleError(error, 'Failed to load telemetry data');
@@ -140,58 +112,7 @@ export function AnalysisView() {
     }
 
     loadTelemetryData();
-  }, [lapIds]);
-
-
-  /**
-   * Asynchronously loads the session data based on the provided sessionId.
-   *
-   * This function sets the loading state to true while fetching the session data.
-   * If the session contains laps and no lap is set in the URL, it uses the first lap's ID.
-   * It also handles any errors that occur during the fetch operation, setting an error message
-   * if an error is caught. In development mode, it rethrows the error for debugging purposes.
-   * Finally, it sets the loading state to false once the operation is complete.
-   *
-   * @async
-   * @function loadSession
-   * @throws Will throw an error in development mode if fetching the session data fails.
-   */
-  useEffect(() => {
-    const loadSession = async () => {
-      try {
-        setLoading(true);
-        const session = await fetchSession(sessionId);
-
-        // Fetch landmarks for the track right after getting session
-        const landmarks = await fetchLandmarks(session.track.id);
-
-        if (!landmarks) {
-          throw new Error('Failed to load landmarks');
-        } else {
-          logger.analysis('Loaded landmarks:', landmarks);
-        }
-
-
-        if (session.laps.length > 0) {
-          // If no lap is set in URL, use first lap
-          const initialLapIds = lapIds?.length ? lapIds : [session.laps[0].id];
-          setLapIds(initialLapIds);
-          logger.analysis('Initial lapIds:', initialLapIds);
-        }
-
-        clearError();
-      } catch (err) {
-        handleError(err, 'Failed to load session data');
-        if (process.env.NODE_ENV === 'development') {
-          throw err;
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSession();
-  }, [sessionId]);
+  }, [lapIds, sessionId, getSession, getTelemetryForLap, handleError, lapsData, setLapsData]);
 
 
   if (loading) {

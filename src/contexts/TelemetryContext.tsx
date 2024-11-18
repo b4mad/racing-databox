@@ -50,7 +50,7 @@ export function TelemetryProvider({ children }: { children: ReactNode }) {
       console.error('Error fetching telemetry:', error);
       throw error;
     }
-  }, [telemetryCache]);
+  }, []);
 
   const clearTelemetry = useCallback((lapId: number) => {
     setTelemetryCache(prev => {
