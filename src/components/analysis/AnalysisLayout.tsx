@@ -1,5 +1,8 @@
 import { Box, Drawer, IconButton } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import CompareIcon from '@mui/icons-material/Compare';
 import { useState } from 'react';
 import { AnalysisToolbar } from './AnalysisToolbar';
 import { LapSelectionPanel } from './LapSelectionPanel';
@@ -39,26 +42,29 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
 
         {/* Left Panel Drawer */}
         <Drawer
-          variant="persistent"
-          anchor="left"
-          open={drawerOpen}
+          variant="permanent"
           sx={{
-            width: 300,
+            width: drawerOpen ? 300 : 57,
             flexShrink: 0,
             '& .MuiDrawer-paper': {
-              width: 300,
+              width: drawerOpen ? 300 : 57,
               position: 'relative',
               height: '100%',
               border: 'none',
               borderRight: 1,
-              borderColor: 'divider'
+              borderColor: 'divider',
+              overflowX: 'hidden',
+              transition: theme => theme.transitions.create('width', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.enteringScreen,
+              }),
             },
           }}
         >
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
               <IconButton
-                onClick={() => setDrawerOpen(false)}
+                onClick={() => setDrawerOpen(!drawerOpen)}
                 size="small"
                 sx={{
                   backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -68,15 +74,43 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
                   color: 'white',
                 }}
               >
-                <ChevronLeftIcon />
+                {drawerOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
               </IconButton>
             </Box>
-            <Box sx={{ flex: '0 0 auto' }}>
-              <LapSelectionPanel analysisData={analysisData} />
-            </Box>
-            <Box sx={{ flex: 1, mt: 2 }}>
-              <GapsAnalysisTable />
-            </Box>
+            
+            {drawerOpen ? (
+              <>
+                <Box sx={{ flex: '0 0 auto' }}>
+                  <LapSelectionPanel analysisData={analysisData} />
+                </Box>
+                <Box sx={{ flex: 1, mt: 2 }}>
+                  <GapsAnalysisTable />
+                </Box>
+              </>
+            ) : (
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pt: 2, gap: 1 }}>
+                <IconButton
+                  size="small"
+                  sx={{
+                    color: 'primary.main',
+                    '&:hover': { backgroundColor: 'action.hover' },
+                  }}
+                  title="Lap Selection"
+                >
+                  <TimelineIcon />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  sx={{
+                    color: 'primary.main',
+                    '&:hover': { backgroundColor: 'action.hover' },
+                  }}
+                  title="Gaps Analysis"
+                >
+                  <CompareIcon />
+                </IconButton>
+              </Box>
+            )}
           </Box>
         </Drawer>
 
@@ -86,7 +120,7 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          ml: drawerOpen ? 0 : -37.5 // compensate for drawer width when closed
+          ml: 0
         }}>
           {/* Delta Time Graph at Top */}
           <Box sx={{ height: '200px', p: 1, borderBottom: 1, borderColor: 'divider' }}>
