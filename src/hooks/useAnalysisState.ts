@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DelimitedNumericArrayParam, useQueryParam } from 'use-query-params';
 import { AnalysisData, TelemetryCacheEntry } from '../services/types';
 import { useZoomState } from './useZoomState';
@@ -32,8 +32,7 @@ export function useAnalysisState() {
 
   // Initialize zoom state based on laps
   const { zoomState, setZoomRange } = useZoomState({
-    lapsData,
-    firstLapId: lapIds?.[0]
+    lapsData
   });
 
   const handleLapSelect = (lapId: number) => {

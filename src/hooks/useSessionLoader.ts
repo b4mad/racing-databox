@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useSession } from './useSession';
 import { useErrorHandler } from './useErrorHandler';
 import { AnalysisData } from '../services/types';
+import { logger } from '../utils/logger';
 
 interface UseSessionLoaderParams {
   sessionId: string;
@@ -23,6 +24,7 @@ export function useSessionLoader({
 
   // Effect 1: Initial session and landmarks loading
   useEffect(() => {
+    logger.loader('useSessionLoader: loading session data ' + sessionId);
     if (!sessionId) return;
     let mounted = true;
 
@@ -62,6 +64,7 @@ export function useSessionLoader({
 
   // Effect 2: Update analysis data when session or lapIds change
   useEffect(() => {
+    logger.loader(`useSessionLoader: updating analysis data for session ${sessionId} and laps ${lapIds}`);
     if (!sessionId || !lapIds?.length) return;
 
     const session = getSession(sessionId);

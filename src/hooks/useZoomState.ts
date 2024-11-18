@@ -1,14 +1,13 @@
-import { useCallback } from 'react';
+import { useEffect } from 'react';
 import { NumberParam, useQueryParam } from 'use-query-params';
 import { ZoomState } from '../components/types';
 import { TelemetryCacheEntry } from '../services/types';
 
 interface UseZoomStateProps {
   lapsData: { [lapId: number]: TelemetryCacheEntry };
-  firstLapId?: number | null;
 }
 
-export function useZoomState({ lapsData, firstLapId }: UseZoomStateProps) {
+export function useZoomState({ lapsData }: UseZoomStateProps) {
   const [zoomStart, setZoomStart] = useQueryParam('zoomStart', NumberParam);
   const [zoomEnd, setZoomEnd] = useQueryParam('zoomEnd', NumberParam);
 
@@ -20,20 +19,24 @@ export function useZoomState({ lapsData, firstLapId }: UseZoomStateProps) {
     bottom: 0
   };
 
-  const setZoomRange = useCallback((startMeters: number, endMeters: number) => {
-    if (!firstLapId) return;
-
-    const firstLapEntry = lapsData[firstLapId];
-    if (!firstLapEntry?.points.length) return;
-
-    const maxDistance = firstLapEntry.points[firstLapEntry.points.length - 1].distance;
-
-    const start = Math.max(0, Math.min(startMeters, maxDistance));
-    const end = Math.max(0, Math.min(endMeters, maxDistance));
-
+  const setZoomRange = (start: number, end: number) => {
     setZoomStart(start);
     setZoomEnd(end);
-  }, [lapsData, firstLapId, setZoomStart, setZoomEnd]);
+  };
+
+  useEffect(() => {
+    // When lapsData changes, check if we have a first lap to set initial zoom
+    const lapIds = Object.keys(lapsData);
+    if (lapIds.length > 0) {
+      const firstLapId = parseInt(lapIds[0]);
+      const firstLapEntry = lapsData[firstLapId];
+
+      if (firstLapEntry?.points.length && (zoomStart === undefined || zoomEnd === undefined)) {
+        const maxDistance = firstLapEntry.points[firstLapEntry.points.length - 1].distance;
+        setZoomRange(0, maxDistance);
+      }
+    }
+  }, [lapsData, zoomStart, zoomEnd]);
 
   return {
     zoomState,

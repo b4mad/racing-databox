@@ -21,6 +21,8 @@ export function useTelemetryLoader({
 
   useEffect(() => {
     async function loadTelemetryData() {
+      logger.loader(`useTelemetryLoader: fetching data for laps ${lapIds}`);
+
       if (!lapIds?.length) return;
 
       // Get missing lap IDs without referencing lapsData in effect deps
