@@ -11,7 +11,7 @@
     "fetch-session": "ts-node src/scripts/fetchSession.ts",
     "fetch-sessions": "ts-node src/scripts/fetchSessions.ts",
     "docker:build": "docker build -t racing-databox .",
-    "docker:run": "docker run -p 8080:80 racing-databox",
+    "docker:run": "docker run -p 8080:8080 -e DATA_BOX_GRAPHQL_URL=http://telemetry.b4mad.racing:30050 -e DATA_BOX_API_URL=https://b4mad.racing racing-databox",
     "build:prod": "NODE_ENV=production webpack --mode production",
     "serve:prod": "yarn build:prod && serve -s dist -p 3000",
     "test": "jest --detectOpenHandles"
