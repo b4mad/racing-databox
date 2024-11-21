@@ -1,31 +1,21 @@
-import { PaddockService } from '../services/PaddockService';
 import { PaddockSession, PaddockLap } from '../services/types';
-import * as fs from 'fs';
-import * as path from 'path';
+import { paddockService, saveTestResponse, sanitizeSessionForSerialization } from './testUtils';
+// At the top of src/tests/fetchSessions.test.ts
+import debug from 'debug';
+debug.enable('paddock:*'); // Enable all paddock namespaces
+// At the top of src/tests/fetchSessions.test.ts
+// process.env.NODE_ENV = 'development';
 
 describe('fetchSessions', () => {
-    const paddockService = new PaddockService('http://telemetry.b4mad.racing:30050/graphql');
-
-    // Create fixtures directory if it doesn't exist
-    const fixturesDir = path.join(__dirname, 'fixtures');
-    if (!fs.existsSync(fixturesDir)){
-        fs.mkdirSync(fixturesDir, { recursive: true });
-    }
-
-    // Store test responses
     let currentResponse: any = null;
 
-    // Save responses after each test
     afterEach(async () => {
-        const testInfo = expect.getState().currentTestName;
-        if (testInfo && currentResponse) {
-            const testName = testInfo.replace(/\s+/g, '_');
-            const fixturePath = path.join(fixturesDir, `${testName}.json`);
+        if (currentResponse) {
             const sanitizedResponse = {
                 ...currentResponse,
                 items: currentResponse.items.map(sanitizeSessionForSerialization)
             };
-            fs.writeFileSync(fixturePath, JSON.stringify(sanitizedResponse, null, 2));
+            saveTestResponse(expect.getState().currentTestName, sanitizedResponse);
         }
         currentResponse = null;
     });
@@ -79,12 +69,44 @@ describe('fetchSessions', () => {
         });
     }, 10000);
 });
-function sanitizeSessionForSerialization(session: any) {
-    return {
-        ...session,
-        laps: session.laps.map((lap: any) => {
-            const { session: _, ...lapWithoutSession } = lap;
-            return lapWithoutSession;
-        })
-    };
-}
+
+describe('fetchLaps', () => {
+    let currentResponse: any = null;
+
+    afterEach(async () => {
+        if (currentResponse) {
+            saveTestResponse(expect.getState().currentTestName, currentResponse);
+        }
+        currentResponse = null;
+    });
+
+    it('should fetch first 2 laps for car ID 4408', async function() {
+        const laps = await paddockService.getLaps({ carId: 4408, limit: 2 });
+        currentResponse = laps;
+
+        // Verify we got exactly 2 laps
+        expect(laps.length).toBe(2);
+
+        // Check the structure of each lap
+        laps.forEach((lap) => {
+            expect(lap).toHaveProperty('id');
+            expect(lap).toHaveProperty('time');
+            expect(lap).toHaveProperty('valid');
+            expect(lap).toHaveProperty('session');
+
+            // Verify session exists and has expected structure
+            expect(lap.session).toBeDefined();
+            if (lap.session) {
+                // Verify the car ID matches what we requested
+                expect(lap.session.car.id).toBe(4408);
+
+                // Check session structure
+                expect(lap.session).toHaveProperty('sessionId');
+                expect(lap.session).toHaveProperty('driver');
+                expect(lap.session).toHaveProperty('game');
+                expect(lap.session).toHaveProperty('sessionType');
+                expect(lap.session).toHaveProperty('track');
+            }
+        });
+    }, 10000); // Increase timeout to 10s for API call
+});

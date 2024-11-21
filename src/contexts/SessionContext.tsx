@@ -178,13 +178,14 @@ export function SessionProvider({ children }: SessionProviderProps) {
   }, [lapsCache, getLapsCacheKey]);
 
   const fetchLaps = useCallback(async (trackId: number, carId: number) => {
+    // FIXME: use lapId instead of trackId and carId for cache key
     const cacheKey = getLapsCacheKey(trackId, carId);
     if (lapsCache[cacheKey]) {
       return lapsCache[cacheKey];
     }
 
     const paddockService = new PaddockService();
-    const laps = await paddockService.getLaps(trackId, carId);
+    const laps = await paddockService.getLaps({ trackId, carId });
 
     setLapsCache(prev => ({
       ...prev,
@@ -196,7 +197,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
   const fetchLap = useCallback(async (lapId: number): Promise<PaddockLap> => {
     const paddockService = new PaddockService();
-    const laps = await paddockService.getLaps(null, null, 1, lapId); // trackId and carId are ignored when lapId is provided
+    const laps = await paddockService.getLaps({ id: lapId, limit: 1 }); // trackId and carId are optional
     if (!laps || laps.length === 0) {
       throw new Error(`Lap ${lapId} not found`);
     }

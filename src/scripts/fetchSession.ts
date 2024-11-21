@@ -16,11 +16,11 @@ const main = async () => {
 
             // Use track and car info to fetch additional laps
             if (session.track?.id && session.car?.id) {
-                const additionalLaps = await paddockService.getLaps(
-                    session.track.id,
-                    session.car.id,
-                    10 // Fetch last 10 laps
-                );
+                const additionalLaps = await paddockService.getLaps({
+                    trackId: session.track.id,
+                    carId: session.car.id,
+                    limit: 10 // Fetch last 10 laps
+                });
                 console.log('\nAdditional laps for this car/track combination:');
                 console.log(util.inspect(additionalLaps, {depth: null, colors: true}));
             }

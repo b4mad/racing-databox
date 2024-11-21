@@ -350,9 +350,19 @@ export class PaddockService {
         };
     }
 
-    async getLaps(trackId: number | null, carId: number | null, limit: number = 10, id?: number): Promise<PaddockLap[]> {
+    async getLaps({
+        trackId = undefined,
+        carId = undefined,
+        limit = 10,
+        id = undefined
+    }: {
+        trackId?: number | null,
+        carId?: number | null,
+        limit?: number,
+        id?: number | null
+    }): Promise<PaddockLap[]> {
         const { data } = await this.executeQuery(gql`
-            query GetLaps($trackId: BigInt!, $carId: BigInt!, $id: BigInt!, $limit: Int!) {
+            query GetLaps($trackId: BigInt, $carId: BigInt, $id: BigInt, $limit: Int!) {
                 allTelemetryLaps(
                     orderBy: TIME_DESC
                     condition: {trackId: $trackId, carId: $carId, id: $id}
@@ -395,12 +405,12 @@ export class PaddockService {
 
         return data.allTelemetryLaps.edges.map((edge: any) => {
             const car = {
-                id: edge.node.telemetryCarByCarId.id,
+                id: Number(edge.node.telemetryCarByCarId.id),
                 name: edge.node.telemetryCarByCarId.name
             };
             const sessionNode = edge.node.telemetrySessionBySessionId;
             return {
-                id: edge.node.id,
+                id: Number(edge.node.id),
                 length: edge.node.length,
                 time: edge.node.time,
                 valid: edge.node.valid,
