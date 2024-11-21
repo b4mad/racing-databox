@@ -187,13 +187,25 @@ export function SessionProvider({ children }: SessionProviderProps) {
   }, []);
 
   const fetchLap = useCallback(async (lapId: number): Promise<PaddockLap> => {
+    // Check cache first
+    if (lapsCache[lapId]) {
+      return lapsCache[lapId];
+    }
+
     const paddockService = new PaddockService();
     const laps = await paddockService.getLaps({ id: lapId, limit: 1 }); // trackId and carId are optional
     if (!laps || laps.length === 0) {
       throw new Error(`Lap ${lapId} not found`);
     }
+
+    // Cache the fetched lap
+    setLapsCache(prev => ({
+      ...prev,
+      [lapId]: laps[0]
+    }));
+
     return laps[0];
-  }, []);
+  }, [lapsCache]);
 
   return (
     <SessionContext.Provider
