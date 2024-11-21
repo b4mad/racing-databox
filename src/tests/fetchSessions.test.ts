@@ -21,7 +21,11 @@ describe('fetchSessions', () => {
         if (testInfo && currentResponse) {
             const testName = testInfo.replace(/\s+/g, '_');
             const fixturePath = path.join(fixturesDir, `${testName}.json`);
-            fs.writeFileSync(fixturePath, JSON.stringify(currentResponse, null, 2));
+            const sanitizedResponse = {
+                ...currentResponse,
+                items: currentResponse.items.map(sanitizeSessionForSerialization)
+            };
+            fs.writeFileSync(fixturePath, JSON.stringify(sanitizedResponse, null, 2));
         }
         currentResponse = null;
     });
@@ -75,3 +79,12 @@ describe('fetchSessions', () => {
         });
     }, 10000);
 });
+function sanitizeSessionForSerialization(session: any) {
+    return {
+        ...session,
+        laps: session.laps.map((lap: any) => {
+            const { session: _, ...lapWithoutSession } = lap;
+            return lapWithoutSession;
+        })
+    };
+}
