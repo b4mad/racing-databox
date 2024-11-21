@@ -1,0 +1,68 @@
+[
+  {
+    "id": 915121,
+    "length": 9175,
+    "time": 1207.54846,
+    "valid": true,
+    "session": {
+      "sessionId": "1708366121",
+      "car": {
+        "id": 4408,
+        "name": "VW Polo GTI R5"
+      },
+      "driver": {
+        "__typename": "TelemetryDriver",
+        "id": "10",
+        "name": "durandom"
+      },
+      "game": {
+        "__typename": "TelemetryGame",
+        "id": "15",
+        "name": "Richard Burns Rally"
+      },
+      "sessionType": {
+        "__typename": "TelemetrySessiontype",
+        "id": "2",
+        "type": "Race"
+      },
+      "track": {
+        "__typename": "TelemetryTrack",
+        "id": "3195",
+        "name": "Pribram Reversed"
+      }
+    }
+  },
+  {
+    "id": 806755,
+    "length": 12891,
+    "time": 815.1207,
+    "valid": true,
+    "session": {
+      "sessionId": "1706298069",
+      "car": {
+        "id": 4408,
+        "name": "VW Polo GTI R5"
+      },
+      "driver": {
+        "__typename": "TelemetryDriver",
+        "id": "10",
+        "name": "durandom"
+      },
+      "game": {
+        "__typename": "TelemetryGame",
+        "id": "15",
+        "name": "Richard Burns Rally"
+      },
+      "sessionType": {
+        "__typename": "TelemetrySessiontype",
+        "id": "2",
+        "type": "Race"
+      },
+      "track": {
+        "__typename": "TelemetryTrack",
+        "id": "3268",
+        "name": "Peyregrosse Mandagout"
+      }
+    }
+  }
+]
