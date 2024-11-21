@@ -1,144 +1,82 @@
 {
   "items": [
     {
-      "id": "720296",
-      "sessionId": "1732221333",
+      "id": "720316",
+      "sessionId": "1732222209",
       "car": {
-        "id": 6247,
-        "name": "Porsche 911 GT3 R (992)"
+        "id": 7181,
+        "name": "Unknown"
       },
       "driver": {
         "id": 1,
         "name": "Jim"
       },
       "game": {
-        "id": 1,
-        "name": "iRacing"
-      },
-      "sessionType": {
-        "id": 1,
-        "type": "Practice"
-      },
-      "track": {
-        "id": 28,
-        "name": "sebring international"
-      },
-      "laps": [
-        {
-          "id": 1931125,
-          "number": 1,
-          "time": 122.571762,
-          "valid": true,
-          "length": 5790,
-          "start": "2024-11-21T21:37:09.966301+00:00",
-          "end": "2024-11-21T21:43:10.67506+00:00"
-        },
-        {
-          "id": 1931158,
-          "number": 2,
-          "time": 121.6749,
-          "valid": true,
-          "length": 5789,
-          "start": "2024-11-21T21:43:10.67506+00:00",
-          "end": "2024-11-21T21:45:12.343926+00:00"
-        },
-        {
-          "id": 1931168,
-          "number": 3,
-          "time": 121.765465,
-          "valid": false,
-          "length": 5789,
-          "start": "2024-11-21T21:45:12.343926+00:00",
-          "end": "2024-11-21T21:47:14.107402+00:00"
-        },
-        {
-          "id": 1931175,
-          "number": 4,
-          "time": 121.998466,
-          "valid": true,
-          "length": 5789,
-          "start": "2024-11-21T21:47:14.107402+00:00",
-          "end": "2024-11-21T21:49:16.102245+00:00"
-        },
-        {
-          "id": 1931184,
-          "number": 5,
-          "time": 123.063034,
-          "valid": true,
-          "length": 5789,
-          "start": "2024-11-21T21:49:16.102245+00:00",
-          "end": "2024-11-21T21:51:19.168391+00:00"
-        },
-        {
-          "id": 1931192,
-          "number": 6,
-          "time": 5.820865,
-          "valid": true,
-          "length": 373,
-          "start": "2024-11-21T21:51:19.168391+00:00",
-          "end": "2024-11-21T21:51:19.168391+00:00"
-        }
-      ]
-    },
-    {
-      "id": "720304",
-      "sessionId": "1732250653",
-      "car": {
-        "id": 2651,
-        "name": "Super Formula SF23 - Honda"
-      },
-      "driver": {
-        "id": 1,
-        "name": "Jim"
-      },
-      "game": {
-        "id": 1,
-        "name": "iRacing"
+        "id": 2,
+        "name": "RaceRoom"
       },
       "sessionType": {
         "id": 2,
         "type": "Race"
       },
       "track": {
-        "id": 9,
-        "name": "imola gp"
+        "id": 7,
+        "name": "Spa-Francorchamps"
       },
       "laps": [
         {
-          "id": 1931171,
+          "id": 1931186,
+          "number": 1,
+          "time": -1,
+          "valid": true,
+          "length": 6976,
+          "start": "2024-11-21T21:50:12.38119+00:00",
+          "end": "2024-11-21T21:52:36.180887+00:00"
+        },
+        {
+          "id": 1931198,
           "number": 2,
-          "time": 89.3064651,
-          "valid": true,
-          "length": 4858,
-          "start": "2024-11-21T21:45:51.405294+00:00",
-          "end": "2024-11-21T21:47:20.72492+00:00"
+          "time": -1,
+          "valid": false,
+          "length": 6975,
+          "start": "2024-11-21T21:52:36.180887+00:00",
+          "end": "2024-11-21T21:54:56.131818+00:00"
         },
         {
-          "id": 1931178,
+          "id": 1931207,
           "number": 3,
-          "time": 86.40017,
-          "valid": true,
-          "length": 4859,
-          "start": "2024-11-21T21:47:20.72492+00:00",
-          "end": "2024-11-21T21:48:47.131621+00:00"
+          "time": -1,
+          "valid": false,
+          "length": 6975,
+          "start": "2024-11-21T21:54:56.131818+00:00",
+          "end": "2024-11-21T21:57:15.982284+00:00"
         },
         {
-          "id": 1931181,
+          "id": 1931218,
           "number": 4,
-          "time": 86.65867,
-          "valid": true,
-          "length": 4857,
-          "start": "2024-11-21T21:48:47.131621+00:00",
-          "end": "2024-11-21T21:50:13.773121+00:00"
+          "time": -1,
+          "valid": false,
+          "length": 6979,
+          "start": "2024-11-21T21:57:15.982284+00:00",
+          "end": "2024-11-21T21:59:33.739443+00:00"
         },
         {
-          "id": 1931187,
+          "id": 1931228,
           "number": 5,
-          "time": 71.2174,
+          "time": -1,
+          "valid": false,
+          "length": 6976,
+          "start": "2024-11-21T21:59:33.739443+00:00",
+          "end": "2024-11-21T22:01:53.079091+00:00"
+        },
+        {
+          "id": 1931240,
+          "number": 6,
+          "time": 8.305908,
           "valid": true,
-          "length": 4016,
-          "start": "2024-11-21T21:50:13.773121+00:00",
-          "end": "2024-11-21T21:50:13.773121+00:00"
+          "length": 288,
+          "start": "2024-11-21T22:01:53.079091+00:00",
+          "end": "2024-11-21T22:01:53.079091+00:00"
         }
       ]
     },
@@ -376,17 +314,105 @@
         {
           "id": 1931189,
           "number": 24,
-          "time": 59.6574326,
+          "time": 94.3241,
           "valid": true,
-          "length": 2643,
+          "length": 4217,
           "start": "2024-11-21T21:50:25.364402+00:00",
-          "end": "2024-11-21T21:50:25.364402+00:00"
+          "end": "2024-11-21T21:51:59.675236+00:00"
+        },
+        {
+          "id": 1931195,
+          "number": 25,
+          "time": 94.41956,
+          "valid": true,
+          "length": 4218,
+          "start": "2024-11-21T21:51:59.675236+00:00",
+          "end": "2024-11-21T21:53:34.204433+00:00"
+        },
+        {
+          "id": 1931203,
+          "number": 26,
+          "time": 94.1493,
+          "valid": true,
+          "length": 4218,
+          "start": "2024-11-21T21:53:34.204433+00:00",
+          "end": "2024-11-21T21:55:08.212786+00:00"
+        },
+        {
+          "id": 1931210,
+          "number": 27,
+          "time": 94.3492355,
+          "valid": true,
+          "length": 4218,
+          "start": "2024-11-21T21:55:08.212786+00:00",
+          "end": "2024-11-21T21:56:42.557054+00:00"
+        },
+        {
+          "id": 1931216,
+          "number": 28,
+          "time": 94.60693,
+          "valid": true,
+          "length": 4219,
+          "start": "2024-11-21T21:56:42.557054+00:00",
+          "end": "2024-11-21T21:58:17.139879+00:00"
+        },
+        {
+          "id": 1931224,
+          "number": 29,
+          "time": 94.01317,
+          "valid": true,
+          "length": 4219,
+          "start": "2024-11-21T21:58:17.139879+00:00",
+          "end": "2024-11-21T21:59:51.141919+00:00"
+        },
+        {
+          "id": 1931232,
+          "number": 30,
+          "time": 94.39563,
+          "valid": true,
+          "length": 4218,
+          "start": "2024-11-21T21:59:51.141919+00:00",
+          "end": "2024-11-21T22:01:25.498779+00:00"
+        },
+        {
+          "id": 1931238,
+          "number": 31,
+          "time": 35.8772,
+          "valid": true,
+          "length": 1745,
+          "start": "2024-11-21T22:01:25.498779+00:00",
+          "end": "2024-11-21T22:01:25.498779+00:00"
         }
       ]
     },
     {
-      "id": "720309",
-      "sessionId": "1732221987",
+      "id": "720326",
+      "sessionId": "1732222868",
+      "car": {
+        "id": 4128,
+        "name": "Porsche 992 GT3 R"
+      },
+      "driver": {
+        "id": 1,
+        "name": "Jim"
+      },
+      "game": {
+        "id": 5,
+        "name": "Automobilista 2"
+      },
+      "sessionType": {
+        "id": 2,
+        "type": "Race"
+      },
+      "track": {
+        "id": 358,
+        "name": "Nurburgring_2020:Nordschleife_2020_24hr"
+      },
+      "laps": []
+    },
+    {
+      "id": "720328",
+      "sessionId": "1732222885",
       "car": {
         "id": 1289,
         "name": "FIA F4"
@@ -407,65 +433,46 @@
         "id": 195,
         "name": "zolder gp"
       },
-      "laps": [
-        {
-          "id": 1931179,
-          "number": 1,
-          "time": 130.194351,
-          "valid": false,
-          "length": 3950,
-          "start": "2024-11-21T21:48:20.521072+00:00",
-          "end": "2024-11-21T21:50:30.712095+00:00"
-        },
-        {
-          "id": 1931190,
-          "number": 2,
-          "time": 54.3142166,
-          "valid": true,
-          "length": 2420,
-          "start": "2024-11-21T21:50:30.712095+00:00",
-          "end": "2024-11-21T21:50:30.712095+00:00"
-        }
-      ]
+      "laps": []
     },
     {
-      "id": "720312",
-      "sessionId": "1732222120",
+      "id": "720325",
+      "sessionId": "1732226464",
       "car": {
-        "id": 7007,
-        "name": "Formula V10 Gen2"
+        "id": 7072,
+        "name": "Unknown"
       },
       "driver": {
         "id": 1,
         "name": "Jim"
       },
       "game": {
-        "id": 5,
-        "name": "Automobilista 2"
+        "id": 2,
+        "name": "RaceRoom"
       },
       "sessionType": {
         "id": 2,
         "type": "Race"
       },
       "track": {
-        "id": 64,
-        "name": "Kansai:Kansai_Classic"
+        "id": 73,
+        "name": "Circuit Zandvoort 2019"
       },
       "laps": [
         {
-          "id": 1931188,
-          "number": 2,
-          "time": 85.4006348,
-          "valid": true,
-          "length": 3290,
-          "start": "2024-11-21T21:50:24.429129+00:00",
-          "end": "2024-11-21T21:50:24.429129+00:00"
+          "id": 1931235,
+          "number": 1,
+          "time": -1,
+          "valid": false,
+          "length": 896,
+          "start": "2024-11-21T22:01:11.930874+00:00",
+          "end": "2024-11-21T22:01:11.930874+00:00"
         }
       ]
     },
     {
-      "id": "720299",
-      "sessionId": "1732221622",
+      "id": "720320",
+      "sessionId": "1732222652",
       "car": {
         "id": 4128,
         "name": "Porsche 992 GT3 R"
@@ -483,63 +490,204 @@
         "type": "HotLap"
       },
       "track": {
-        "id": 3365,
-        "name": "La_Sarthe:Le_Mans_Circuit_Bugatti"
+        "id": 358,
+        "name": "Nurburgring_2020:Nordschleife_2020_24hr"
+      },
+      "laps": []
+    },
+    {
+      "id": "720304",
+      "sessionId": "1732250653",
+      "car": {
+        "id": 2651,
+        "name": "Super Formula SF23 - Honda"
+      },
+      "driver": {
+        "id": 1,
+        "name": "Jim"
+      },
+      "game": {
+        "id": 1,
+        "name": "iRacing"
+      },
+      "sessionType": {
+        "id": 2,
+        "type": "Race"
+      },
+      "track": {
+        "id": 9,
+        "name": "imola gp"
       },
       "laps": [
         {
-          "id": 1931162,
+          "id": 1931171,
           "number": 2,
-          "time": 99.0120544,
+          "time": 89.3064651,
           "valid": true,
-          "length": 4164,
-          "start": "2024-11-21T21:43:40.916915+00:00",
-          "end": "2024-11-21T21:45:18.554077+00:00"
+          "length": 4858,
+          "start": "2024-11-21T21:45:51.405294+00:00",
+          "end": "2024-11-21T21:47:20.72492+00:00"
         },
         {
-          "id": 1931169,
+          "id": 1931178,
           "number": 3,
-          "time": 97.6478,
+          "time": 86.40017,
           "valid": true,
-          "length": 4160,
-          "start": "2024-11-21T21:45:18.554077+00:00",
-          "end": "2024-11-21T21:46:55.292303+00:00"
+          "length": 4859,
+          "start": "2024-11-21T21:47:20.72492+00:00",
+          "end": "2024-11-21T21:48:47.131621+00:00"
         },
         {
-          "id": 1931173,
+          "id": 1931181,
           "number": 4,
-          "time": 98.41196,
+          "time": 86.65867,
           "valid": true,
-          "length": 4165,
-          "start": "2024-11-21T21:46:55.292303+00:00",
-          "end": "2024-11-21T21:48:32.244409+00:00"
+          "length": 4857,
+          "start": "2024-11-21T21:48:47.131621+00:00",
+          "end": "2024-11-21T21:50:13.773121+00:00"
         },
         {
-          "id": 1931180,
+          "id": 1931187,
           "number": 5,
-          "time": 97.68268,
-          "valid": false,
-          "length": 4161,
-          "start": "2024-11-21T21:48:32.244409+00:00",
-          "end": "2024-11-21T21:50:09.063239+00:00"
+          "time": 87.0674,
+          "valid": true,
+          "length": 4858,
+          "start": "2024-11-21T21:50:13.773121+00:00",
+          "end": "2024-11-21T21:51:40.866972+00:00"
         },
         {
-          "id": 1931185,
+          "id": 1931194,
           "number": 6,
-          "time": -3,
-          "valid": false,
-          "length": 985,
-          "start": "2024-11-21T21:50:09.063239+00:00",
-          "end": "2024-11-21T21:50:09.063239+00:00"
+          "time": 86.72943,
+          "valid": true,
+          "length": 4859,
+          "start": "2024-11-21T21:51:40.866972+00:00",
+          "end": "2024-11-21T21:53:07.714614+00:00"
+        },
+        {
+          "id": 1931199,
+          "number": 7,
+          "time": 86.7122345,
+          "valid": true,
+          "length": 4859,
+          "start": "2024-11-21T21:53:07.714614+00:00",
+          "end": "2024-11-21T21:54:34.288425+00:00"
+        },
+        {
+          "id": 1931206,
+          "number": 8,
+          "time": 86.9695,
+          "valid": true,
+          "length": 4860,
+          "start": "2024-11-21T21:54:34.288425+00:00",
+          "end": "2024-11-21T21:56:01.264946+00:00"
+        },
+        {
+          "id": 1931213,
+          "number": 9,
+          "time": 86.7812653,
+          "valid": true,
+          "length": 4858,
+          "start": "2024-11-21T21:56:01.264946+00:00",
+          "end": "2024-11-21T21:57:28.026839+00:00"
+        },
+        {
+          "id": 1931219,
+          "number": 10,
+          "time": 86.41233,
+          "valid": true,
+          "length": 4859,
+          "start": "2024-11-21T21:57:28.026839+00:00",
+          "end": "2024-11-21T21:58:54.449926+00:00"
+        },
+        {
+          "id": 1931225,
+          "number": 11,
+          "time": 85.8016357,
+          "valid": true,
+          "length": 4859,
+          "start": "2024-11-21T21:58:54.449926+00:00",
+          "end": "2024-11-21T22:00:20.237968+00:00"
+        },
+        {
+          "id": 1931233,
+          "number": 12,
+          "time": 85.8044357,
+          "valid": true,
+          "length": 4858,
+          "start": "2024-11-21T22:00:20.237968+00:00",
+          "end": "2024-11-21T22:01:46.040861+00:00"
+        },
+        {
+          "id": 1931239,
+          "number": 13,
+          "time": 15.299633,
+          "valid": true,
+          "length": 822,
+          "start": "2024-11-21T22:01:46.040861+00:00",
+          "end": "2024-11-21T22:01:46.040861+00:00"
         }
       ]
     },
     {
-      "id": "720314",
-      "sessionId": "1732222147",
+      "id": "720321",
+      "sessionId": "1732247863",
       "car": {
-        "id": 7262,
-        "name": "Corvette Racing 33:LM"
+        "id": 5256,
+        "name": "Mazda MX-5 Cup ND2 202"
+      },
+      "driver": {
+        "id": 1,
+        "name": "Jim"
+      },
+      "game": {
+        "id": 6,
+        "name": "rFactor 2 (64 bit)"
+      },
+      "sessionType": {
+        "id": 1,
+        "type": "Practice"
+      },
+      "track": {
+        "id": 5370,
+        "name": "Tocancipa_ETB"
+      },
+      "laps": [
+        {
+          "id": 1931221,
+          "number": 1,
+          "time": 829.3025,
+          "valid": true,
+          "length": 2725,
+          "start": "2024-11-21T21:57:47.877704+00:00",
+          "end": "2024-11-21T21:59:36.332192+00:00"
+        },
+        {
+          "id": 1931229,
+          "number": 2,
+          "time": 98.41815,
+          "valid": false,
+          "length": 2725,
+          "start": "2024-11-21T21:59:36.332192+00:00",
+          "end": "2024-11-21T22:01:14.761595+00:00"
+        },
+        {
+          "id": 1931236,
+          "number": 3,
+          "time": 46.6310425,
+          "valid": true,
+          "length": 1501,
+          "start": "2024-11-21T22:01:14.761595+00:00",
+          "end": "2024-11-21T22:01:14.761595+00:00"
+        }
+      ]
+    },
+    {
+      "id": "720327",
+      "sessionId": "1732222874",
+      "car": {
+        "id": 7345,
+        "name": "Tower Motorsports 13:LM"
       },
       "driver": {
         "id": 1,
@@ -550,122 +698,79 @@
         "name": "Le Mans Ultimate"
       },
       "sessionType": {
-        "id": 4,
-        "type": "Qualify"
-      },
-      "track": {
-        "id": 4008,
-        "name": "Autodromo Nazionale Monza"
-      },
-      "laps": [
-        {
-          "id": 1931193,
-          "number": 2,
-          "time": 0,
-          "valid": false,
-          "length": 0,
-          "start": "2024-11-21T21:51:32.936487+00:00",
-          "end": "2024-11-21T21:51:32.936487+00:00"
-        }
-      ]
-    },
-    {
-      "id": "720306",
-      "sessionId": "1732221932",
-      "car": {
-        "id": 7034,
-        "name": "GT4"
-      },
-      "driver": {
-        "id": 1,
-        "name": "Jim"
-      },
-      "game": {
-        "id": 3,
-        "name": "Assetto Corsa Competizione"
-      },
-      "sessionType": {
         "id": 1,
         "type": "Practice"
       },
       "track": {
-        "id": 3,
-        "name": "nurburgring:track config"
-      },
-      "laps": [
-        {
-          "id": 1931191,
-          "number": 1,
-          "time": 0,
-          "valid": false,
-          "length": 728,
-          "start": "2024-11-21T21:51:06.249753+00:00",
-          "end": "2024-11-21T21:51:06.249753+00:00"
-        }
-      ]
-    },
-    {
-      "id": "720316",
-      "sessionId": "1732222209",
-      "car": {
-        "id": 7181,
-        "name": "Unknown"
-      },
-      "driver": {
-        "id": 1,
-        "name": "Jim"
-      },
-      "game": {
-        "id": 2,
-        "name": "RaceRoom"
-      },
-      "sessionType": {
-        "id": 2,
-        "type": "Race"
-      },
-      "track": {
-        "id": 7,
-        "name": "Spa-Francorchamps"
-      },
-      "laps": [
-        {
-          "id": 1931186,
-          "number": 1,
-          "time": 75.29521,
-          "valid": true,
-          "length": 3487,
-          "start": "2024-11-21T21:50:12.38119+00:00",
-          "end": "2024-11-21T21:50:12.38119+00:00"
-        }
-      ]
-    },
-    {
-      "id": "720315",
-      "sessionId": "1732222158",
-      "car": {
-        "id": 7181,
-        "name": "Unknown"
-      },
-      "driver": {
-        "id": 1,
-        "name": "Jim"
-      },
-      "game": {
-        "id": 2,
-        "name": "RaceRoom"
-      },
-      "sessionType": {
-        "id": 2,
-        "type": "Race"
-      },
-      "track": {
-        "id": 7,
-        "name": "Spa-Francorchamps"
+        "id": 3957,
+        "name": "Sebring International Raceway"
       },
       "laps": []
+    },
+    {
+      "id": "720317",
+      "sessionId": "1732243995",
+      "car": {
+        "id": 7112,
+        "name": "MINI Cooper JCW"
+      },
+      "driver": {
+        "id": 1,
+        "name": "Jim"
+      },
+      "game": {
+        "id": 5,
+        "name": "Automobilista 2"
+      },
+      "sessionType": {
+        "id": 4,
+        "type": "Qualify"
+      },
+      "track": {
+        "id": 352,
+        "name": "Donington:Donington_GP"
+      },
+      "laps": [
+        {
+          "id": 1931204,
+          "number": 1,
+          "time": 101.826996,
+          "valid": false,
+          "length": 3984,
+          "start": "2024-11-21T21:54:18.21295+00:00",
+          "end": "2024-11-21T21:57:57.828679+00:00"
+        },
+        {
+          "id": 1931222,
+          "number": 2,
+          "time": 101.081055,
+          "valid": false,
+          "length": 3982,
+          "start": "2024-11-21T21:57:57.828679+00:00",
+          "end": "2024-11-21T21:59:40.015782+00:00"
+        },
+        {
+          "id": 1931230,
+          "number": 3,
+          "time": 100.715057,
+          "valid": true,
+          "length": 3984,
+          "start": "2024-11-21T21:59:40.015782+00:00",
+          "end": "2024-11-21T22:01:20.340615+00:00"
+        },
+        {
+          "id": 1931237,
+          "number": 4,
+          "time": -3,
+          "valid": false,
+          "length": 3922,
+          "start": "2024-11-21T22:01:20.340615+00:00",
+          "end": "2024-11-21T22:01:20.340615+00:00"
+        }
+      ]
     }
   ],
-  "totalCount": 714971,
+  "totalCount": 714983,
   "hasNextPage": true,
-  "endCursor": "WyJlbmRfZGVzYyIsWyIyMDI0LTExLTIxVDIxOjUwOjA5LjYxNjQyOSswMDowMCIsNzIwMzE1XV0="
+  "endCursor": "WyJlbmRfZGVzYyIsWyIyMDI0LTExLTIxVDIyOjAyOjAxLjI0MzQ4NSswMDowMCIsNzIwMzE3XV0="
 }

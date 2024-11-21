@@ -13,7 +13,6 @@ interface SessionContextType {
   tracks: PaddockTrack[];
   fetchLandmarks: (trackId: number) => Promise<TrackLandmarks>;
   getLandmarks: (trackId: number) => TrackLandmarks | undefined;
-  getLaps: (trackId: number, carId: number) => PaddockLap[] | undefined;
   fetchLaps: (trackId: number, carId: number) => Promise<PaddockLap[]>;
   loading: boolean;
   error: string | null;
@@ -52,9 +51,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
   const [selectedDriver, setSelectedDriver] = useState<number | null>();
   const [selectedTrack, setSelectedTrack] = useState<number | null>();
   const [landmarksCache, setLandmarksCache] = useState<{ [trackId: number]: TrackLandmarks }>({});
-  const [lapsCache, setLapsCache] = useState<{ [key: string]: PaddockLap[] }>({});
-
-  const getLapsCacheKey = useCallback((trackId: number, carId: number) => `${trackId}-${carId}`, []);
+  const [lapsCache, setLapsCache] = useState<{ [lapId: number]: PaddockLap }>({});
 
   const fetchSessions = useCallback(async (isInitialLoad = false) => {
     try {
@@ -112,10 +109,6 @@ export function SessionProvider({ children }: SessionProviderProps) {
     }
   }, [endCursor, selectedDriver, selectedCar, selectedTrack]);
 
-  const getSession = useCallback((sessionId: string) => {
-    return sessions.find(session => session.sessionId === sessionId);
-  }, [sessions]);
-
 
   const getLandmarks = useCallback((trackId: number): TrackLandmarks | undefined => {
     return landmarksCache[trackId];
@@ -143,6 +136,10 @@ export function SessionProvider({ children }: SessionProviderProps) {
       throw err;
     }
   }, [landmarksCache]);
+
+  const getSession = useCallback((sessionId: string) => {
+    return sessions.find(session => session.sessionId === sessionId);
+  }, [sessions]);
 
   const fetchSession = useCallback(async (sessionId: string): Promise<PaddockSession> => {
     // First try to find the session in our list
@@ -173,27 +170,21 @@ export function SessionProvider({ children }: SessionProviderProps) {
     return session;
   }, []);
 
-  const getLaps = useCallback((trackId: number, carId: number) => {
-    return lapsCache[getLapsCacheKey(trackId, carId)];
-  }, [lapsCache, getLapsCacheKey]);
-
   const fetchLaps = useCallback(async (trackId: number, carId: number) => {
-    // FIXME: use lapId instead of trackId and carId for cache key
-    const cacheKey = getLapsCacheKey(trackId, carId);
-    if (lapsCache[cacheKey]) {
-      return lapsCache[cacheKey];
-    }
-
     const paddockService = new PaddockService();
     const laps = await paddockService.getLaps({ trackId, carId });
 
-    setLapsCache(prev => ({
-      ...prev,
-      [cacheKey]: laps
-    }));
+    // Cache each lap individually by its ID
+    setLapsCache(prev => {
+      const newCache = { ...prev };
+      laps.forEach(lap => {
+        newCache[lap.id] = lap;
+      });
+      return newCache;
+    });
 
     return laps;
-  }, [lapsCache, getLapsCacheKey]);
+  }, []);
 
   const fetchLap = useCallback(async (lapId: number): Promise<PaddockLap> => {
     const paddockService = new PaddockService();
@@ -228,7 +219,6 @@ export function SessionProvider({ children }: SessionProviderProps) {
         fetchSession,
         fetchLandmarks,
         getLandmarks,
-        getLaps,
         fetchLaps,
       }}
     >
