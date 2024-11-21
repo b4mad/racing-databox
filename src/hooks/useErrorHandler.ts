@@ -1,42 +1,21 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
+import { useError } from '../contexts/ErrorContext';
 import { logger } from '../utils/logger';
 
 export type ErrorSeverity = 'error' | 'warning' | 'info';
 
-interface ErrorState {
-  message: string;
-  severity: ErrorSeverity;
-  permanent?: boolean;
-}
-
 type LoggerContext = 'paddock' | 'api' | 'telemetry' | 'analysis';
 
 export function useErrorHandler(loggerContext: LoggerContext = 'api') {
-  const [errorState, setErrorState] = useState<ErrorState | null>(null);
+  const { errorState, handleError: contextHandleError, clearError } = useError();
 
   const handleError = useCallback((err: unknown, context: string, options?: {
     severity?: ErrorSeverity,
     permanent?: boolean
   }) => {
-    const message = err instanceof Error ? err.message : 'An unexpected error occurred';
-    const fullMessage = `${context}: ${message}`;
-
-    logger[loggerContext]('Error:', fullMessage);
-
-    setErrorState({
-      message: fullMessage,
-      severity: options?.severity || 'error',
-      permanent: options?.permanent
-    });
-
-    if (process.env.NODE_ENV === 'development') {
-      console.error(err);
-    }
-  }, [loggerContext]);
-
-  const clearError = useCallback(() => {
-    setErrorState(null);
-  }, []);
+    logger[loggerContext]('Error:', context);
+    contextHandleError(err, context, options);
+  }, [contextHandleError, loggerContext]);
 
   return {
     error: errorState?.message || null,

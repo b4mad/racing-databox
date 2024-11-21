@@ -1,6 +1,8 @@
 import { createContext, useCallback, useState, ReactNode } from 'react';
+import { useErrorHandler } from '../hooks/useErrorHandler';
 import { PaddockService } from '../services/PaddockService';
 import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, PaddockLap, TrackLandmarks } from '../services/types';
+
 
 interface SessionContextType {
   // List view state
@@ -43,7 +45,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
   const [drivers, setDrivers] = useState<PaddockDriver[]>([]);
   const [tracks, setTracks] = useState<PaddockTrack[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { error, handleError } = useErrorHandler('paddock');
   const [hasNextPage, setHasNextPage] = useState(false);
   const [endCursor, setEndCursor] = useState<string>();
   const [selectedCar, setSelectedCar] = useState<number | null>();
@@ -53,7 +55,6 @@ export function SessionProvider({ children }: SessionProviderProps) {
   const [lapsCache, setLapsCache] = useState<{ [key: string]: PaddockLap[] }>({});
 
   const getLapsCacheKey = useCallback((trackId: number, carId: number) => `${trackId}-${carId}`, []);
-
 
   const fetchSessions = useCallback(async (isInitialLoad = false) => {
     try {
@@ -87,12 +88,8 @@ export function SessionProvider({ children }: SessionProviderProps) {
         setHasNextPage(sessionsData.hasNextPage);
         setEndCursor(sessionsData.endCursor);
       }
-      setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load data');
-      if (process.env.NODE_ENV === 'development') {
-        throw err;
-      }
+      handleError(err, 'Failed to load data');
     } finally {
       setLoading(false);
     }
@@ -111,10 +108,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
       setHasNextPage(moreData.hasNextPage);
       setEndCursor(moreData.endCursor);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load more sessions');
-      if (process.env.NODE_ENV === 'development') {
-        throw err;
-      }
+      handleError(err, 'Failed to load more sessions');
     }
   }, [endCursor, selectedDriver, selectedCar, selectedTrack]);
 
@@ -145,10 +139,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
       return landmarks;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load landmarks');
-      if (process.env.NODE_ENV === 'development') {
-        throw err;
-      }
+      handleError(err, 'Failed to load landmarks');
       throw err;
     }
   }, [landmarksCache]);

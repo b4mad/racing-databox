@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { ErrorDisplay } from '../components/ErrorDisplay'
 import { useErrorHandler } from '../hooks/useErrorHandler'
 import { Container, Box, Stack, CircularProgress } from '@mui/material'
 import InfiniteScroll from 'react-infinite-scroll-component'
@@ -9,7 +8,7 @@ import { SessionsViewNav } from '../components/SessionsViewNav'
 import { useSession } from '../hooks/useSession'
 
 export function SessionsView() {
-  const { handleError, errorState, clearError } = useErrorHandler('api');
+  const { handleError, errorState } = useErrorHandler('paddock');
   const {
     sessions,
     cars,
@@ -93,26 +92,11 @@ export function SessionsView() {
   }
 
   if (errorState?.permanent) {
-    return (
-      <Container>
-        <ErrorDisplay
-          error={errorState.message}
-          severity={errorState.severity}
-          onClose={clearError}
-          permanent
-        />
-      </Container>
-    );
+    return null;
   }
 
   return (
-    <>
-      <ErrorDisplay
-        error={errorState?.message || null}
-        severity={errorState?.severity}
-        onClose={clearError}
-      />
-      <Container id="scrollableDiv" style={{ height: '100vh', overflow: 'auto' }}>
+    <Container id="scrollableDiv" style={{ height: '100vh', overflow: 'auto' }}>
       <SessionsViewNav
         cars={cars}
         selectedCar={urlSelectedCar}
@@ -154,6 +138,5 @@ export function SessionsView() {
         </Stack>
       </InfiniteScroll>
       </Container>
-    </>
   );
 }

@@ -10,8 +10,6 @@
  */
 
 import { useSessionLoader } from '../hooks/useSessionLoader'
-import { ErrorDisplay } from '../components/ErrorDisplay'
-import { useErrorHandler } from '../hooks/useErrorHandler'
 import { useParams, Navigate } from 'react-router-dom'
 import { Box, CircularProgress, Container } from '@mui/material'
 import { AnalysisLayout } from '../components/analysis/AnalysisLayout'
@@ -43,8 +41,6 @@ function AnalysisViewContent({ sessionId }: { sessionId: string }) {
     setLapsData,
   } = useAnalysisContext();
 
-  const { error, errorState, clearError } = useErrorHandler('analysis');
-
   useSessionLoader({
     sessionId,
     lapIds,
@@ -69,27 +65,7 @@ function AnalysisViewContent({ sessionId }: { sessionId: string }) {
     );
   }
 
-  if (errorState?.permanent) {
-    return (
-      <Container>
-        <ErrorDisplay
-          error={error}
-          severity={errorState.severity}
-          onClose={clearError}
-          permanent
-        />
-      </Container>
-    );
-  }
-
   return (
-    <>
-      <ErrorDisplay
-        error={error}
-        severity={errorState?.severity}
-        onClose={clearError}
-      />
-      <AnalysisLayout />
-    </>
+    <AnalysisLayout />
   );
 }
