@@ -7,18 +7,18 @@ const main = async () => {
         const sessionId = '1729092115'; // RBR
         // const sessionId = '1730913437'; // RaceRoom
 
-        const sessionDataArray = await paddockService.getSessionData(sessionId);
+        const { items: sessions } = await paddockService.getSessions(10, undefined, { sessionId });
 
         console.log('Session Data:');
-        for (const sessionData of sessionDataArray) {
-            console.log('\nSession Info:', sessionData.sessionId);
-            console.log('Session Laps:', sessionData.laps);
+        for (const session of sessions) {
+            console.log('\nSession Info:', session.sessionId);
+            console.log('Session Laps:', session.laps);
 
             // Use track and car info to fetch additional laps
-            if (sessionData.track?.id && sessionData.car?.id) {
+            if (session.track?.id && session.car?.id) {
                 const additionalLaps = await paddockService.getLaps(
-                    sessionData.track.id,
-                    sessionData.car.id,
+                    session.track.id,
+                    session.car.id,
                     10 // Fetch last 10 laps
                 );
                 console.log('\nAdditional laps for this car/track combination:');
