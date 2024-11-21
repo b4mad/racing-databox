@@ -19,7 +19,7 @@ export function useSessionLoader({
   setAnalysisData,
   setLapIds
 }: UseSessionLoaderParams) {
-  const { getSession, fetchSession, getLandmarks, fetchLandmarks } = useSession();
+  const { getSession, fetchSession, getLandmarks, fetchLandmarks, fetchLap } = useSession();
   const { handleError, clearError } = useErrorHandler('paddock');
 
   // Effect 1: Initial session and landmarks loading
@@ -68,24 +68,44 @@ export function useSessionLoader({
     if (!sessionId || !lapIds?.length) return;
 
     const session = getSession(sessionId);
-    if (!session?.laps) return;
+    if (!session) return;
 
     const landmarks = getLandmarks(session.track.id);
-    if (!landmarks) return;
 
-    const filteredLaps = session.laps.filter(lap =>
+    const sessionLaps = session.laps.filter(lap =>
       lapIds.includes(lap.id)
     );
-    if (!filteredLaps.length) return;
 
-    setAnalysisData({
-      laps: filteredLaps,
+    // Now get the remaining laps via fetchLap
+    const missingLapIds = lapIds.filter((id): id is number =>
+      id !== null && !sessionLaps.find(lap => lap.id === id)
+    );
+    if (missingLapIds.length) {
+      const fetchMissingLaps = async () => {
+        try {
+          const fetchedLaps = await Promise.all(
+            missingLapIds.map(id => fetchLap(id))
+          );
+          sessionLaps.push(...fetchedLaps);
+        } catch (err) {
+          handleError(err, 'Failed to load additional laps');
+        }
+      };
+      fetchMissingLaps();
+    }
+
+
+    const data : AnalysisData = {
       session,
+      driver: session.driver,
       car: session.car,
       track: session.track,
       game: session.game,
-      landmarks,
-      driver: session.driver
-    });
+      laps: sessionLaps,
+      landmarks: landmarks
+    }
+    logger.loader('useSessionLoader Analysis data:', data);
+
+    setAnalysisData(data);
   }, [sessionId, lapIds]);
 }

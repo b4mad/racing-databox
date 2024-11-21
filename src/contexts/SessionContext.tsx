@@ -5,6 +5,7 @@ import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, PaddockLap, Tr
 interface SessionContextType {
   // List view state
   sessions: PaddockSession[];
+  fetchLap: (lapId: number) => Promise<PaddockLap>;
   cars: PaddockCar[];
   drivers: PaddockDriver[];
   tracks: PaddockTrack[];
@@ -202,11 +203,21 @@ export function SessionProvider({ children }: SessionProviderProps) {
     return laps;
   }, [lapsCache, getLapsCacheKey]);
 
+  const fetchLap = useCallback(async (lapId: number): Promise<PaddockLap> => {
+    const paddockService = new PaddockService();
+    const laps = await paddockService.getLaps(null, null, 1, lapId); // trackId and carId are ignored when lapId is provided
+    if (!laps || laps.length === 0) {
+      throw new Error(`Lap ${lapId} not found`);
+    }
+    return laps[0];
+  }, []);
+
   return (
     <SessionContext.Provider
       value={{
         sessions,
         cars,
+        fetchLap,
         drivers,
         tracks,
         loading,
