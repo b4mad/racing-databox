@@ -1,4 +1,5 @@
 import { Box, Drawer, IconButton, Typography } from '@mui/material';
+import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -12,18 +13,9 @@ import { TrackMapVisualization } from './TrackMapVisualization';
 import { DeltaTimeGraph } from './DeltaTimeGraph';
 import { SectorVisualization } from './SectorVisualization';
 import { TelemetryGraphs } from './TelemetryGraphs';
-import { AnalysisData, TelemetryCacheEntry } from '../../services/types';
-import { ZoomState } from '../../components/types'
 
-interface AnalysisLayoutProps {
-  analysisData?: AnalysisData;
-  lapsData: { [lapId: number]: TelemetryCacheEntry };
-  onLapSelect: (lapId: number) => void;
-  zoomState: ZoomState;
-  setZoomRange: (startMeters: number, endMeters: number) => void;
-}
-
-export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState, setZoomRange }: AnalysisLayoutProps) {
+export function AnalysisLayout() {
+  const { analysisData, lapsData, zoomState, setZoomRange, handleLapSelect } = useAnalysisContext();
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [isLapsModalOpen, setIsLapsModalOpen] = useState(false);
   const mapDataAvailable = Object.keys(lapsData).length > 0 &&
@@ -42,7 +34,7 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
           open={isLapsModalOpen}
           onClose={() => setIsLapsModalOpen(false)}
           analysisData={analysisData}
-          onLapSelect={onLapSelect}
+          onLapSelect={handleLapSelect}
         />
       )}
 
@@ -100,10 +92,7 @@ export function AnalysisLayout({ analysisData, lapsData, onLapSelect, zoomState,
                       <TimelineIcon />
                     </IconButton>
                   </Box>
-                  <LapSelectionPanel
-                    analysisData={analysisData}
-                    lapsData={lapsData}
-                  />
+                  <LapSelectionPanel />
                 </Box>
                 {Object.keys(lapsData).length > 1 && (
                   <Box sx={{ flex: 1, mt: 2 }}>

@@ -15,9 +15,8 @@ import { useErrorHandler } from '../hooks/useErrorHandler'
 import { useParams, Navigate } from 'react-router-dom'
 import { Box, CircularProgress, Container } from '@mui/material'
 import { AnalysisLayout } from '../components/analysis/AnalysisLayout'
-import { useAnalysisState } from '../hooks/useAnalysisState'
 import { useTelemetryLoader } from '../hooks/useTelemetryLoader'
-
+import { AnalysisProvider, useAnalysisContext } from '../contexts/AnalysisContext'
 
 export function AnalysisView() {
   const { sessionId } = useParams();
@@ -26,19 +25,23 @@ export function AnalysisView() {
     return <Navigate to="/" replace />;
   }
 
+  return (
+    <AnalysisProvider>
+      <AnalysisViewContent sessionId={sessionId} />
+    </AnalysisProvider>
+  );
+}
+
+function AnalysisViewContent({ sessionId }: { sessionId: string }) {
   const {
     loading,
-    analysisData,
-    lapsData,
     lapIds,
+    lapsData,
     setLapIds,
     setLoading,
     setAnalysisData,
     setLapsData,
-    handleLapSelect,
-    zoomState,
-    setZoomRange
-  } = useAnalysisState();
+  } = useAnalysisContext();
 
   const { error, errorState, clearError } = useErrorHandler('analysis');
 
@@ -50,13 +53,11 @@ export function AnalysisView() {
     setLapIds
   });
 
-
   useTelemetryLoader({
     lapIds,
     lapsData,
-    setLapsData
+    setLapsData,
   });
-
 
   if (loading) {
     return (
@@ -88,13 +89,7 @@ export function AnalysisView() {
         severity={errorState?.severity}
         onClose={clearError}
       />
-      <AnalysisLayout
-      analysisData={analysisData}
-      lapsData={lapsData}
-      onLapSelect={handleLapSelect}
-      zoomState={zoomState}
-      setZoomRange={setZoomRange}
-    />
+      <AnalysisLayout />
     </>
   );
 }
