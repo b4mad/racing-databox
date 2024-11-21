@@ -1,4 +1,4 @@
-import { createContext, useCallback, useState, ReactNode } from 'react';
+import { createContext, useCallback, useState, ReactNode, useRef } from 'react';
 import { useErrorHandler } from '../hooks/useErrorHandler';
 import { PaddockService } from '../services/PaddockService';
 import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, PaddockLap, TrackLandmarks } from '../services/types';
@@ -39,6 +39,8 @@ interface SessionProviderProps {
 }
 
 export function SessionProvider({ children }: SessionProviderProps) {
+  const paddockService = useRef(new PaddockService());
+
   const [sessions, setSessions] = useState<PaddockSession[]>([]);
   const [cars, setCars] = useState<PaddockCar[]>([]);
   const [drivers, setDrivers] = useState<PaddockDriver[]>([]);
@@ -55,18 +57,17 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
   const fetchSessions = useCallback(async (isInitialLoad = false) => {
     try {
-      const paddockService = new PaddockService();
 
       if (isInitialLoad) {
         const [sessionsData, carsData, driversData, tracksData] = await Promise.all([
-          paddockService.getSessions(20, undefined, {
+          paddockService.current.getSessions(20, undefined, {
             driverId: selectedDriver ?? undefined,
             carId: selectedCar ?? undefined,
             trackId: selectedTrack ?? undefined
           }),
-          paddockService.getAllCars(10),
-          paddockService.getAllDrivers(10),
-          paddockService.getAllTracks(10)
+          paddockService.current.getAllCars(10),
+          paddockService.current.getAllDrivers(10),
+          paddockService.current.getAllTracks(10)
         ]);
         const filteredSessions = sessionsData.items.filter(session => session.laps.length > 0);
         setSessions(filteredSessions);
@@ -76,7 +77,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
         setDrivers(driversData);
         setTracks(tracksData);
       } else {
-        const sessionsData = await paddockService.getSessions(20, undefined, {
+        const sessionsData = await paddockService.current.getSessions(20, undefined, {
           driverId: selectedDriver ?? undefined,
           carId: selectedCar ?? undefined,
           trackId: selectedTrack ?? undefined
@@ -94,8 +95,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
   const fetchMoreSessions = useCallback(async () => {
     try {
-      const paddockService = new PaddockService();
-      const moreData = await paddockService.getSessions(20, endCursor, {
+      const moreData = await paddockService.current.getSessions(20, endCursor, {
         driverId: selectedDriver ?? undefined,
         carId: selectedCar ?? undefined,
         trackId: selectedTrack ?? undefined
@@ -121,8 +121,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
         return landmarksCache[trackId];
       }
 
-      const paddockService = new PaddockService();
-      const landmarks = await paddockService.getLandmarks(trackId);
+      const landmarks = await paddockService.current.getLandmarks(trackId);
 
       // Cache the results
       setLandmarksCache(prev => ({
@@ -147,8 +146,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
     // If not found, fetch it
     if (!session) {
-      const paddockService = new PaddockService();
-      const response = await paddockService.getSessions(1, undefined, { sessionId });
+      const response = await paddockService.current.getSessions(1, undefined, { sessionId });
       if (response.items.length === 0) {
         throw new Error(`Session ${sessionId} not found`);
       }
@@ -171,8 +169,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
   }, []);
 
   const fetchLaps = useCallback(async (trackId: number, carId: number) => {
-    const paddockService = new PaddockService();
-    const laps = await paddockService.getLaps({ trackId, carId });
+    const laps = await paddockService.current.getLaps({ trackId, carId });
 
     // Cache each lap individually by its ID
     setLapsCache(prev => {
@@ -192,8 +189,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
       return lapsCache[lapId];
     }
 
-    const paddockService = new PaddockService();
-    const laps = await paddockService.getLaps({ id: lapId, limit: 1 }); // trackId and carId are optional
+    const laps = await paddockService.current.getLaps({ id: lapId, limit: 1 }); // trackId and carId are optional
     if (!laps || laps.length === 0) {
       throw new Error(`Lap ${lapId} not found`);
     }
