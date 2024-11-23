@@ -14,6 +14,7 @@
     "docker:run": "docker run -p 8080:8080 -e DATA_BOX_GRAPHQL_URL=http://telemetry.b4mad.racing:30050 -e DATA_BOX_API_URL=https://b4mad.racing racing-databox",
     "build:prod": "NODE_ENV=production webpack --mode production",
     "serve:prod": "yarn build:prod && serve -s dist -p 3000",
+    "analyze": "ANALYZE=true yarn build:prod",
     "test": "jest --detectOpenHandles"
   },
   "dependencies": {
@@ -59,6 +60,7 @@
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.10.0",
     "webpack": "^5.88.2",
+    "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
   },

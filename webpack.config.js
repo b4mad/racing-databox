@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const bodyParser = require('body-parser');
 
 module.exports = {
@@ -34,7 +35,8 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
     }),
-  ],
+    process.env.ANALYZE && new BundleAnalyzerPlugin(),
+  ].filter(Boolean),
   devServer: {
     port: 3000,
     historyApiFallback: true,
