@@ -104,9 +104,7 @@ export function ChartLineGraph({
         },
         ticks: {
           color: theme.palette.chart?.text
-        },
-        min: 0,
-        max: dataKeys[0].key === 'speed' ? 250 : undefined
+        }
       }
     },
     plugins: {

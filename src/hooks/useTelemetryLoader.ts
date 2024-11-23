@@ -11,18 +11,30 @@ interface UseTelemetryLoaderParams {
   setLapsData: React.Dispatch<React.SetStateAction<{ [lapId: number]: TelemetryCacheEntry }>>;
 }
 
-export function calculateDelta(referenceLap: TelemetryCacheEntry, comparisonLap: TelemetryCacheEntry): TelemetryPoint[] {
-  return comparisonLap.points.map((point, index) => {
-    // Find the closest point in the reference lap based on distance
-    const referencePoint = referenceLap.points.find(
-      (refPoint) => Math.abs(refPoint.distance - point.distance) < 0.1
-    ) || referenceLap.points[index];
+function calculateDelta(referenceLap: TelemetryCacheEntry, comparisonLap: TelemetryCacheEntry): TelemetryPoint[] {
+  const result: TelemetryPoint[] = [];
+  let refIndex = 0;
 
-    return {
-      ...point,
-      delta: point.lapTime - (referencePoint?.lapTime || 0)
-    };
-  });
+  // For each point in the comparison lap
+  for (let i = 0; i < comparisonLap.points.length; i++) {
+    const compPoint = comparisonLap.points[i];
+
+    // Advance through reference points until we find one past our current distance
+    while (refIndex < referenceLap.points.length - 1 &&
+           referenceLap.points[refIndex].distance < compPoint.distance) {
+      refIndex++;
+    }
+
+    // Find the best matching point (either current or previous index)
+    let bestRefPoint = referenceLap.points[refIndex];
+
+    result.push({
+      ...compPoint,
+      delta: compPoint.lapTime - bestRefPoint.lapTime
+    });
+  }
+
+  return result;
 }
 
 export function useTelemetryLoader({
