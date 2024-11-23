@@ -61,33 +61,9 @@
 - Compiler Options:
   - Target: Set to `ES2020` to utilize modern JavaScript features.
   - Module: `ESNext` to support the latest module syntax and dynamic imports.
-  - Module Resolution: `Bundler` for compatibility with bundler tools like Webpack.
-  - Lib: Includes `ES2020`, `DOM`, and `DOM.Iterable` for comprehensive ECMAScript and browser API support.
-  - Strict Mode: Enabled (`"strict": true`) to enforce strict type checking and enhance code reliability.
-  - No Unused Locals: Warnings for unused local variables to maintain clean code.
-  - No Unused Parameters: Warnings for unused function parameters.
-  - No Fallthrough Cases In Switch: Prevents unintended fall-through in switch statements.
-  - Allow JS: Enabled (`"allowJs": true`) to include JavaScript files in the project, facilitating gradual migration to TypeScript.
-  - ES Module Interop: Enabled (`"esModuleInterop": true`) for seamless interoperability between CommonJS and ES modules.
-  - Use Define For Class Fields: Enabled (`"useDefineForClassFields": true`) for compliance with the latest ECMAScript proposals regarding class field declarations.
-  - JSX Support: Set to `react-jsx` to enable the new JSX transform introduced in React 17+.
-  - Isolated Modules: Enabled (`"isolatedModules": true`) to support transpilation processes like Babel.
-  - Resolve JSON Modules: Enabled to allow importing JSON files directly into TypeScript modules.
-  - Skip Lib Check: Enabled (`"skipLibCheck": true`) to speed up build times by skipping type checking of declaration files (`.d.ts`).
-  - No Emit: Set to `false` to allow emitting compiled JavaScript files into the output directory.
-  - Output Directory: `"outDir": "./dist"` specifies where compiled JavaScript files are outputted.
-- Project Structure:
-  - Root Configuration (`tsconfig.json`):
-    - Uses project references to include `tsconfig.app.json` for better organization and scalability.
-    - The `"files": []` property ensures no unintended files are included at the root level.
-  - Application Configuration (`tsconfig.app.json`):
-    - Extends the root configuration with specific settings for the application code under `src/`.
-    - Includes all files within the `src` directory for compilation.
-- Benefits of Configuration:
-  - Enhanced Code Quality: Strict type checking and unused code warnings help maintain a clean and error-free codebase.
-  - Modern JavaScript Features: Targeting `ES2020` and enabling modern features allow developers to write up-to-date and efficient code.
-  - Tooling Compatibility: Settings like `moduleResolution` and `isolatedModules` ensure smooth integration with tools like Webpack and Babel.
-  - Development Efficiency: Skipping library checks and enabling incremental builds improve development speed.
+  - Strict Mode: Enabled (`"strict": true`) to enforce strict type checking.
+  - ES Module Interop: Enabled (`"esModuleInterop": true`) for interoperability between CommonJS and ES modules.
+  - JSX Support: Set to `react-jsx` for React JSX transform.
 
 ## Data Models and Relationships
 ## GraphQL Schema and API Endpoints
