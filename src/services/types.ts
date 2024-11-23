@@ -7,6 +7,7 @@ export interface TelemetryPoint {
     gear: number;
     steeringAngle: number;
     lapTime: number;
+    delta: number;  // Time difference from reference lap
     lapNumber: number;
     position?: {
         x: number;

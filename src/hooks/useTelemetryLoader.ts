@@ -34,9 +34,30 @@ export function useTelemetryLoader({
 
       try {
         const telemetryUpdates: { [key: number]: TelemetryCacheEntry } = {};
+        // Get reference lap data (first valid lap)
+        const referenceLapId = lapIds.find(id => id !== null);
+        const referenceLapData = referenceLapId ? lapsData[referenceLapId]?.points : undefined;
+
         const promises = missingLapIds.map(async (lapId) => {
           const entry = await getTelemetryForLap(lapId);
           const lapIndex = lapIds.indexOf(lapId);
+
+          // Calculate delta for each point
+          entry.points = entry.points.map(point => {
+            // If no reference lap exists or this is the reference lap, delta is 0
+            if (!referenceLapData || lapId === referenceLapId) {
+              return { ...point, delta: 0 };
+            }
+
+            // Find closest point in reference lap by distance
+            const refPoint = referenceLapData.find(ref =>
+              Math.abs(ref.distance - point.distance) < 0.1
+            );
+            return {
+              ...point,
+              delta: refPoint ? point.lapTime - refPoint.lapTime : 0
+            };
+          });
 
           telemetryUpdates[lapId] = {
             ...entry,
