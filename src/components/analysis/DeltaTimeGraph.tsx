@@ -1,9 +1,21 @@
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
+import { DeltaGraph } from '../LineGraph';
+import { useAnalysisContext } from '../../contexts/AnalysisContext';
 
 export function DeltaTimeGraph() {
+  const { lapsData, zoomState, setZoomRange } = useAnalysisContext();
+
+  if (Object.keys(lapsData).length === 0) {
+    return null;
+  }
+
   return (
-    <Box sx={{ p: 1 }}>
-      <Typography>Delta Time Graph</Typography>
+    <Box sx={{ width: '100%', height: '100%' }}>
+      <DeltaGraph
+        lapsData={lapsData}
+        zoomState={zoomState}
+        onZoomChange={setZoomRange}
+      />
     </Box>
   );
 }

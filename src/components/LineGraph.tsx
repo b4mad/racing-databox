@@ -39,6 +39,10 @@ const GRAPH_CONFIGS = {
     dataKeys: [{ key: "gear" as keyof TelemetryPoint, name: "Gear", color: "#9c27b0" }],
     unit: "",
     stepLine: true
+  },
+  delta: {
+    dataKeys: [{ key: "delta" as keyof TelemetryPoint, name: "Delta Time", color: "#ff4081" }],
+    unit: " s"
   }
 };
 
@@ -52,6 +56,10 @@ export function PedalsGraph(props: BaseGraphProps) {
 
 export function GearGraph(props: BaseGraphProps) {
   return <LineGraph {...props} {...GRAPH_CONFIGS.gear} />;
+}
+
+export function DeltaGraph(props: BaseGraphProps) {
+  return <LineGraph {...props} {...GRAPH_CONFIGS.delta} />;
 }
 
 export function LineGraph({ lapsData, dataKeys, unit = '', stepLine = false, title, zoomState, onZoomChange }: LineGraphProps) {

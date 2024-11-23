@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { TelemetryCacheEntry } from '../services/types';
+import { TelemetryCacheEntry, TelemetryPoint } from '../services/types';
 import { useTelemetry } from './useTelemetry';
 import { useErrorHandler } from './useErrorHandler';
 import { getLapColor } from '../utils/colors';
@@ -9,6 +9,20 @@ interface UseTelemetryLoaderParams {
   lapIds?: (number | null)[] | null | undefined;
   lapsData: { [lapId: number]: TelemetryCacheEntry };
   setLapsData: React.Dispatch<React.SetStateAction<{ [lapId: number]: TelemetryCacheEntry }>>;
+}
+
+export function calculateDelta(referenceLap: TelemetryCacheEntry, comparisonLap: TelemetryCacheEntry): TelemetryPoint[] {
+  return comparisonLap.points.map((point, index) => {
+    // Find the closest point in the reference lap based on distance
+    const referencePoint = referenceLap.points.find(
+      (refPoint) => Math.abs(refPoint.distance - point.distance) < 0.1
+    ) || referenceLap.points[index];
+
+    return {
+      ...point,
+      delta: point.lapTime - (referencePoint?.lapTime || 0)
+    };
+  });
 }
 
 export function useTelemetryLoader({
@@ -34,30 +48,9 @@ export function useTelemetryLoader({
 
       try {
         const telemetryUpdates: { [key: number]: TelemetryCacheEntry } = {};
-        // Get reference lap data (first valid lap)
-        const referenceLapId = lapIds.find(id => id !== null);
-        const referenceLapData = referenceLapId ? lapsData[referenceLapId]?.points : undefined;
-
         const promises = missingLapIds.map(async (lapId) => {
           const entry = await getTelemetryForLap(lapId);
           const lapIndex = lapIds.indexOf(lapId);
-
-          // Calculate delta for each point
-          entry.points = entry.points.map(point => {
-            // If no reference lap exists or this is the reference lap, delta is 0
-            if (!referenceLapData || lapId === referenceLapId) {
-              return { ...point, delta: 0 };
-            }
-
-            // Find closest point in reference lap by distance
-            const refPoint = referenceLapData.find(ref =>
-              Math.abs(ref.distance - point.distance) < 0.1
-            );
-            return {
-              ...point,
-              delta: refPoint ? point.lapTime - refPoint.lapTime : 0
-            };
-          });
 
           telemetryUpdates[lapId] = {
             ...entry,
@@ -69,6 +62,21 @@ export function useTelemetryLoader({
         });
 
         await Promise.all(promises);
+
+        // Use the first lap in lapIds as reference
+        const referenceLapId = lapIds[0];
+        logger.analysis(`Reference lap: ${referenceLapId}`);
+        if (referenceLapId && typeof referenceLapId === 'number') {
+          const referenceLap = lapsData[referenceLapId] || telemetryUpdates[referenceLapId];
+
+          // Calculate deltas for all new laps
+          Object.keys(telemetryUpdates).forEach(lapIdStr => {
+            const lapId = parseInt(lapIdStr, 10);
+            if (lapId !== referenceLapId) {
+              telemetryUpdates[lapId].points = calculateDelta(referenceLap, telemetryUpdates[lapId]);
+            }
+          });
+        }
 
         if (Object.keys(telemetryUpdates).length > 0) {
           setLapsData(prev => ({
