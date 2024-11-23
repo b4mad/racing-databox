@@ -65,6 +65,55 @@
   - ES Module Interop: Enabled (`"esModuleInterop": true`) for interoperability between CommonJS and ES modules.
   - JSX Support: Set to `react-jsx` for React JSX transform.
 
+## Directory Structure and Architectural Patterns
+
+- **`src/components`**
+  - Contains reusable UI components.
+  - Follows the **Component-Based Architecture** pattern, promoting reusability and modularity.
+  - Components are organized by functionality and can be composed to build complex interfaces.
+
+- **`src/contexts`**
+  - Implements React Contexts for global state management.
+  - Follows the **Context API** pattern to provide shared state across the component tree without prop drilling.
+  - Includes context providers like `ThemeContext`, `ErrorContext`, `UIStateContext`, `SessionContext`, and `TelemetryContext`.
+
+- **`src/providers`**
+  - Contains higher-order components and context providers that encapsulate related logic.
+  - Implements the **Provider Pattern** to supply dependencies and services to the application.
+  - Includes providers like `QueryProvider` and `QueryParamProvider` for managing React Query configurations and URL query parameters.
+
+- **`src/hooks`**
+  - Contains custom React hooks.
+  - Utilizes the **Custom Hooks Pattern** to encapsulate reusable logic and side effects.
+  - Hooks abstract complex functionalities like error handling (`useErrorHandler`).
+
+- **`src/services`**
+  - Contains service classes and utilities for data fetching and API interactions.
+  - Follows the **Service Layer Pattern** to separate business logic and data access from UI components.
+  - Includes services like `PaddockService` for interacting with GraphQL APIs.
+
+- **`src/views`**
+  - Contains page-level components corresponding to different routes.
+  - Applies the **Page Component Pattern** where each view manages its own state and data fetching.
+  - Views include `AnalysisView` and `SessionsView` for different parts of the application.
+
+- **`src/theme`**
+  - Contains theming configurations and custom styling.
+  - Implements the **Theming Pattern** for consistent styling across the application.
+  - Customizes Material-UI themes to match the application's branding.
+
+- **`src/utils`** *(If present)*
+  - Houses utility functions and helper modules.
+  - Follows the **Utility Module Pattern** for shared helper functions and constants.
+
+- **`src/App.tsx`**
+  - The root component that sets up the application structure and routing.
+  - Uses React Router for navigation and wraps the app with various context providers.
+
+- **`src/index.tsx`**
+  - The entry point of the application.
+  - Renders the `App` component into the DOM.
+
 ## Data Models and Relationships
 ## GraphQL Schema and API Endpoints
 ## Component Hierarchy and Structure
