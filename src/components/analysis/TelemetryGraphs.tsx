@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { SpeedGraph, PedalsGraph, GearGraph } from '../LineGraph';
+import { SpeedGraph, PedalsGraph, GearGraph, LapTimeGraph } from '../LineGraph';
 import { TelemetryCacheEntry } from '../../services/types';
 import { ZoomState } from '../types';
 import { logger } from '../../utils/logger'
@@ -19,6 +19,14 @@ export function TelemetryGraphs({ lapsData, zoomState, setZoomRange }: Telemetry
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
+      <Box sx={{ flex: 1 }}>
+        <LapTimeGraph
+          lapsData={lapsData}
+          zoomState={zoomState}
+          onZoomChange={setZoomRange}
+          showBrush={false}
+        />
+      </Box>
       <Box sx={{ flex: 1 }}>
         <SpeedGraph
           lapsData={lapsData}
