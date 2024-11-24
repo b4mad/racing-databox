@@ -140,7 +140,12 @@ export function AnalysisLayout() {
           <Box sx={{ flex: 1, display: 'flex', minHeight: 0 }}>
             {/* Track Map */}
             {mapDataAvailable && (
-              <Box sx={{ flex: 1, p: 1 }}>
+              <Box sx={{
+                flex: 1,
+                p: 1,
+                display: 'flex',
+                width: '50%',
+                }}>
                 <TrackMapVisualization
                   lapsData={lapsData}
                   zoomState={zoomState}
@@ -155,7 +160,7 @@ export function AnalysisLayout() {
               p: 1,
               display: 'flex',
               ...(mapDataAvailable && {
-                width: '400px',
+                width: '50%',
                 borderLeft: 1,
                 borderColor: 'divider'
               })

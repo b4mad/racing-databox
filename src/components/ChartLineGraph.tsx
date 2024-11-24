@@ -80,7 +80,7 @@ export function ChartLineGraph({
       x: {
         type: 'linear',
         title: {
-          display: true,
+          display: false,
           text: 'Distance (m)',
           color: theme.palette.chart?.text || theme.palette.text.primary
         },

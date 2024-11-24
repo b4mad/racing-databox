@@ -25,7 +25,7 @@ interface LineGraphProps extends BaseGraphProps {
 const GRAPH_CONFIGS = {
   speed: {
     dataKeys: [{ key: "speed" as keyof TelemetryPoint, name: "Speed", color: "#2196f3" }],
-    unit: " km/h"
+    unit: "Speed km/h"
   },
   pedals: {
     dataKeys: [
@@ -37,16 +37,16 @@ const GRAPH_CONFIGS = {
   },
   gear: {
     dataKeys: [{ key: "gear" as keyof TelemetryPoint, name: "Gear", color: "#9c27b0" }],
-    unit: "",
+    unit: "Gear",
     stepLine: true
   },
   delta: {
     dataKeys: [{ key: "delta" as keyof TelemetryPoint, name: "Delta Time", color: "#ff4081" }],
-    unit: " s"
+    unit: "Delta s"
   },
   lapTime: {
     dataKeys: [{ key: "lapTime" as keyof TelemetryPoint, name: "Lap Time", color: "#00bcd4" }],
-    unit: " s"
+    unit: "Time s"
   }
 };
 
