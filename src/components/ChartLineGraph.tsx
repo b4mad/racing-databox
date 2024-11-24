@@ -35,6 +35,7 @@ import { TelemetryPoint, TelemetryCacheEntry } from '../services/types';
 import { ZoomState } from './types';
 
 // Vertical line plugin
+// https://stackoverflow.com/questions/70112637/draw-a-horizontal-and-vertical-line-on-mouse-hover-in-chart-js
 const verticalLinePlugin: Plugin = {
   id: 'verticalLine',
   defaults: {
