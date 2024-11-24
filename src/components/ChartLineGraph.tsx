@@ -9,6 +9,14 @@ declare module 'chart.js' {
       draw: boolean;
     };
   }
+
+  interface PluginOptionsByType<TType> {
+    verticalLine?: {
+      width?: number;
+      color?: string;
+      dash?: number[];
+    };
+  }
 }
 import {
   Chart as ChartJS,
@@ -43,8 +51,7 @@ const verticalLinePlugin: Plugin = {
   afterEvent: (chart, args) => {
     const { chartArea, verticalLine } = chart;
     const { event } = args;
-
-    if (!chartArea || !event || !event.x || event.x < chartArea.left || event.x > chartArea.right) {
+    if (!chart.config.options?.plugins?.verticalLine || !chartArea || !event || !event.x || event.x < chartArea.left || event.x > chartArea.right) {
       verticalLine.draw = false;
     } else {
       verticalLine.x = event.x;
@@ -56,7 +63,7 @@ const verticalLinePlugin: Plugin = {
     const { ctx, chartArea: { top, bottom }, verticalLine } = chart;
     const { x, draw } = verticalLine;
 
-    if (!draw) return;
+    if (!draw || !opts) return;
 
     ctx.save();
     ctx.beginPath();
