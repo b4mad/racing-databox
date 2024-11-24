@@ -144,6 +144,7 @@ export function AnalysisLayout() {
                 <TrackMapVisualization
                   lapsData={lapsData}
                   zoomState={zoomState}
+                  onZoomChange={setZoomRange}
                 />
               </Box>
             )}

@@ -19,7 +19,11 @@ export function TrackMapVisualization({ lapsData, zoomState, onZoomChange }: Tra
 
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
-      <MapLine lapsData={lapsData} zoomState={zoomState} onZoomChange={onZoomChange} />
+      <MapLine
+        lapsData={lapsData}
+        zoomState={zoomState}
+        onZoomChange={onZoomChange}
+      />
     </Box>
   );
 }
