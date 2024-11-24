@@ -34,6 +34,29 @@ interface MapLineProps {
 }
 
 export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
+  const handleViewChange = (context: any) => {
+    if (onZoomChange) {
+      // Find visible points based on current x/y view bounds
+      const {min: xMin, max: xMax} = context.chart.scales.x;
+      const {min: yMin, max: yMax} = context.chart.scales.y;
+
+      const visiblePoints = Object.values(lapsData).flatMap(lap =>
+        lap.points.filter(point =>
+          point.position &&
+          point.position.x >= xMin &&
+          point.position.x <= xMax &&
+          point.position.y >= yMin &&
+          point.position.y <= yMax
+        )
+      );
+
+      if (visiblePoints.length > 0) {
+        const minDistance = Math.min(...visiblePoints.map(p => p.distance));
+        const maxDistance = Math.max(...visiblePoints.map(p => p.distance));
+        onZoomChange(minDistance, maxDistance);
+      }
+    }
+  };
   const theme = useTheme();
   // Calculate visible map area based on zoomed data points
   const mapBounds = useMemo(() => {
@@ -94,7 +117,7 @@ export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
       x: {
         type: 'linear' as const,
         title: {
-          display: true,
+          display: false,
           text: 'X Position (m)',
           color: theme.palette.chart?.text
         },
@@ -110,7 +133,7 @@ export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
       y: {
         type: 'linear' as const,
         title: {
-          display: true,
+          display: false,
           text: 'Y Position (m)',
           color: theme.palette.chart?.text
         },
@@ -144,7 +167,7 @@ export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
         intersect: false
       },
       legend: {
-        display: true
+        display: false
       },
       zoom: {
         zoom: {
@@ -158,57 +181,13 @@ export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
             enabled: true,
           },
           mode: 'xy',
-          onZoomComplete: (context: any) => {
-            if (onZoomChange) {
-              // Find visible points based on current x/y view bounds
-              const {min: xMin, max: xMax} = context.chart.scales.x;
-              const {min: yMin, max: yMax} = context.chart.scales.y;
-
-              const visiblePoints = Object.values(lapsData).flatMap(lap =>
-                lap.points.filter(point =>
-                  point.position &&
-                  point.position.x >= xMin &&
-                  point.position.x <= xMax &&
-                  point.position.y >= yMin &&
-                  point.position.y <= yMax
-                )
-              );
-
-              if (visiblePoints.length > 0) {
-                const minDistance = Math.min(...visiblePoints.map(p => p.distance));
-                const maxDistance = Math.max(...visiblePoints.map(p => p.distance));
-                onZoomChange(minDistance, maxDistance);
-              }
-            }
-          }
+          onZoomComplete: handleViewChange,
         },
         pan: {
           enabled: true,
           mode: 'xy',
           modifierKey: 'shift',
-          onPanComplete: (context: any) => {
-            if (onZoomChange) {
-              // Find visible points based on current x/y view bounds
-              const {min: xMin, max: xMax} = context.chart.scales.x;
-              const {min: yMin, max: yMax} = context.chart.scales.y;
-
-              const visiblePoints = Object.values(lapsData).flatMap(lap =>
-                lap.points.filter(point =>
-                  point.position &&
-                  point.position.x >= xMin &&
-                  point.position.x <= xMax &&
-                  point.position.y >= yMin &&
-                  point.position.y <= yMax
-                )
-              );
-
-              if (visiblePoints.length > 0) {
-                const minDistance = Math.min(...visiblePoints.map(p => p.distance));
-                const maxDistance = Math.max(...visiblePoints.map(p => p.distance));
-                onZoomChange(minDistance, maxDistance);
-              }
-            }
-          }
+          onPanComplete: handleViewChange
         },
       }
     }
