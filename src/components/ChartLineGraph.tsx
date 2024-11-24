@@ -116,6 +116,9 @@ export function ChartLineGraph({
           pinch: {
             enabled: true,
           },
+          drag: {
+            enabled: true,
+          },
           mode: 'x',
           onZoomComplete: (context: any) => {
             if (onZoomChange) {
@@ -127,6 +130,7 @@ export function ChartLineGraph({
         pan: {
           enabled: true,
           mode: 'x',
+          modifierKey: 'shift', // Require 'Shift' key for drag-to-zoom
           onPanComplete: (context: any) => {
             if (onZoomChange) {
               const {min, max} = context.chart.scales.x;
