@@ -1,5 +1,15 @@
 import { Line } from 'react-chartjs-2';
 import { useTheme } from '@mui/material/styles';
+
+// Extend Chart.js types
+declare module 'chart.js' {
+  interface Chart {
+    verticalLine: {
+      x: number;
+      draw: boolean;
+    };
+  }
+}
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,11 +19,56 @@ import {
   Title,
   Tooltip,
   Legend,
-  ChartOptions
+  ChartOptions,
+  Plugin
 } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import { TelemetryPoint, TelemetryCacheEntry } from '../services/types';
 import { ZoomState } from './types';
+
+// Vertical line plugin
+const verticalLinePlugin: Plugin = {
+  id: 'verticalLine',
+  defaults: {
+    width: 1,
+    color: '#FF4949',
+    dash: [3, 3],
+  },
+  afterInit: (chart) => {
+    chart.verticalLine = {
+      x: 0,
+      draw: false
+    };
+  },
+  afterEvent: (chart, args) => {
+    const { chartArea, verticalLine } = chart;
+    const { event } = args;
+
+    if (!chartArea || !event || !event.x || event.x < chartArea.left || event.x > chartArea.right) {
+      verticalLine.draw = false;
+    } else {
+      verticalLine.x = event.x;
+      verticalLine.draw = true;
+    }
+    chart.draw();
+  },
+  beforeDatasetsDraw: (chart, _args, opts) => {
+    const { ctx, chartArea: { top, bottom }, verticalLine } = chart;
+    const { x, draw } = verticalLine;
+
+    if (!draw) return;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.lineWidth = opts.width;
+    ctx.strokeStyle = opts.color;
+    ctx.setLineDash(opts.dash);
+    ctx.moveTo(x, bottom);
+    ctx.lineTo(x, top);
+    ctx.stroke();
+    ctx.restore();
+  }
+};
 
 // Register Chart.js components
 ChartJS.register(
@@ -24,7 +79,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  zoomPlugin
+  zoomPlugin,
+  verticalLinePlugin
 );
 
 interface DataKeyConfig {
@@ -72,7 +128,7 @@ export function ChartLineGraph({
     )
   };
 
-  const options: ChartOptions<'line'> = {
+  const options: ChartOptions<'line'> & {plugins: {verticalLine: any}} = {
     responsive: true,
     maintainAspectRatio: false,
     animation: false,
@@ -159,6 +215,11 @@ export function ChartLineGraph({
       },
       legend: {
         display: false
+      },
+      verticalLine: {
+        color: theme.palette.chart?.grid || theme.palette.divider,
+        width: 1,
+        dash: [3, 3]
       }
     }
   };
