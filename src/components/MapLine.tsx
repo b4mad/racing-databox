@@ -11,8 +11,10 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ChartOptions
 } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
 ChartJS.register(
   CategoryScale,
@@ -21,15 +23,17 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  zoomPlugin
 );
 
 interface MapLineProps {
   lapsData: { [lapNumber: number]: TelemetryCacheEntry };
   zoomState: ZoomState;
+  onZoomChange?: (start: number, end: number) => void;
 }
 
-export function MapLine({ lapsData, zoomState }: MapLineProps) {
+export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
   const theme = useTheme();
   // Calculate visible map area based on zoomed data points
   const mapBounds = useMemo(() => {
@@ -83,7 +87,7 @@ export function MapLine({ lapsData, zoomState }: MapLineProps) {
     }))
   };
 
-  const options = {
+  const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
@@ -141,6 +145,37 @@ export function MapLine({ lapsData, zoomState }: MapLineProps) {
       },
       legend: {
         display: true
+      },
+      zoom: {
+        zoom: {
+          wheel: {
+            enabled: false,
+          },
+          pinch: {
+            enabled: true,
+          },
+          drag: {
+            enabled: true,
+          },
+          mode: 'xy',
+          onZoomComplete: (context: any) => {
+            if (onZoomChange) {
+              const {min, max} = context.chart.scales.x;
+              onZoomChange(min, max);
+            }
+          }
+        },
+        pan: {
+          enabled: true,
+          mode: 'xy',
+          modifierKey: 'shift',
+          onPanComplete: (context: any) => {
+            if (onZoomChange) {
+              const {min, max} = context.chart.scales.x;
+              onZoomChange(min, max);
+            }
+          }
+        },
       }
     }
   };

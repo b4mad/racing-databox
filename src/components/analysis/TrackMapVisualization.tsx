@@ -6,9 +6,10 @@ import { ZoomState } from '../types';
 interface TrackMapVisualizationProps {
   lapsData: { [lapNumber: number]: TelemetryCacheEntry };
   zoomState: ZoomState;
+  onZoomChange?: (start: number, end: number) => void;
 }
 
-export function TrackMapVisualization({ lapsData, zoomState }: TrackMapVisualizationProps) {
+export function TrackMapVisualization({ lapsData, zoomState, onZoomChange }: TrackMapVisualizationProps) {
   const firstLapNumber = Object.keys(lapsData)[0];
   const mapDataAvailable = firstLapNumber ? lapsData[parseInt(firstLapNumber)].mapDataAvailable : false;
 
@@ -18,7 +19,7 @@ export function TrackMapVisualization({ lapsData, zoomState }: TrackMapVisualiza
 
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
-      <MapLine lapsData={lapsData} zoomState={zoomState} />
+      <MapLine lapsData={lapsData} zoomState={zoomState} onZoomChange={onZoomChange} />
     </Box>
   );
 }
