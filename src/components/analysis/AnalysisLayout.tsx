@@ -10,7 +10,6 @@ import { AnalysisToolbar } from './AnalysisToolbar';
 import { LapSelectionPanel } from './LapSelectionPanel';
 import { GapsAnalysisTable } from './GapsAnalysisTable';
 import { TrackMapVisualization } from './TrackMapVisualization';
-import { DeltaTimeGraph } from './DeltaTimeGraph';
 import { SectorVisualization } from './SectorVisualization';
 import { TelemetryGraphs } from './TelemetryGraphs';
 
@@ -133,16 +132,12 @@ export function AnalysisLayout() {
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden',
+          overflow: 'auto',
           ml: 0
         }}>
-          {/* Delta Time Graph at Top */}
-          <Box sx={{ height: '200px', p: 1, borderBottom: 1, borderColor: 'divider' }}>
-            <DeltaTimeGraph />
-          </Box>
 
           {/* Lower Content Area */}
-          <Box sx={{ flex: 1, display: 'flex' }}>
+          <Box sx={{ flex: 1, display: 'flex', minHeight: 0 }}>
             {/* Track Map */}
             {mapDataAvailable && (
               <Box sx={{ flex: 1, p: 1 }}>
@@ -157,11 +152,11 @@ export function AnalysisLayout() {
             <Box sx={{
               flex: 1,
               p: 1,
+              display: 'flex',
               ...(mapDataAvailable && {
                 width: '400px',
                 borderLeft: 1,
-                borderColor: 'divider',
-                overflow: 'auto'
+                borderColor: 'divider'
               })
             }}>
               <TelemetryGraphs

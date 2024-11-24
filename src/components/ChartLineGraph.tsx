@@ -111,7 +111,7 @@ export function ChartLineGraph({
       zoom: {
         zoom: {
           wheel: {
-            enabled: true,
+            enabled: false,
           },
           pinch: {
             enabled: true,
@@ -157,7 +157,7 @@ export function ChartLineGraph({
   };
 
   return (
-    <div className="graph-container" style={{ width: '100%', height: '200px', position: 'relative' }}>
+    <div className="graph-container" style={{ width: '100%', height: '100%', position: 'relative' }}>
       <Line data={chartData} options={options} />
     </div>
   );
