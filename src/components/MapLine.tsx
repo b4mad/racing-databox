@@ -125,7 +125,10 @@ export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
           color: theme.palette.chart?.grid
         },
         ticks: {
-          color: theme.palette.chart?.text
+          color: theme.palette.chart?.text,
+          font: {
+            size: 11
+          }
         },
         min: mapBounds.minX,
         max: mapBounds.maxX

@@ -88,7 +88,10 @@ export function ChartLineGraph({
           color: theme.palette.chart?.grid || theme.palette.divider
         },
         ticks: {
-          color: theme.palette.chart?.text
+          color: theme.palette.chart?.text,
+          font: {
+            size: 11
+          }
         },
         min: typeof zoomState.left === 'number' ? zoomState.left : parseFloat(zoomState.left || '0'),
         max: typeof zoomState.right === 'number' ? zoomState.right : parseFloat(zoomState.right || '0')
