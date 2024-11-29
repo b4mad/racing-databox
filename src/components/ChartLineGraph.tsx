@@ -234,37 +234,69 @@ export function ChartLineGraph({
         dash: [3, 3]
       },
       annotation: {
-        annotations: analysisData?.landmarks?.segments.map((segment, _index) => {
-          // Calculate the current zoom range
-          const xScale = (zoomState.right !== undefined && zoomState.right !== null &&
-                         zoomState.left !== undefined && zoomState.left !== null) ?
-            Math.abs(zoomState.right - zoomState.left) :
-            0;
+        annotations: {
+          ...Object.fromEntries(
+            (analysisData?.landmarks?.segments || []).map((segment, index) => {
+              const xScale = (zoomState.right !== undefined && zoomState.right !== null &&
+                            zoomState.left !== undefined && zoomState.left !== null) ?
+                Math.abs(zoomState.right - zoomState.left) :
+                0;
 
-          // Only show labels when zoomed in enough (e.g., less than 2000m visible)
-          const showLabel = xScale < 750;
+              const showLabel = xScale < 750;
 
-          return {
-            type: 'line',
-            scaleID: 'x',
-            borderColor: theme.palette.chart?.segment || theme.palette.primary.main,
-            borderWidth: 2,
-            borderDash: [5, 3],
-            value: segment.start,
-            label: {
-              display: showLabel,
-              content: segment.name,
-              position: 'start',
-              backgroundColor: theme.palette.chart?.labelBackground,
-              color: theme.palette.chart?.labelText,
-              font: {
-                size: 9
-              },
-              rotation: 0,
-              yAdjust: 0
-            }
-          };
-        }) || []
+              return [`segment${index}`, {
+                type: 'line' as const,
+                scaleID: 'x',
+                borderColor: theme.palette.chart?.segment || theme.palette.primary.main,
+                borderWidth: 2,
+                borderDash: [5, 3],
+                value: segment.start,
+                label: {
+                  display: showLabel,
+                  content: segment.name,
+                  position: 'start',
+                  backgroundColor: theme.palette.chart?.labelBackground,
+                  color: theme.palette.chart?.labelText,
+                  font: {
+                    size: 9
+                  },
+                  rotation: 0,
+                  yAdjust: 0
+                }
+              }];
+            })
+          ),
+          ...Object.fromEntries(
+            (analysisData?.landmarks?.turns || []).map((turn, index) => {
+              const xScale = (zoomState.right !== undefined && zoomState.right !== null &&
+                            zoomState.left !== undefined && zoomState.left !== null) ?
+                Math.abs(zoomState.right - zoomState.left) :
+                0;
+
+              const showLabel = xScale < 750;
+
+              return [`turn${index}`, {
+                type: 'label' as const,
+                borderColor: theme.palette.chart?.segment || theme.palette.primary.main,
+                borderRadius: 4,
+                borderWidth: 1,
+                backgroundColor: theme.palette.chart?.labelBackground,
+                content: turn.name,
+                position: {
+                  x: 'center',
+                  y: 'end'
+                } as const,
+                xValue: turn.start,
+                yAdjust: -10,
+                display: showLabel,
+                font: {
+                  size: 9
+                },
+                color: theme.palette.chart?.labelText
+              }];
+            })
+          )
+        }
       }
     }
   };
