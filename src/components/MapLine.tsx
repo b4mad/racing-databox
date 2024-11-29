@@ -186,41 +186,76 @@ export function MapLine({ lapsData, zoomState, onZoomChange, analysisData }: Map
         display: false
       },
       annotation: {
-        annotations: (analysisData?.landmarks?.segments || []).reduce<any[]>((acc, segment) => {
-          // Find the closest points to segment start and end
-          const startPoint = Object.values(lapsData)[0]?.points.find(p =>
-            Math.abs(p.distance - segment.start) < 1 && p.position
-          )?.position;
-          const endPoint = Object.values(lapsData)[0]?.points.find(p =>
-            segment.end !== null && Math.abs(p.distance - segment.end) < 1 && p.position
-          )?.position;
+        annotations: [
+          // Segment markers
+          ...(analysisData?.landmarks?.segments || []).reduce<any[]>((acc, segment) => {
+            const startPoint = Object.values(lapsData)[0]?.points.find(p =>
+              Math.abs(p.distance - segment.start) < 1 && p.position
+            )?.position;
+            const endPoint = Object.values(lapsData)[0]?.points.find(p =>
+              segment.end !== null && Math.abs(p.distance - segment.end) < 1 && p.position
+            )?.position;
 
-          if (!startPoint || !endPoint) return acc;
+            if (!startPoint || !endPoint) return acc;
 
-          // Add point annotation for segment start
-          acc.push({
-            type: 'point' as const,
-            xValue: startPoint.x,
-            yValue: startPoint.y,
-            backgroundColor: theme.palette.chart?.segment || theme.palette.primary.main,
-            borderColor: theme.palette.chart?.segment || theme.palette.primary.main,
-            borderWidth: 2,
-            radius: 4,
-            pointStyle: 'circle',
-            label: {
-              display: true,
-              content: segment.name,
-              position: 'top',
+            acc.push({
+              type: 'point' as const,
+              xValue: startPoint.x,
+              yValue: startPoint.y,
+              backgroundColor: theme.palette.chart?.segment || theme.palette.primary.main,
+              borderColor: theme.palette.chart?.segment || theme.palette.primary.main,
+              borderWidth: 2,
+              radius: 4,
+              pointStyle: 'circle',
+              label: {
+                display: true,
+                content: segment.name,
+                position: 'top',
+                backgroundColor: theme.palette.chart?.labelBackground,
+                color: theme.palette.chart?.labelText,
+                font: {
+                  size: 9
+                },
+                yAdjust: -8
+              }
+            });
+            return acc;
+          }, []),
+          // Turn callouts
+          ...(analysisData?.landmarks?.turns || []).reduce<any[]>((acc, turn) => {
+            const turnPoint = Object.values(lapsData)[0]?.points.find(p =>
+              Math.abs(p.distance - turn.start) < 1 && p.position
+            )?.position;
+
+            if (!turnPoint) return acc;
+
+            acc.push({
+              type: 'label',
               backgroundColor: theme.palette.chart?.labelBackground,
               color: theme.palette.chart?.labelText,
-              font: {
-                size: 9
+              callout: {
+                display: true,
+                borderColor: theme.palette.chart?.segment || theme.palette.primary.main,
+                borderWidth: 2,
+                margin: 5
               },
-              yAdjust: -8
-            }
-          });
-          return acc;
-        }, [])
+              content: turn.name,
+              font: {
+                size: 12,
+                weight: 'bold'
+              },
+              position: {
+                x: 'center',
+                y: 'center'
+              },
+              xValue: turnPoint.x,
+              yValue: turnPoint.y,
+              xAdjust: 60,
+              yAdjust: -60
+            });
+            return acc;
+          }, [])
+        ]
       },
       zoom: {
         zoom: {
