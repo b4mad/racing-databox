@@ -14,7 +14,7 @@ import { SectorVisualization } from './SectorVisualization';
 import { TelemetryGraphs } from './TelemetryGraphs';
 
 export function AnalysisLayout() {
-  const { analysisData, lapsData, zoomState, setZoomRange, handleLapSelect } = useAnalysisContext();
+  const { analysisData, lapsData, handleLapSelect } = useAnalysisContext();
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [isLapsModalOpen, setIsLapsModalOpen] = useState(false);
   const mapDataAvailable = Object.keys(lapsData).length > 0 &&
@@ -146,11 +146,7 @@ export function AnalysisLayout() {
                 display: 'flex',
                 width: '50%',
                 }}>
-                <TrackMapVisualization
-                  lapsData={lapsData}
-                  zoomState={zoomState}
-                  onZoomChange={setZoomRange}
-                />
+                <TrackMapVisualization />
               </Box>
             )}
 
@@ -165,11 +161,7 @@ export function AnalysisLayout() {
                 borderColor: 'divider'
               })
             }}>
-              <TelemetryGraphs
-                lapsData={lapsData}
-                zoomState={zoomState}
-                setZoomRange={setZoomRange}
-              />
+              <TelemetryGraphs />
             </Box>
           </Box>
         </Box>
@@ -177,11 +169,7 @@ export function AnalysisLayout() {
 
       {/* Bottom Panel - Full Width */}
       <Box sx={{ height: '50px', borderTop: 1, borderColor: 'divider', p: 1 }}>
-        <SectorVisualization
-          currentLapData={Object.keys(lapsData).length > 0 ? lapsData[parseInt(Object.keys(lapsData)[0])].points : []}
-          setZoomRange={setZoomRange}
-          analysisData={analysisData}
-        />
+        <SectorVisualization />
       </Box>
     </Box>
   );

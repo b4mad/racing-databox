@@ -1,16 +1,10 @@
 import { Box } from '@mui/material';
 import { SpeedGraph, PedalsGraph, GearGraph, LapTimeGraph, DeltaGraph } from '../LineGraph';
-import { TelemetryCacheEntry } from '../../services/types';
-import { ZoomState } from '../types';
+import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { logger } from '../../utils/logger'
 
-interface TelemetryGraphsProps {
-  lapsData: { [lapNumber: number]: TelemetryCacheEntry };
-  zoomState: ZoomState;
-  setZoomRange: (startMeters: number, endMeters: number) => void;
-}
-
-export function TelemetryGraphs({ lapsData, zoomState, setZoomRange }: TelemetryGraphsProps) {
+export function TelemetryGraphs() {
+  const { lapsData, zoomState, setZoomRange } = useAnalysisContext();
   // log the number of graphs
   logger.analysis('TelemetryGraphs', lapsData);
   if (Object.keys(lapsData).length === 0) {

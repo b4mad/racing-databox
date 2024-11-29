@@ -87,7 +87,7 @@ export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
     const maxRange = Math.max(xRange, yRange);
     const xCenter = (maxX + minX) / 2;
     const yCenter = (maxY + minY) / 2;
-    
+
     // Add equal margins to both axes
     const margin = maxRange * 0.1; // 10% margin
     return {

@@ -1,13 +1,10 @@
 import { Box, Button, Stack } from '@mui/material';
-import { TelemetryPoint, AnalysisData } from '../../services/types';
+import { useAnalysisContext } from '../../contexts/AnalysisContext';
 
-interface SectorVisualizationProps {
-  currentLapData: TelemetryPoint[];
-  setZoomRange: (startMeters: number, endMeters: number) => void;
-  analysisData?: AnalysisData;
-}
-
-export function SectorVisualization({ currentLapData, setZoomRange, analysisData }: SectorVisualizationProps) {
+export function SectorVisualization() {
+  const { lapsData, setZoomRange, analysisData } = useAnalysisContext();
+  const firstLapNumber = Object.keys(lapsData)[0];
+  const currentLapData = firstLapNumber ? lapsData[parseInt(firstLapNumber)].points : [];
   const zoomOut = () => {
     if (currentLapData.length === 0) return;
     const maxDistance = currentLapData[currentLapData.length - 1].distance;

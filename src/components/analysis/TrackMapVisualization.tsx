@@ -1,15 +1,9 @@
 import { Box } from '@mui/material';
 import { MapLine } from '../MapLine';
-import { TelemetryCacheEntry } from '../../services/types';
-import { ZoomState } from '../types';
+import { useAnalysisContext } from '../../contexts/AnalysisContext';
 
-interface TrackMapVisualizationProps {
-  lapsData: { [lapNumber: number]: TelemetryCacheEntry };
-  zoomState: ZoomState;
-  onZoomChange?: (start: number, end: number) => void;
-}
-
-export function TrackMapVisualization({ lapsData, zoomState, onZoomChange }: TrackMapVisualizationProps) {
+export function TrackMapVisualization() {
+  const { lapsData, zoomState, setZoomRange } = useAnalysisContext();
   const firstLapNumber = Object.keys(lapsData)[0];
   const mapDataAvailable = firstLapNumber ? lapsData[parseInt(firstLapNumber)].mapDataAvailable : false;
 
@@ -22,7 +16,7 @@ export function TrackMapVisualization({ lapsData, zoomState, onZoomChange }: Tra
       <MapLine
         lapsData={lapsData}
         zoomState={zoomState}
-        onZoomChange={onZoomChange}
+        onZoomChange={setZoomRange}
       />
     </Box>
   );
