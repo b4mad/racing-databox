@@ -153,7 +153,10 @@ export function AnalysisLayout() {
                 display: 'flex',
                 width: '50%',
                 }}>
-                <TrackMapVisualization />
+                <TrackMapVisualization 
+                  showTurns={showTurns ?? true}
+                  showSegments={showSegments ?? true}
+                />
               </Box>
             )}
 

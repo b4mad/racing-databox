@@ -8,6 +8,12 @@ declare module '@mui/material/styles' {
       labelBackground: string;
       labelText: string;
       segment: string;
+      toggleButton: {
+        color: string;
+        selectedColor: string;
+        background: string;
+        hoverBackground: string;
+      };
     };
   }
   interface PaletteOptions {
@@ -17,6 +23,12 @@ declare module '@mui/material/styles' {
       labelBackground: string;
       labelText: string;
       segment: string;
+      toggleButton: {
+        color: string;
+        selectedColor: string;
+        background: string;
+        hoverBackground: string;
+      };
     };
   }
 }

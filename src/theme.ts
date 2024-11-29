@@ -3,7 +3,7 @@ import { createTheme, PaletteMode } from '@mui/material';
 export const getTheme = (mode: PaletteMode) => createTheme({
   palette: {
     mode,
-    ...(mode === 'light' 
+    ...(mode === 'light'
       ? {
           // Light mode colors
           primary: {
@@ -19,6 +19,12 @@ export const getTheme = (mode: PaletteMode) => createTheme({
             labelBackground: 'rgba(255, 255, 255, 0.9)',
             labelText: 'rgba(0, 0, 0, 0.87)',
             segment: '#2196f3',
+            toggleButton: {
+              color: '#000000',
+              selectedColor: '#1976d2',
+              background: 'rgba(0, 0, 0, 0.05)',
+              hoverBackground: 'rgba(0, 0, 0, 0.1)',
+            },
           },
         }
       : {
@@ -36,6 +42,12 @@ export const getTheme = (mode: PaletteMode) => createTheme({
             labelBackground: 'rgba(0, 0, 0, 0.8)',
             labelText: 'rgba(255, 255, 255, 0.87)',
             segment: '#1976d2',
+            toggleButton: {
+              color: '#ffffff',
+              selectedColor: '#90caf9',
+              background: 'rgba(0, 0, 0, 0.5)',
+              hoverBackground: 'rgba(0, 0, 0, 0.7)',
+            },
           },
         }),
   },

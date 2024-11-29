@@ -2,7 +2,12 @@ import { Box } from '@mui/material';
 import { MapLine } from '../MapLine';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 
-export function TrackMapVisualization() {
+interface TrackMapVisualizationProps {
+  showTurns: boolean;
+  showSegments: boolean;
+}
+
+export function TrackMapVisualization({ showTurns, showSegments }: TrackMapVisualizationProps) {
   const { analysisData, lapsData, zoomState, setZoomRange } = useAnalysisContext();
   const firstLapNumber = Object.keys(lapsData)[0];
   const mapDataAvailable = firstLapNumber ? lapsData[parseInt(firstLapNumber)].mapDataAvailable : false;
@@ -18,6 +23,8 @@ export function TrackMapVisualization() {
         zoomState={zoomState}
         onZoomChange={setZoomRange}
         analysisData={analysisData}
+        showTurns={showTurns}
+        showSegments={showSegments}
       />
     </Box>
   );

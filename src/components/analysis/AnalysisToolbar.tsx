@@ -62,13 +62,27 @@ export function AnalysisToolbar({
       <Stack direction="row" spacing={1} sx={{ ml: 2 }}>
         <ToggleButtonGroup
           size="small"
-          sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          sx={{ 
+            backgroundColor: 'chart.toggleButton.background',
+            '& .MuiToggleButton-root': {
+              color: 'chart.toggleButton.color',
+              '&:hover': {
+                backgroundColor: 'chart.toggleButton.hoverBackground',
+              },
+              '&.Mui-selected': {
+                color: 'chart.toggleButton.selectedColor',
+                backgroundColor: 'chart.toggleButton.background',
+                '&:hover': {
+                  backgroundColor: 'chart.toggleButton.hoverBackground',
+                },
+              },
+            },
+          }}
         >
           <ToggleButton
             value="turns"
             selected={showTurns}
             onChange={() => onToggleTurns(!showTurns)}
-            sx={{ color: 'white', '&.Mui-selected': { color: 'primary.main' } }}
           >
             Turns
           </ToggleButton>
@@ -76,7 +90,6 @@ export function AnalysisToolbar({
             value="segments"
             selected={showSegments}
             onChange={() => onToggleSegments(!showSegments)}
-            sx={{ color: 'white', '&.Mui-selected': { color: 'primary.main' } }}
           >
             Segments
           </ToggleButton>
