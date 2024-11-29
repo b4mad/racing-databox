@@ -4,3 +4,4 @@ export interface ZoomState {
   top: number;
   bottom: number;
 }
+export type AnnotationType = 'turns' | 'segments';

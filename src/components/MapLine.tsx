@@ -34,11 +34,10 @@ interface MapLineProps {
   zoomState: ZoomState;
   onZoomChange?: (start: number, end: number) => void;
   analysisData?: AnalysisData;
-  showTurns?: boolean;
-  showSegments?: boolean;
+  visibleAnnotations: (null|string)[];
 }
 
-export function MapLine({ lapsData, zoomState, onZoomChange, analysisData, showTurns = true, showSegments = true }: MapLineProps) {
+export function MapLine({ lapsData, zoomState, onZoomChange, analysisData, visibleAnnotations }: MapLineProps) {
   const handleViewChange = (context: any) => {
     if (onZoomChange) {
       // Find visible points based on current x/y view bounds
@@ -189,8 +188,8 @@ export function MapLine({ lapsData, zoomState, onZoomChange, analysisData, showT
       },
       annotation: {
         annotations: [
-          // Segment markers (only if showSegments is true)
-          ...((showSegments ? analysisData?.landmarks?.segments : []) || []).reduce<any[]>((acc, segment) => {
+          // Segment markers
+          ...((visibleAnnotations.includes('segments') ? analysisData?.landmarks?.segments : []) || []).reduce<any[]>((acc, segment) => {
             const startPoint = Object.values(lapsData)[0]?.points.find(p =>
               Math.abs(p.distance - segment.start) < 1 && p.position
             )?.position;
@@ -223,8 +222,8 @@ export function MapLine({ lapsData, zoomState, onZoomChange, analysisData, showT
             });
             return acc;
           }, []),
-          // Turn callouts (only if showTurns is true)
-          ...((showTurns ? analysisData?.landmarks?.turns : []) || []).reduce<any[]>((acc, turn) => {
+          // Turn callouts
+          ...((visibleAnnotations.includes('turns') ? analysisData?.landmarks?.turns : []) || []).reduce<any[]>((acc, turn) => {
             const turnPoint = Object.values(lapsData)[0]?.points.find(p =>
               Math.abs(p.distance - turn.start) < 1 && p.position
             )?.position;

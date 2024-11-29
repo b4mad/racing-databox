@@ -4,11 +4,10 @@ import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { logger } from '../../utils/logger'
 
 interface TelemetryGraphsProps {
-  showTurns: boolean;
-  showSegments: boolean;
+  visibleAnnotations: (string | null)[];
 }
 
-export function TelemetryGraphs({ showTurns, showSegments }: TelemetryGraphsProps) {
+export function TelemetryGraphs({ visibleAnnotations }: TelemetryGraphsProps) {
   const { analysisData, lapsData, zoomState, setZoomRange } = useAnalysisContext();
   // log the number of graphs
   logger.analysis('TelemetryGraphs', lapsData);
@@ -25,8 +24,7 @@ export function TelemetryGraphs({ showTurns, showSegments }: TelemetryGraphsProp
           onZoomChange={setZoomRange}
           showBrush={false}
           analysisData={analysisData}
-          showTurns={showTurns}
-          showSegments={showSegments}
+          visibleAnnotations={visibleAnnotations}
           />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
@@ -36,8 +34,7 @@ export function TelemetryGraphs({ showTurns, showSegments }: TelemetryGraphsProp
           onZoomChange={setZoomRange}
           showBrush={false}
           analysisData={analysisData}
-          showTurns={showTurns}
-          showSegments={showSegments}
+          visibleAnnotations={visibleAnnotations}
           />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
@@ -47,8 +44,7 @@ export function TelemetryGraphs({ showTurns, showSegments }: TelemetryGraphsProp
           onZoomChange={setZoomRange}
           showBrush={false}
           analysisData={analysisData}
-          showTurns={showTurns}
-          showSegments={showSegments}
+          visibleAnnotations={visibleAnnotations}
           />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
@@ -58,8 +54,7 @@ export function TelemetryGraphs({ showTurns, showSegments }: TelemetryGraphsProp
           onZoomChange={setZoomRange}
           showBrush={false}
           analysisData={analysisData}
-          showTurns={showTurns}
-          showSegments={showSegments}
+          visibleAnnotations={visibleAnnotations}
           />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
@@ -69,8 +64,7 @@ export function TelemetryGraphs({ showTurns, showSegments }: TelemetryGraphsProp
           onZoomChange={setZoomRange}
           showBrush={true}  // Only show brush on bottom graph
           analysisData={analysisData}
-          showTurns={showTurns}
-          showSegments={showSegments}
+          visibleAnnotations={visibleAnnotations}
         />
       </Box>
     </Box>

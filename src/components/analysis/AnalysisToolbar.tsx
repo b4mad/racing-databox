@@ -1,4 +1,5 @@
 import { Box, IconButton, Typography, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { AnnotationType } from '../../components/types';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '../ThemeToggle';
@@ -6,18 +7,14 @@ import { AnalysisData } from '../../services/types';
 
 interface AnalysisToolbarProps {
   analysisData?: AnalysisData;
-  showTurns: boolean;
-  showSegments: boolean;
-  onToggleTurns: (show: boolean) => void;
-  onToggleSegments: (show: boolean) => void;
+  visibleAnnotations: (string | null)[];
+  onToggleAnnotation: (annotation: AnnotationType) => void;
 }
 
 export function AnalysisToolbar({
   analysisData,
-  showTurns,
-  showSegments,
-  onToggleTurns,
-  onToggleSegments
+  visibleAnnotations,
+  onToggleAnnotation
 }: AnalysisToolbarProps) {
   const navigate = useNavigate();
   return (
@@ -62,7 +59,7 @@ export function AnalysisToolbar({
       <Stack direction="row" spacing={1} sx={{ ml: 2 }}>
         <ToggleButtonGroup
           size="small"
-          sx={{ 
+          sx={{
             backgroundColor: 'chart.toggleButton.background',
             '& .MuiToggleButton-root': {
               color: 'chart.toggleButton.color',
@@ -81,15 +78,15 @@ export function AnalysisToolbar({
         >
           <ToggleButton
             value="turns"
-            selected={showTurns}
-            onChange={() => onToggleTurns(!showTurns)}
+            selected={visibleAnnotations.includes('turns')}
+            onChange={() => onToggleAnnotation('turns')}
           >
             Turns
           </ToggleButton>
           <ToggleButton
             value="segments"
-            selected={showSegments}
-            onChange={() => onToggleSegments(!showSegments)}
+            selected={visibleAnnotations.includes('segments')}
+            onChange={() => onToggleAnnotation('segments')}
           >
             Segments
           </ToggleButton>

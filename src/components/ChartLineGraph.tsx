@@ -108,8 +108,7 @@ interface ChartLineGraphProps {
   zoomState: ZoomState;
   onZoomChange?: (start: number, end: number) => void;
   analysisData?: AnalysisData;
-  showTurns?: boolean;
-  showSegments?: boolean;
+  visibleAnnotations: (null|string)[];
 }
 
 export function ChartLineGraph({
@@ -121,8 +120,7 @@ export function ChartLineGraph({
   zoomState,
   onZoomChange,
   analysisData,
-  showTurns = true,
-  showSegments = true
+  visibleAnnotations
 }: ChartLineGraphProps) {
   const theme = useTheme();
 
@@ -240,7 +238,7 @@ export function ChartLineGraph({
       annotation: {
         annotations: {
           ...Object.fromEntries(
-            (showSegments ? (analysisData?.landmarks?.segments || []) : []).map((segment, index) => {
+            (visibleAnnotations.includes('segments') ? (analysisData?.landmarks?.segments || []) : []).map((segment, index) => {
               const xScale = (zoomState.right !== undefined && zoomState.right !== null &&
                             zoomState.left !== undefined && zoomState.left !== null) ?
                 Math.abs(zoomState.right - zoomState.left) :
@@ -271,7 +269,7 @@ export function ChartLineGraph({
             })
           ),
           ...Object.fromEntries(
-            (showTurns ? (analysisData?.landmarks?.turns || []) : []).map((turn, index) => {
+            (visibleAnnotations.includes('turns') ? (analysisData?.landmarks?.turns || []) : []).map((turn, index) => {
               const xScale = (zoomState.right !== undefined && zoomState.right !== null &&
                             zoomState.left !== undefined && zoomState.left !== null) ?
                 Math.abs(zoomState.right - zoomState.left) :

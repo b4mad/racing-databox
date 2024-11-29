@@ -3,11 +3,10 @@ import { MapLine } from '../MapLine';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 
 interface TrackMapVisualizationProps {
-  showTurns: boolean;
-  showSegments: boolean;
+  visibleAnnotations: (string | null)[];
 }
 
-export function TrackMapVisualization({ showTurns, showSegments }: TrackMapVisualizationProps) {
+export function TrackMapVisualization({ visibleAnnotations }: TrackMapVisualizationProps) {
   const { analysisData, lapsData, zoomState, setZoomRange } = useAnalysisContext();
   const firstLapNumber = Object.keys(lapsData)[0];
   const mapDataAvailable = firstLapNumber ? lapsData[parseInt(firstLapNumber)].mapDataAvailable : false;
@@ -23,8 +22,7 @@ export function TrackMapVisualization({ showTurns, showSegments }: TrackMapVisua
         zoomState={zoomState}
         onZoomChange={setZoomRange}
         analysisData={analysisData}
-        showTurns={showTurns}
-        showSegments={showSegments}
+        visibleAnnotations={visibleAnnotations}
       />
     </Box>
   );
