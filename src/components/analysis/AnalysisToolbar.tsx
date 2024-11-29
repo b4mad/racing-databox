@@ -1,4 +1,4 @@
-import { Box, IconButton, Typography, Stack } from '@mui/material';
+import { Box, IconButton, Typography, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '../ThemeToggle';
@@ -6,9 +6,19 @@ import { AnalysisData } from '../../services/types';
 
 interface AnalysisToolbarProps {
   analysisData?: AnalysisData;
+  showTurns: boolean;
+  showSegments: boolean;
+  onToggleTurns: (show: boolean) => void;
+  onToggleSegments: (show: boolean) => void;
 }
 
-export function AnalysisToolbar({ analysisData }: AnalysisToolbarProps) {
+export function AnalysisToolbar({
+  analysisData,
+  showTurns,
+  showSegments,
+  onToggleTurns,
+  onToggleSegments
+}: AnalysisToolbarProps) {
   const navigate = useNavigate();
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1, justifyContent: 'space-between' }}>
@@ -49,6 +59,29 @@ export function AnalysisToolbar({ analysisData }: AnalysisToolbarProps) {
           </Typography>
         </Stack>
       )}
+      <Stack direction="row" spacing={1} sx={{ ml: 2 }}>
+        <ToggleButtonGroup
+          size="small"
+          sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+        >
+          <ToggleButton
+            value="turns"
+            selected={showTurns}
+            onChange={() => onToggleTurns(!showTurns)}
+            sx={{ color: 'white', '&.Mui-selected': { color: 'primary.main' } }}
+          >
+            Turns
+          </ToggleButton>
+          <ToggleButton
+            value="segments"
+            selected={showSegments}
+            onChange={() => onToggleSegments(!showSegments)}
+            sx={{ color: 'white', '&.Mui-selected': { color: 'primary.main' } }}
+          >
+            Segments
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Stack>
       <ThemeToggle />
     </Box>
   );

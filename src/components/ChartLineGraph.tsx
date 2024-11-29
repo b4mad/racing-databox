@@ -108,6 +108,8 @@ interface ChartLineGraphProps {
   zoomState: ZoomState;
   onZoomChange?: (start: number, end: number) => void;
   analysisData?: AnalysisData;
+  showTurns?: boolean;
+  showSegments?: boolean;
 }
 
 export function ChartLineGraph({
@@ -118,7 +120,9 @@ export function ChartLineGraph({
   title,
   zoomState,
   onZoomChange,
-  analysisData
+  analysisData,
+  showTurns = true,
+  showSegments = true
 }: ChartLineGraphProps) {
   const theme = useTheme();
 
@@ -236,7 +240,7 @@ export function ChartLineGraph({
       annotation: {
         annotations: {
           ...Object.fromEntries(
-            (analysisData?.landmarks?.segments || []).map((segment, index) => {
+            (showSegments ? (analysisData?.landmarks?.segments || []) : []).map((segment, index) => {
               const xScale = (zoomState.right !== undefined && zoomState.right !== null &&
                             zoomState.left !== undefined && zoomState.left !== null) ?
                 Math.abs(zoomState.right - zoomState.left) :
@@ -267,7 +271,7 @@ export function ChartLineGraph({
             })
           ),
           ...Object.fromEntries(
-            (analysisData?.landmarks?.turns || []).map((turn, index) => {
+            (showTurns ? (analysisData?.landmarks?.turns || []) : []).map((turn, index) => {
               const xScale = (zoomState.right !== undefined && zoomState.right !== null &&
                             zoomState.left !== undefined && zoomState.left !== null) ?
                 Math.abs(zoomState.right - zoomState.left) :

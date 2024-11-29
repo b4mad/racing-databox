@@ -3,7 +3,12 @@ import { SpeedGraph, PedalsGraph, GearGraph, LapTimeGraph, DeltaGraph } from '..
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { logger } from '../../utils/logger'
 
-export function TelemetryGraphs() {
+interface TelemetryGraphsProps {
+  showTurns: boolean;
+  showSegments: boolean;
+}
+
+export function TelemetryGraphs({ showTurns, showSegments }: TelemetryGraphsProps) {
   const { analysisData, lapsData, zoomState, setZoomRange } = useAnalysisContext();
   // log the number of graphs
   logger.analysis('TelemetryGraphs', lapsData);
@@ -20,6 +25,8 @@ export function TelemetryGraphs() {
           onZoomChange={setZoomRange}
           showBrush={false}
           analysisData={analysisData}
+          showTurns={showTurns}
+          showSegments={showSegments}
           />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
@@ -29,6 +36,8 @@ export function TelemetryGraphs() {
           onZoomChange={setZoomRange}
           showBrush={false}
           analysisData={analysisData}
+          showTurns={showTurns}
+          showSegments={showSegments}
           />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
@@ -38,6 +47,8 @@ export function TelemetryGraphs() {
           onZoomChange={setZoomRange}
           showBrush={false}
           analysisData={analysisData}
+          showTurns={showTurns}
+          showSegments={showSegments}
           />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
@@ -47,6 +58,8 @@ export function TelemetryGraphs() {
           onZoomChange={setZoomRange}
           showBrush={false}
           analysisData={analysisData}
+          showTurns={showTurns}
+          showSegments={showSegments}
           />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
@@ -56,6 +69,8 @@ export function TelemetryGraphs() {
           onZoomChange={setZoomRange}
           showBrush={true}  // Only show brush on bottom graph
           analysisData={analysisData}
+          showTurns={showTurns}
+          showSegments={showSegments}
         />
       </Box>
     </Box>

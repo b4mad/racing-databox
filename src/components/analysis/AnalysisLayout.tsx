@@ -1,5 +1,6 @@
 import { Box, Drawer, IconButton, Typography } from '@mui/material';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
+import { useQueryParam, BooleanParam } from 'use-query-params';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -17,6 +18,8 @@ export function AnalysisLayout() {
   const { analysisData, lapsData, handleLapSelect } = useAnalysisContext();
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [isLapsModalOpen, setIsLapsModalOpen] = useState(false);
+  const [showTurns, setShowTurns] = useQueryParam('showTurns', BooleanParam);
+  const [showSegments, setShowSegments] = useQueryParam('showSegments', BooleanParam);
   const mapDataAvailable = Object.keys(lapsData).length > 0 &&
     lapsData[parseInt(Object.keys(lapsData)[0])].mapDataAvailable;
 
@@ -26,6 +29,10 @@ export function AnalysisLayout() {
       <Box sx={{ p: 1, borderBottom: 1, borderColor: 'divider' }}>
         <AnalysisToolbar
           analysisData={analysisData}
+          showTurns={showTurns ?? true}
+          showSegments={showSegments ?? true}
+          onToggleTurns={(show) => setShowTurns(show)}
+          onToggleSegments={(show) => setShowSegments(show)}
         />
       </Box>
       {analysisData && (
@@ -161,7 +168,10 @@ export function AnalysisLayout() {
                 borderColor: 'divider'
               })
             }}>
-              <TelemetryGraphs />
+              <TelemetryGraphs 
+                showTurns={showTurns ?? true}
+                showSegments={showSegments ?? true}
+              />
             </Box>
           </Box>
         </Box>

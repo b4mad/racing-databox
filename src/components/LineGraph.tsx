@@ -14,6 +14,8 @@ interface BaseGraphProps {
   showBrush?: boolean;
   onZoomChange?: (startMeters: number, endMeters: number) => void;
   analysisData?: AnalysisData;
+  showTurns?: boolean;
+  showSegments?: boolean;
 }
 
 interface LineGraphProps extends BaseGraphProps {
@@ -71,7 +73,7 @@ export function LapTimeGraph(props: BaseGraphProps) {
   return <LineGraph {...props} {...GRAPH_CONFIGS.lapTime} />;
 }
 
-export function LineGraph({ lapsData, dataKeys, unit = '', stepLine = false, title, zoomState, onZoomChange, analysisData }: LineGraphProps) {
+export function LineGraph({ lapsData, dataKeys, unit = '', stepLine = false, title, zoomState, onZoomChange, analysisData, showTurns, showSegments }: LineGraphProps) {
   return (
     <ChartLineGraph
       lapsData={lapsData}
@@ -82,6 +84,8 @@ export function LineGraph({ lapsData, dataKeys, unit = '', stepLine = false, tit
       zoomState={zoomState}
       onZoomChange={onZoomChange}
       analysisData={analysisData}
+      showTurns={showTurns}
+      showSegments={showSegments}
     />
   );
 }
