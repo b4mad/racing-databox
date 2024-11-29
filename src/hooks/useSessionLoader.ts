@@ -72,8 +72,7 @@ export function useSessionLoader({
     const session = getSession(sessionId);
     if (!session) return;
 
-    // TODO: Fetch landmarks only if session changes, i.e. above
-    const landmarks = getLandmarks(session.track.id);
+    const landmarks = analysisData?.landmarks || getLandmarks(session.track.id);
 
     const sessionLaps = session.laps.filter(lap =>
       lapIds.includes(lap.id)
@@ -105,7 +104,6 @@ export function useSessionLoader({
             segmentsByLapId[item.lap.id] = item.segments;
           });
           logger.loader('useSessionLoader: fetched missing laps', fetchedLapsAndSegments);
-          logger.loader('useSessionLoader: fetched missing laps', segmentsByLapId);
 
           const data: AnalysisData = {
             session,
