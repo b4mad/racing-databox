@@ -1,4 +1,4 @@
-import { TelemetryPoint, TelemetryCacheEntry } from '../services/types';
+import { TelemetryPoint, TelemetryCacheEntry, AnalysisData } from '../services/types';
 import { ZoomState } from './types';
 import { ChartLineGraph } from './ChartLineGraph';
 
@@ -13,6 +13,7 @@ interface BaseGraphProps {
   zoomState: ZoomState;
   showBrush?: boolean;
   onZoomChange?: (startMeters: number, endMeters: number) => void;
+  analysisData?: AnalysisData;
 }
 
 interface LineGraphProps extends BaseGraphProps {
@@ -70,7 +71,7 @@ export function LapTimeGraph(props: BaseGraphProps) {
   return <LineGraph {...props} {...GRAPH_CONFIGS.lapTime} />;
 }
 
-export function LineGraph({ lapsData, dataKeys, unit = '', stepLine = false, title, zoomState, onZoomChange }: LineGraphProps) {
+export function LineGraph({ lapsData, dataKeys, unit = '', stepLine = false, title, zoomState, onZoomChange, analysisData }: LineGraphProps) {
   return (
     <ChartLineGraph
       lapsData={lapsData}
@@ -80,6 +81,7 @@ export function LineGraph({ lapsData, dataKeys, unit = '', stepLine = false, tit
       title={title}
       zoomState={zoomState}
       onZoomChange={onZoomChange}
+      analysisData={analysisData}
     />
   );
 }

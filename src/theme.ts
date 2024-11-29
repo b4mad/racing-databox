@@ -16,6 +16,9 @@ export const getTheme = (mode: PaletteMode) => createTheme({
           chart: {
             text: 'rgba(0, 0, 0, 0.6)',
             grid: 'rgba(0, 0, 0, 0.1)',
+            labelBackground: 'rgba(255, 255, 255, 0.9)',
+            labelText: 'rgba(0, 0, 0, 0.87)',
+            segment: '#2196f3',
           },
         }
       : {
@@ -30,6 +33,9 @@ export const getTheme = (mode: PaletteMode) => createTheme({
           chart: {
             text: 'rgba(255, 255, 255, 0.6)',
             grid: 'rgba(255, 255, 255, 0.1)',
+            labelBackground: 'rgba(0, 0, 0, 0.8)',
+            labelText: 'rgba(255, 255, 255, 0.87)',
+            segment: '#1976d2',
           },
         }),
   },

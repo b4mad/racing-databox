@@ -5,12 +5,18 @@ declare module '@mui/material/styles' {
     chart?: {
       text: string;
       grid: string;
+      labelBackground: string;
+      labelText: string;
+      segment: string;
     };
   }
   interface PaletteOptions {
     chart?: {
       text: string;
       grid: string;
+      labelBackground: string;
+      labelText: string;
+      segment: string;
     };
   }
 }

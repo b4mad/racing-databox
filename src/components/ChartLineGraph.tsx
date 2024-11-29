@@ -31,7 +31,8 @@ import {
   Plugin
 } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
-import { TelemetryPoint, TelemetryCacheEntry } from '../services/types';
+import annotationPlugin from 'chartjs-plugin-annotation';
+import { TelemetryPoint, TelemetryCacheEntry, AnalysisData } from '../services/types';
 import { ZoomState } from './types';
 
 // Vertical line plugin
@@ -88,7 +89,8 @@ ChartJS.register(
   Tooltip,
   Legend,
   zoomPlugin,
-  verticalLinePlugin
+  verticalLinePlugin,
+  annotationPlugin
 );
 
 interface DataKeyConfig {
@@ -105,6 +107,7 @@ interface ChartLineGraphProps {
   title?: string;
   zoomState: ZoomState;
   onZoomChange?: (start: number, end: number) => void;
+  analysisData?: AnalysisData;
 }
 
 export function ChartLineGraph({
@@ -114,7 +117,8 @@ export function ChartLineGraph({
   stepLine = false,
   title,
   zoomState,
-  onZoomChange
+  onZoomChange,
+  analysisData
 }: ChartLineGraphProps) {
   const theme = useTheme();
 
@@ -228,6 +232,39 @@ export function ChartLineGraph({
         color: theme.palette.chart?.grid || theme.palette.divider,
         width: 1,
         dash: [3, 3]
+      },
+      annotation: {
+        annotations: analysisData?.landmarks?.segments.map((segment, _index) => {
+          // Calculate the current zoom range
+          const xScale = (zoomState.right !== undefined && zoomState.right !== null &&
+                         zoomState.left !== undefined && zoomState.left !== null) ?
+            Math.abs(zoomState.right - zoomState.left) :
+            0;
+
+          // Only show labels when zoomed in enough (e.g., less than 2000m visible)
+          const showLabel = xScale < 750;
+
+          return {
+            type: 'line',
+            scaleID: 'x',
+            borderColor: theme.palette.chart?.segment || theme.palette.primary.main,
+            borderWidth: 2,
+            borderDash: [5, 3],
+            value: segment.start,
+            label: {
+              display: showLabel,
+              content: segment.name,
+              position: 'start',
+              backgroundColor: theme.palette.chart?.labelBackground,
+              color: theme.palette.chart?.labelText,
+              font: {
+                size: 9
+              },
+              rotation: 0,
+              yAdjust: 0
+            }
+          };
+        }) || []
       }
     }
   };

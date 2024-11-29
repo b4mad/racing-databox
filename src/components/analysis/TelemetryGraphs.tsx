@@ -4,7 +4,7 @@ import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { logger } from '../../utils/logger'
 
 export function TelemetryGraphs() {
-  const { lapsData, zoomState, setZoomRange } = useAnalysisContext();
+  const { analysisData, lapsData, zoomState, setZoomRange } = useAnalysisContext();
   // log the number of graphs
   logger.analysis('TelemetryGraphs', lapsData);
   if (Object.keys(lapsData).length === 0) {
@@ -19,7 +19,8 @@ export function TelemetryGraphs() {
           zoomState={zoomState}
           onZoomChange={setZoomRange}
           showBrush={false}
-        />
+          analysisData={analysisData}
+          />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
         <LapTimeGraph
@@ -27,7 +28,8 @@ export function TelemetryGraphs() {
           zoomState={zoomState}
           onZoomChange={setZoomRange}
           showBrush={false}
-        />
+          analysisData={analysisData}
+          />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
         <SpeedGraph
@@ -35,7 +37,8 @@ export function TelemetryGraphs() {
           zoomState={zoomState}
           onZoomChange={setZoomRange}
           showBrush={false}
-        />
+          analysisData={analysisData}
+          />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
         <PedalsGraph
@@ -43,7 +46,8 @@ export function TelemetryGraphs() {
           zoomState={zoomState}
           onZoomChange={setZoomRange}
           showBrush={false}
-        />
+          analysisData={analysisData}
+          />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
         <GearGraph
@@ -51,6 +55,7 @@ export function TelemetryGraphs() {
           zoomState={zoomState}
           onZoomChange={setZoomRange}
           showBrush={true}  // Only show brush on bottom graph
+          analysisData={analysisData}
         />
       </Box>
     </Box>
