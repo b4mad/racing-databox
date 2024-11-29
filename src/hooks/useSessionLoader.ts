@@ -136,7 +136,7 @@ export function useSessionLoader({
       landmarks: landmarks,
       segments: segmentsByLapId
     }
-    logger.loader('useSessionLoader Analysis data:', data);
+    logger.loader('useSessionLoader Analysis data - no missing laps:', data);
 
     setAnalysisData(data);
   }, [sessionId, lapIds]);
