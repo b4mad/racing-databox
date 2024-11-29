@@ -81,13 +81,20 @@ export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
     const minY = Math.min(...visiblePoints.map(p => p.position!.y));
     const maxY = Math.max(...visiblePoints.map(p => p.position!.y));
 
-    // Add margin
-    const margin = 50;
+    // Calculate the range and center
+    const xRange = maxX - minX;
+    const yRange = maxY - minY;
+    const maxRange = Math.max(xRange, yRange);
+    const xCenter = (maxX + minX) / 2;
+    const yCenter = (maxY + minY) / 2;
+    
+    // Add equal margins to both axes
+    const margin = maxRange * 0.1; // 10% margin
     return {
-      minX: minX - margin,
-      maxX: maxX + margin,
-      minY: minY - margin,
-      maxY: maxY + margin
+      minX: xCenter - (maxRange / 2) - margin,
+      maxX: xCenter + (maxRange / 2) + margin,
+      minY: yCenter - (maxRange / 2) - margin,
+      maxY: yCenter + (maxRange / 2) + margin
     };
   }, [lapsData, zoomState.left, zoomState.right]);
 
@@ -112,7 +119,8 @@ export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
 
   const options: ChartOptions<'line'> = {
     responsive: true,
-    maintainAspectRatio: false,
+    maintainAspectRatio: true,
+    aspectRatio: 1,
     scales: {
       x: {
         type: 'linear' as const,
@@ -131,7 +139,8 @@ export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
           }
         },
         min: mapBounds.minX,
-        max: mapBounds.maxX
+        max: mapBounds.maxX,
+        bounds: 'ticks'
       },
       y: {
         type: 'linear' as const,
@@ -147,7 +156,8 @@ export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
           color: theme.palette.chart?.text
         },
         min: mapBounds.minY,
-        max: mapBounds.maxY
+        max: mapBounds.maxY,
+        bounds: 'ticks'
       }
     },
     animation: {
@@ -197,8 +207,6 @@ export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
   };
 
   return (
-    <div className="map-container" style={{ width: '100%', height: '100%' }}>
-      <Line data={chartData} options={options} />
-    </div>
+    <Line data={chartData} options={options} style={{ width: '100%', height: '100%' }} />
   );
 }
