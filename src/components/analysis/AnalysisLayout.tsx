@@ -153,9 +153,9 @@ export function AnalysisLayout() {
                 display: 'flex',
                 width: '50%',
                 }}>
-                <TrackMapVisualization 
-                  showTurns={showTurns ?? true}
-                  showSegments={showSegments ?? true}
+                <TrackMapVisualization
+                  showTurns={showTurns ?? false}
+                  showSegments={showSegments ?? false}
                 />
               </Box>
             )}
@@ -171,9 +171,9 @@ export function AnalysisLayout() {
                 borderColor: 'divider'
               })
             }}>
-              <TelemetryGraphs 
-                showTurns={showTurns ?? true}
-                showSegments={showSegments ?? true}
+              <TelemetryGraphs
+                showTurns={showTurns ?? false}
+                showSegments={showSegments ?? false}
               />
             </Box>
           </Box>
