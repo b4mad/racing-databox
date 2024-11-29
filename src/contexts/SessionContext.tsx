@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState, ReactNode, useRef } from 'react';
 import { useErrorHandler } from '../hooks/useErrorHandler';
 import { PaddockService } from '../services/PaddockService';
-import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, PaddockLap, TrackLandmarks } from '../services/types';
+import { PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, PaddockLap, TrackLandmarks, PaddockSegment } from '../services/types';
 
 
 interface SessionContextType {
@@ -14,6 +14,7 @@ interface SessionContextType {
   fetchLandmarks: (trackId: number) => Promise<TrackLandmarks>;
   getLandmarks: (trackId: number) => TrackLandmarks | undefined;
   fetchLaps: (trackId: number, carId: number) => Promise<PaddockLap[]>;
+  getSegments: (lapId: number) => Promise<PaddockSegment[]>;
   loading: boolean;
   error: string | null;
   hasNextPage: boolean;
@@ -183,6 +184,15 @@ export function SessionProvider({ children }: SessionProviderProps) {
     return laps;
   }, []);
 
+  const getSegments = useCallback(async (lapId: number): Promise<PaddockSegment[]> => {
+    try {
+      return await paddockService.current.getSegments(lapId);
+    } catch (err) {
+      handleError(err, 'Failed to load segments');
+      throw err;
+    }
+  }, []);
+
   const fetchLap = useCallback(async (lapId: number): Promise<PaddockLap> => {
     // Check cache first
     if (lapsCache[lapId]) {
@@ -228,6 +238,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
         fetchLandmarks,
         getLandmarks,
         fetchLaps,
+        getSegments,
       }}
     >
       {children}

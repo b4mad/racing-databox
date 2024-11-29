@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, gql, NormalizedCacheObject } from '@apollo/client';
 import { logger } from '../utils/logger';
-import { TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, PaddockGame, PaddockSessionType, PaginatedResponse } from './types';
+import { TrackLandmarks, PaddockLandmark, PaddockLap, PaddockSession, PaddockCar, PaddockDriver, PaddockTrack, PaddockGame, PaddockSessionType, PaginatedResponse, PaddockSegment } from './types';
 
 export class PaddockService {
     private client: ApolloClient<NormalizedCacheObject>;
@@ -315,6 +315,65 @@ export class PaddockService {
             hasNextPage,
             endCursor: hasNextPage ? endCursor : undefined
         };
+    }
+
+    async getSegments(lapId: number): Promise<PaddockSegment[]> {
+        logger.paddock('Fetching segments for lap %d', lapId);
+        const { data } = await this.executeQuery(gql`
+            query GetSegments($lapId: BigInt!) {
+                allTelemetrySegments(
+                    condition: { lapId: $lapId }
+                ) {
+                    edges {
+                        node {
+                            id
+                            accelerationPoint
+                            apex
+                            brakeApplicationRate
+                            brakePressure
+                            brakeReleaseRate
+                            brakingPoint
+                            coastingTime
+                            cornerSpeed
+                            entrySpeed
+                            exitSpeed
+                            gear
+                            kind
+                            landmarkId
+                            lapId
+                            launchWheelSlipTime
+                            liftOffPoint
+                            throttleApplicationRate
+                            throttleLift
+                            throttleReleaseRate
+                        }
+                    }
+                }
+            }
+        `, { lapId });
+
+        return data.allTelemetrySegments.edges.map((edge: any) => ({
+            id: Number(edge.node.id),
+            accelerationPoint: edge.node.accelerationPoint,
+            apex: edge.node.apex,
+            brakeApplicationRate: edge.node.brakeApplicationRate,
+            brakePressure: edge.node.brakePressure,
+            brakeReleaseRate: edge.node.brakeReleaseRate,
+            brakingPoint: edge.node.brakingPoint,
+            coastingTime: edge.node.coastingTime,
+            cornerSpeed: edge.node.cornerSpeed,
+            entrySpeed: edge.node.entrySpeed,
+            exitSpeed: edge.node.exitSpeed,
+            gear: edge.node.gear,
+            kind: edge.node.kind,
+            landmarkId: Number(edge.node.landmarkId),
+            lapId: Number(edge.node.lapId),
+            launchWheelSlipTime: edge.node.launchWheelSlipTime,
+            liftOffPoint: edge.node.liftOffPoint,
+            throttleApplicationRate: edge.node.throttleApplicationRate,
+            throttleLift: edge.node.throttleLift,
+            throttleReleaseRate: edge.node.throttleReleaseRate
+        }));
     }
 
     async getLandmarks(id: number): Promise<TrackLandmarks> {

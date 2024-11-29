@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { useSession } from './useSession';
 import { useErrorHandler } from './useErrorHandler';
-import { AnalysisData } from '../services/types';
+import { AnalysisData, PaddockSegment } from '../services/types';
 import { logger } from '../utils/logger';
 
 interface UseSessionLoaderParams {
   sessionId: string;
   lapIds?: (number | null)[] | null | undefined;
+  analysisData?: AnalysisData;
   setLoading: (loading: boolean) => void;
   setAnalysisData: (data: AnalysisData) => void;
   setLapIds: (ids: number[] | undefined) => void;
@@ -15,11 +16,12 @@ interface UseSessionLoaderParams {
 export function useSessionLoader({
   sessionId,
   lapIds,
+  analysisData,
   setLoading,
   setAnalysisData,
   setLapIds
 }: UseSessionLoaderParams) {
-  const { getSession, fetchSession, getLandmarks, fetchLandmarks, fetchLap } = useSession();
+  const { getSession, fetchSession, getLandmarks, fetchLandmarks, fetchLap, getSegments } = useSession();
   const { handleError, clearError } = useErrorHandler('paddock');
 
   // Effect 1: Initial session and landmarks loading
@@ -70,11 +72,14 @@ export function useSessionLoader({
     const session = getSession(sessionId);
     if (!session) return;
 
+    // TODO: Fetch landmarks only if session changes, i.e. above
     const landmarks = getLandmarks(session.track.id);
 
     const sessionLaps = session.laps.filter(lap =>
       lapIds.includes(lap.id)
     );
+
+    const segmentsByLapId: { [lapId: number]: PaddockSegment[] } = analysisData?.segments ?? {};
 
     // Now get the remaining laps via fetchLap
     const missingLapIds = lapIds.filter((id): id is number =>
@@ -83,26 +88,55 @@ export function useSessionLoader({
     if (missingLapIds.length) {
       const fetchMissingLaps = async () => {
         try {
-          const fetchedLaps = await Promise.all(
-            missingLapIds.map(id => fetchLap(id))
+          const fetchedLapsAndSegments = await Promise.all(
+            missingLapIds.map(async id => {
+              const [lap, segments] = await Promise.all([
+                fetchLap(id),
+                getSegments(id)
+              ]);
+              return { lap, segments };
+            })
           );
-          sessionLaps.push(...fetchedLaps);
+
+          sessionLaps.push(...fetchedLapsAndSegments.map(item => item.lap));
+
+          // Preserve existing segments and add new ones
+          fetchedLapsAndSegments.forEach(item => {
+            segmentsByLapId[item.lap.id] = item.segments;
+          });
+          logger.loader('useSessionLoader: fetched missing laps', fetchedLapsAndSegments);
+          logger.loader('useSessionLoader: fetched missing laps', segmentsByLapId);
+
+          const data: AnalysisData = {
+            session,
+            driver: session.driver,
+            car: session.car,
+            track: session.track,
+            game: session.game,
+            laps: sessionLaps,
+            landmarks: landmarks,
+            segments: segmentsByLapId
+          };
+          logger.loader('useSessionLoader Analysis data:', data);
+          setAnalysisData(data);
         } catch (err) {
           handleError(err, 'Failed to load additional laps');
         }
       };
       fetchMissingLaps();
+      return;
     }
 
-
-    const data : AnalysisData = {
+    // If no missing laps to fetch, set the analysis data immediately
+    const data: AnalysisData = {
       session,
       driver: session.driver,
       car: session.car,
       track: session.track,
       game: session.game,
       laps: sessionLaps,
-      landmarks: landmarks
+      landmarks: landmarks,
+      segments: segmentsByLapId
     }
     logger.loader('useSessionLoader Analysis data:', data);
 

@@ -1,4 +1,5 @@
 import { PaddockSession, PaddockLap } from '../services/types';
+import { logger } from '../utils/logger';
 import { paddockService, saveTestResponse, sanitizeSessionForSerialization } from './testUtils';
 // At the top of src/tests/fetchSessions.test.ts
 import debug from 'debug';
@@ -66,6 +67,39 @@ describe('fetchSessions', () => {
                 expect(typeof lap.time).toBe('number');
                 expect(typeof lap.valid).toBe('boolean');
             });
+        });
+    }, 10000);
+});
+
+describe('fetchSegments', () => {
+    let currentResponse: any = null;
+
+    afterEach(async () => {
+        if (currentResponse) {
+            saveTestResponse(expect.getState().currentTestName, currentResponse);
+        }
+        currentResponse = null;
+    });
+
+    it('should fetch segments for lap ID 1929683', async function() {
+        const segments = await paddockService.getSegments(1929683);
+        currentResponse = segments;
+
+        // Verify we got some segments back
+        expect(segments.length).toBeGreaterThan(0);
+
+        // Check the structure of each segment
+        segments.forEach((segment) => {
+            logger.api('Segment:', segment);
+            expect(segment).toHaveProperty('id');
+            expect(segment).toHaveProperty('lapId');
+            expect(segment.lapId).toBe(1929683);
+            expect(segment).toHaveProperty('kind');
+            expect(segment).toHaveProperty('cornerSpeed');
+            expect(segment).toHaveProperty('entrySpeed');
+            expect(segment).toHaveProperty('exitSpeed');
+            expect(typeof segment.id).toBe('number');
+            expect(typeof segment.apex).toBe('number');
         });
     }, 10000);
 });

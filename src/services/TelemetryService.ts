@@ -39,6 +39,7 @@ function parseTelemetryData(rawData: RawTelemetryData): {
             steeringAngle: row[steeringIndex],
             lapTime: row[lapTimeIndex],
             lapNumber: row[lapNumberIndex],
+            delta: 0
         };
 
         if (mapDataAvailable) {

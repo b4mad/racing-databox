@@ -39,6 +39,7 @@ export interface AnalysisData {
     game: PaddockGame;
     landmarks?: TrackLandmarks;
     driver: PaddockDriver;
+    segments?: { [lapId: number]: PaddockSegment[] };
 }
 
 
@@ -129,6 +130,29 @@ export interface TelemetryCacheEntry {
     points: TelemetryPoint[];
     mapDataAvailable: boolean;
     color?: string;
+}
+
+export interface PaddockSegment {
+    id: number;
+    accelerationPoint: number;
+    apex: number;
+    brakeApplicationRate: number;
+    brakePressure: number;
+    brakeReleaseRate: number;
+    brakingPoint: number;
+    coastingTime: number;
+    cornerSpeed: number;
+    entrySpeed: number;
+    exitSpeed: number;
+    gear: number;
+    kind: string;
+    landmarkId: number;
+    lapId: number;
+    launchWheelSlipTime: number;
+    liftOffPoint: number;
+    throttleApplicationRate: number;
+    throttleLift: number;
+    throttleReleaseRate: number;
 }
 
 export interface TelemetryCache {

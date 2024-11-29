@@ -35,6 +35,7 @@ function AnalysisViewContent({ sessionId }: { sessionId: string }) {
     loading,
     lapIds,
     lapsData,
+    analysisData,
     setLapIds,
     setLoading,
     setAnalysisData,
@@ -44,6 +45,7 @@ function AnalysisViewContent({ sessionId }: { sessionId: string }) {
   useSessionLoader({
     sessionId,
     lapIds,
+    analysisData,
     setLoading,
     setAnalysisData,
     setLapIds
