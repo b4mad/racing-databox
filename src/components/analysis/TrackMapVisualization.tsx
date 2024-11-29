@@ -3,7 +3,7 @@ import { MapLine } from '../MapLine';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 
 export function TrackMapVisualization() {
-  const { lapsData, zoomState, setZoomRange } = useAnalysisContext();
+  const { analysisData, lapsData, zoomState, setZoomRange } = useAnalysisContext();
   const firstLapNumber = Object.keys(lapsData)[0];
   const mapDataAvailable = firstLapNumber ? lapsData[parseInt(firstLapNumber)].mapDataAvailable : false;
 
@@ -17,6 +17,7 @@ export function TrackMapVisualization() {
         lapsData={lapsData}
         zoomState={zoomState}
         onZoomChange={setZoomRange}
+        analysisData={analysisData}
       />
     </Box>
   );

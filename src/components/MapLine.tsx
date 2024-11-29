@@ -1,6 +1,6 @@
 import { Line } from 'react-chartjs-2';
 import { useTheme } from '@mui/material/styles';
-import { TelemetryPoint, TelemetryCacheEntry } from '../services/types';
+import { TelemetryPoint, TelemetryCacheEntry, AnalysisData } from '../services/types';
 import { ZoomState } from './types';
 import { useMemo } from 'react';
 import {
@@ -15,6 +15,7 @@ import {
   ChartOptions
 } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
+import annotationPlugin from 'chartjs-plugin-annotation';
 
 ChartJS.register(
   CategoryScale,
@@ -24,16 +25,18 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  zoomPlugin
+  zoomPlugin,
+  annotationPlugin
 );
 
 interface MapLineProps {
   lapsData: { [lapNumber: number]: TelemetryCacheEntry };
   zoomState: ZoomState;
   onZoomChange?: (start: number, end: number) => void;
+  analysisData?: AnalysisData;
 }
 
-export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
+export function MapLine({ lapsData, zoomState, onZoomChange, analysisData }: MapLineProps) {
   const handleViewChange = (context: any) => {
     if (onZoomChange) {
       // Find visible points based on current x/y view bounds
@@ -181,6 +184,43 @@ export function MapLine({ lapsData, zoomState, onZoomChange }: MapLineProps) {
       },
       legend: {
         display: false
+      },
+      annotation: {
+        annotations: (analysisData?.landmarks?.segments || []).reduce<any[]>((acc, segment) => {
+          // Find the closest points to segment start and end
+          const startPoint = Object.values(lapsData)[0]?.points.find(p =>
+            Math.abs(p.distance - segment.start) < 1 && p.position
+          )?.position;
+          const endPoint = Object.values(lapsData)[0]?.points.find(p =>
+            segment.end !== null && Math.abs(p.distance - segment.end) < 1 && p.position
+          )?.position;
+
+          if (!startPoint || !endPoint) return acc;
+
+          // Add point annotation for segment start
+          acc.push({
+            type: 'point' as const,
+            xValue: startPoint.x,
+            yValue: startPoint.y,
+            backgroundColor: theme.palette.chart?.segment || theme.palette.primary.main,
+            borderColor: theme.palette.chart?.segment || theme.palette.primary.main,
+            borderWidth: 2,
+            radius: 4,
+            pointStyle: 'circle',
+            label: {
+              display: true,
+              content: segment.name,
+              position: 'top',
+              backgroundColor: theme.palette.chart?.labelBackground,
+              color: theme.palette.chart?.labelText,
+              font: {
+                size: 9
+              },
+              yAdjust: -8
+            }
+          });
+          return acc;
+        }, [])
       },
       zoom: {
         zoom: {
