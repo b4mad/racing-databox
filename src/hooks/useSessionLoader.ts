@@ -50,7 +50,7 @@ export function useSessionLoader({
             car: session.car,
             track: session.track,
             game: session.game,
-            laps: session.laps,
+            laps: [],
             landmarks: landmarks,
             segments: {}
           };
@@ -95,18 +95,14 @@ export function useSessionLoader({
             logger.loader('useSessionLoader: fetched missing laps', fetchedLapsAndSegments);
           }
 
-          const data: AnalysisData = {
-            session,
-            driver: session.driver,
-            car: session.car,
-            track: session.track,
-            game: session.game,
-            laps: sessionLaps,
-            landmarks: analysisData.landmarks,
-            segments: segmentsByLapId
+          // Update the existing analysis data
+          analysisData.laps = sessionLaps;
+          analysisData.segments = {
+            ...analysisData.segments,
+            ...segmentsByLapId
           };
-          logger.loader('useSessionLoader Analysis data:', data);
-          setAnalysisData(data);
+          logger.loader('useSessionLoader Analysis data:', analysisData);
+          setAnalysisData({...analysisData});
         }
 
         clearError();
