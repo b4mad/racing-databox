@@ -33,36 +33,23 @@ export function useSessionLoader({
       try {
         setLoading(true);
 
+        let session = analysisData?.session;
+        let landmarks = analysisData?.landmarks;
         // Ensure we have the base session data
-        if (!analysisData || analysisData.session.sessionId !== sessionId) {
-          const session = await fetchSession(sessionId);
-          const landmarks = await fetchLandmarks(session.track.id);
-
-
-          if (!landmarks) {
-            throw new Error('Failed to load landmarks');
-          }
-
-          // Create initial analysis data with session and landmarks
-          const data: AnalysisData = {
-            session,
-            driver: session.driver,
-            car: session.car,
-            track: session.track,
-            game: session.game,
-            laps: [],
-            landmarks: landmarks,
-            segments: {}
-          };
-          setAnalysisData(data);
+        if (!session || session.sessionId !== sessionId) {
+          session = await fetchSession(sessionId);
           // Set initial lap if we have laps and none are currently selected
           if (session.laps.length > 0 && !lapIds?.length) {
             setLapIds([session.laps[0].id]);
+            return; // Exit here as setLapIds will trigger this effect again
           }
-          return; // Exit here as setLapIds will trigger this effect again
+
+          landmarks = await fetchLandmarks(session.track.id);
+          if (!landmarks) {
+            throw new Error('Failed to load landmarks');
+          }
         }
 
-        const session = analysisData.session;
 
         // If we have lapIds, process them
         if (lapIds?.length) {
@@ -96,13 +83,18 @@ export function useSessionLoader({
           }
 
           // Update the existing analysis data
-          analysisData.laps = sessionLaps;
-          analysisData.segments = {
-            ...analysisData.segments,
-            ...segmentsByLapId
+          let updatedData : AnalysisData = {
+            session,
+            driver: session.driver,
+            car: session.car,
+            track: session.track,
+            game: session.game,
+            laps: sessionLaps,
+            landmarks: landmarks,
+            segments: segmentsByLapId
           };
-          logger.loader('useSessionLoader Analysis data:', analysisData);
-          setAnalysisData({...analysisData});
+          logger.loader('useSessionLoader Analysis data:', updatedData);
+          setAnalysisData(updatedData);
         }
 
         clearError();
