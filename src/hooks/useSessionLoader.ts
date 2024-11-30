@@ -16,6 +16,7 @@ interface UseSessionLoaderParams {
 export function useSessionLoader({
   sessionId,
   lapIds,
+  analysisData,
   setLoading,
   setAnalysisData,
   setLapIds
@@ -33,18 +34,35 @@ export function useSessionLoader({
         setLoading(true);
 
         // Ensure we have the base session data
-        const session = await fetchSession(sessionId);
-        const landmarks = await fetchLandmarks(session.track.id);
+        if (!analysisData || analysisData.session.sessionId !== sessionId) {
+          const session = await fetchSession(sessionId);
+          const landmarks = await fetchLandmarks(session.track.id);
 
-        if (!landmarks) {
-          throw new Error('Failed to load landmarks');
-        }
 
-        // Set initial lap if we have laps and none are currently selected
-        if (session.laps.length > 0 && !lapIds?.length) {
-          setLapIds([session.laps[0].id]);
+          if (!landmarks) {
+            throw new Error('Failed to load landmarks');
+          }
+
+          // Create initial analysis data with session and landmarks
+          const data: AnalysisData = {
+            session,
+            driver: session.driver,
+            car: session.car,
+            track: session.track,
+            game: session.game,
+            laps: session.laps,
+            landmarks: landmarks,
+            segments: {}
+          };
+          setAnalysisData(data);
+          // Set initial lap if we have laps and none are currently selected
+          if (session.laps.length > 0 && !lapIds?.length) {
+            setLapIds([session.laps[0].id]);
+          }
           return; // Exit here as setLapIds will trigger this effect again
         }
+
+        const session = analysisData.session;
 
         // If we have lapIds, process them
         if (lapIds?.length) {
@@ -84,7 +102,7 @@ export function useSessionLoader({
             track: session.track,
             game: session.game,
             laps: sessionLaps,
-            landmarks: landmarks,
+            landmarks: analysisData.landmarks,
             segments: segmentsByLapId
           };
           logger.loader('useSessionLoader Analysis data:', data);
