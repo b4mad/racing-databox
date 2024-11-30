@@ -16,22 +16,23 @@ interface UseSessionLoaderParams {
 export function useSessionLoader({
   sessionId,
   lapIds,
-  analysisData,
   setLoading,
   setAnalysisData,
   setLapIds
 }: UseSessionLoaderParams) {
-  const { getSession, fetchSession, getLandmarks, fetchLandmarks, fetchLap, getSegments } = useSession();
+  const { fetchSession, fetchLandmarks, fetchLap, getSegments } = useSession();
   const { handleError, clearError } = useErrorHandler('paddock');
 
-  // Effect 1: Initial session and landmarks loading
+  // Combined effect for session loading and updates
   useEffect(() => {
-    logger.loader('useSessionLoader: loading session data ' + sessionId);
+    logger.loader(`useSessionLoader: loading/updating session ${sessionId} and laps ${lapIds}`);
     if (!sessionId) return;
 
-    const loadSession = async () => {
+    const loadSessionAndData = async () => {
       try {
         setLoading(true);
+
+        // Ensure we have the base session data
         const session = await fetchSession(sessionId);
         const landmarks = await fetchLandmarks(session.track.id);
 
@@ -39,62 +40,42 @@ export function useSessionLoader({
           throw new Error('Failed to load landmarks');
         }
 
-        // Set initial lap only if we have laps and none are currently selected
+        // Set initial lap if we have laps and none are currently selected
         if (session.laps.length > 0 && !lapIds?.length) {
           setLapIds([session.laps[0].id]);
+          return; // Exit here as setLapIds will trigger this effect again
         }
 
-        clearError();
-      } catch (err) {
-        handleError(err, 'Failed to load session data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadSession();
-  }, [sessionId]);
-
-  // Effect 2: Update analysis data when session or lapIds change
-  useEffect(() => {
-    logger.loader(`useSessionLoader: updating analysis data for session ${sessionId} and laps ${lapIds}`);
-    if (!sessionId || !lapIds?.length) return;
-
-    const session = getSession(sessionId);
-    if (!session) return;
-
-    const landmarks = analysisData?.landmarks || getLandmarks(session.track.id);
-
-    const sessionLaps = session.laps.filter(lap =>
-      lapIds.includes(lap.id)
-    );
-
-    const segmentsByLapId: { [lapId: number]: PaddockSegment[] } = analysisData?.segments ?? {};
-
-    // Now get the remaining laps via fetchLap
-    const missingLapIds = lapIds.filter((id): id is number =>
-      id !== null && !sessionLaps.find(lap => lap.id === id)
-    );
-    if (missingLapIds.length) {
-      const fetchMissingLaps = async () => {
-        try {
-          const fetchedLapsAndSegments = await Promise.all(
-            missingLapIds.map(async id => {
-              const [lap, segments] = await Promise.all([
-                fetchLap(id),
-                getSegments(id)
-              ]);
-              return { lap, segments };
-            })
+        // If we have lapIds, process them
+        if (lapIds?.length) {
+          const sessionLaps = session.laps.filter(lap =>
+            lapIds.includes(lap.id)
           );
 
-          sessionLaps.push(...fetchedLapsAndSegments.map(item => item.lap));
+          const segmentsByLapId: { [lapId: number]: PaddockSegment[] } = {};
 
-          // Preserve existing segments and add new ones
-          fetchedLapsAndSegments.forEach(item => {
-            segmentsByLapId[item.lap.id] = item.segments;
-          });
-          logger.loader('useSessionLoader: fetched missing laps', fetchedLapsAndSegments);
+          // Get missing laps
+          const missingLapIds = lapIds.filter((id): id is number =>
+            id !== null && !sessionLaps.find(lap => lap.id === id)
+          );
+
+          if (missingLapIds.length) {
+            const fetchedLapsAndSegments = await Promise.all(
+              missingLapIds.map(async id => {
+                const [lap, segments] = await Promise.all([
+                  fetchLap(id),
+                  getSegments(id)
+                ]);
+                return { lap, segments };
+              })
+            );
+
+            sessionLaps.push(...fetchedLapsAndSegments.map(item => item.lap));
+            fetchedLapsAndSegments.forEach(item => {
+              segmentsByLapId[item.lap.id] = item.segments;
+            });
+            logger.loader('useSessionLoader: fetched missing laps', fetchedLapsAndSegments);
+          }
 
           const data: AnalysisData = {
             session,
@@ -108,27 +89,16 @@ export function useSessionLoader({
           };
           logger.loader('useSessionLoader Analysis data:', data);
           setAnalysisData(data);
-        } catch (err) {
-          handleError(err, 'Failed to load additional laps');
         }
-      };
-      fetchMissingLaps();
-      return;
-    }
 
-    // If no missing laps to fetch, set the analysis data immediately
-    const data: AnalysisData = {
-      session,
-      driver: session.driver,
-      car: session.car,
-      track: session.track,
-      game: session.game,
-      laps: sessionLaps,
-      landmarks: landmarks,
-      segments: segmentsByLapId
-    }
-    logger.loader('useSessionLoader Analysis data - no missing laps:', data);
+        clearError();
+      } catch (err) {
+        handleError(err, 'Failed to load session data');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setAnalysisData(data);
+    loadSessionAndData();
   }, [sessionId, lapIds]);
 }
