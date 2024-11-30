@@ -28,16 +28,12 @@ export function useSessionLoader({
   useEffect(() => {
     logger.loader('useSessionLoader: loading session data ' + sessionId);
     if (!sessionId) return;
-    let mounted = true;
 
     const loadSession = async () => {
       try {
         setLoading(true);
         const session = await fetchSession(sessionId);
-        if (!mounted) return;
-
         const landmarks = await fetchLandmarks(session.track.id);
-        if (!mounted) return;
 
         if (!landmarks) {
           throw new Error('Failed to load landmarks');
@@ -50,18 +46,13 @@ export function useSessionLoader({
 
         clearError();
       } catch (err) {
-        if (mounted) {
-          handleError(err, 'Failed to load session data');
-        }
+        handleError(err, 'Failed to load session data');
       } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
     loadSession();
-    return () => { mounted = false; };
   }, [sessionId]);
 
   // Effect 2: Update analysis data when session or lapIds change
