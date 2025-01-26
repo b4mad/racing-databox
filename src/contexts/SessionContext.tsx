@@ -67,7 +67,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
             trackId: selectedTrack ?? undefined
           }),
           paddockService.current.getAllCars(10),
-          paddockService.current.getAllDrivers(10),
+          paddockService.current.getAllDrivers(1000),
           paddockService.current.getAllTracks(10)
         ]);
         const filteredSessions = sessionsData.items.filter(session => session.laps.length > 0);

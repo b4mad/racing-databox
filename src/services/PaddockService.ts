@@ -52,7 +52,10 @@ export class PaddockService {
     async getAllDrivers(limit: number = 10): Promise<PaddockDriver[]> {
         const { data } = await this.executeQuery(gql`
             query GetAllDrivers($limit: Int!) {
-                allTelemetryDrivers(first: $limit) {
+                allTelemetryDrivers(
+                    first: $limit
+                    orderBy: NAME_ASC
+                ) {
                     nodes {
                         id
                         name
