@@ -37,6 +37,18 @@ const GRAPH_CONFIGS = {
     ],
     unit: "%"
   },
+  throttle: {
+    dataKeys: [{ key: "throttle" as keyof TelemetryPoint, name: "Throttle", color: "#4caf50" }],
+    unit: "Throttle %"
+  },
+  brake: {
+    dataKeys: [{ key: "brake" as keyof TelemetryPoint, name: "Brake", color: "#f44336" }],
+    unit: "Brake %"
+  },
+  handbrake: {
+    dataKeys: [{ key: "handbrake" as keyof TelemetryPoint, name: "Handbrake", color: "#ff9800" }],
+    unit: "Handbrake %"
+  },
   gear: {
     dataKeys: [{ key: "gear" as keyof TelemetryPoint, name: "Gear", color: "#9c27b0" }],
     unit: "Gear",
@@ -58,6 +70,18 @@ export function SpeedGraph(props: BaseGraphProps) {
 
 export function PedalsGraph(props: BaseGraphProps) {
   return <LineGraph {...props} {...GRAPH_CONFIGS.pedals} />;
+}
+
+export function ThrottleGraph(props: BaseGraphProps) {
+  return <LineGraph {...props} {...GRAPH_CONFIGS.throttle} />;
+}
+
+export function BrakeGraph(props: BaseGraphProps) {
+  return <LineGraph {...props} {...GRAPH_CONFIGS.brake} />;
+}
+
+export function HandbrakeGraph(props: BaseGraphProps) {
+  return <LineGraph {...props} {...GRAPH_CONFIGS.handbrake} />;
 }
 
 export function GearGraph(props: BaseGraphProps) {

@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { SpeedGraph, PedalsGraph, GearGraph, LapTimeGraph, DeltaGraph } from '../LineGraph';
+import { SpeedGraph, ThrottleGraph, BrakeGraph, HandbrakeGraph, GearGraph, LapTimeGraph, DeltaGraph } from '../LineGraph';
 import { useAnalysisContext } from '../../contexts/AnalysisContext';
 import { logger } from '../../utils/logger'
 
@@ -17,7 +17,7 @@ export function TelemetryGraphs({ visibleAnnotations }: TelemetryGraphsProps) {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, minHeight: '100%', overflow: 'auto', flex: 1 }}>
-      <Box sx={{ minHeight: '150px' }}>
+      <Box sx={{ minHeight: '50px' }}>
         <DeltaGraph
           lapsData={lapsData}
           zoomState={zoomState}
@@ -27,7 +27,7 @@ export function TelemetryGraphs({ visibleAnnotations }: TelemetryGraphsProps) {
           visibleAnnotations={visibleAnnotations}
           />
       </Box>
-      <Box sx={{ minHeight: '150px' }}>
+      <Box sx={{ minHeight: '50px' }}>
         <LapTimeGraph
           lapsData={lapsData}
           zoomState={zoomState}
@@ -48,14 +48,34 @@ export function TelemetryGraphs({ visibleAnnotations }: TelemetryGraphsProps) {
           />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
-        <PedalsGraph
+        <ThrottleGraph
           lapsData={lapsData}
           zoomState={zoomState}
           onZoomChange={setZoomRange}
           showBrush={false}
           analysisData={analysisData}
           visibleAnnotations={visibleAnnotations}
-          />
+        />
+      </Box>
+      <Box sx={{ minHeight: '150px' }}>
+        <BrakeGraph
+          lapsData={lapsData}
+          zoomState={zoomState}
+          onZoomChange={setZoomRange}
+          showBrush={false}
+          analysisData={analysisData}
+          visibleAnnotations={visibleAnnotations}
+        />
+      </Box>
+      <Box sx={{ minHeight: '150px' }}>
+        <HandbrakeGraph
+          lapsData={lapsData}
+          zoomState={zoomState}
+          onZoomChange={setZoomRange}
+          showBrush={false}
+          analysisData={analysisData}
+          visibleAnnotations={visibleAnnotations}
+        />
       </Box>
       <Box sx={{ minHeight: '150px' }}>
         <GearGraph
